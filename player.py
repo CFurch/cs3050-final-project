@@ -16,4 +16,10 @@ class PlayerCharacter(arcade.Sprite):
         picking something up if the current item slot 
         """
 
+    def setup(self):
+        """
+        This may not be needed, add as wanted
+        :return:
+        """
+
 
