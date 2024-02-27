@@ -15,10 +15,11 @@ SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 650
 SCREEN_TITLE = "2D Lethal Company"
 
-# Starting location of the player
+# Starting location of the player, and movement constants
 PLAYER_START_X = 2
 PLAYER_START_Y = 1
-
+MAX_STAM = 100
+STAM_DRAIN = 2 # Stam drain 2, will be divided by 2 for stamina increase rate
 BASE_MOVEMENT_SPEED = 5
 
 
@@ -277,9 +278,9 @@ class LethalGame(arcade.Window):
 
         # Update player speed based on stamina
         if self.sprinting:
-            self.player.decrease_stam(1)
-        else:
-            self.player.increase_stam(1)
+            self.player.decrease_stam(STAM_DRAIN)
+        elif self.player.get_stam() < MAX_STAM:
+            self.player.increase_stam(STAM_DRAIN / 2)
 
         # Update Animations
         # self.scene.update_animation(
