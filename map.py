@@ -1,10 +1,11 @@
 import arcade
 
 
-class map(arcade.Sprite):
+class Map(arcade.Sprite):
     def __init__(self):
         """
-
+        This needs to have an overall wall list, created when making all the rooms together.
+        the Room class needs to implement a Room.get_walls method for this
         """
 
     def setup(self):
