@@ -10,7 +10,8 @@ TILE_SIZE = 128
 class Room(arcade.Sprite):
     def __init__(self):
         """
-        representation of room, pull from json,
+        Spawn areas (coordinates for bounding boxes (x, y), list of list of tuples), room type,
+        doors, loot_item_spawn_list, wall_list
         """
         super().__init__()
         self.wall_list = None
@@ -29,6 +30,7 @@ class Room(arcade.Sprite):
         :return:
         """
         self.wall_list = arcade.SpriteList()
+
         self.loot_item_spawn_list = loot_item_spawn_list
         self.spawners = spawners
         self.hazards = hazards
@@ -71,11 +73,13 @@ class Room(arcade.Sprite):
     def get_walls(self):
         return self.wall_list
 
-
 """
 This class needs a get_walls method to return the walls of the room in the form of a list.
 """
 
+"""
+TO DO: Getters and Setters for all values
+"""
 
 
 
