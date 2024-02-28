@@ -8,7 +8,7 @@ class Room(arcade.Sprite):
         doors, loot_item_spawn_list, wall_list
         """
 
-    def setup(self, room_type, item, x_top_left, y_top_left, spawners, hazards):
+    def setup(self, bitwise_repr, room_type, x_center, y_center, loot_to_spawn, spawners, hazards):
         """
         loot_value, allow null for spawners and hazards to be null
         :return:
