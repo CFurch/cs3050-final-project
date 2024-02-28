@@ -98,11 +98,21 @@ class PlayerCharacter(arcade.Sprite):
         if self.health > 100:  # Assuming max health is 100
             self.health = 100
 
+
+    def set_current_inv_slot(self, inventory_slot):
+        """
+        Set the currently selected inventory slot, unless there is a two-handed object being held.
+        """
+        if not self.holding_two_handed:
+            self.current_item_slot_selected = inventory_slot
+
+    def get_current_inv_slot(self):
+        """
+        Getter for the currently selected inventory slot.
+        """
+        return self.current_item_slot_selected
+
     """
-    set_current_inv_slot(self, inventory_slot) - set the currently selected inventory slot, 
-                                                 unless there is a two handed object being held
-    get_current_inv_slot(self) - getter
-    
     future todo:
     Add self.current_texture variable, set to 0. In init, load each texture (into self.walk_textures) 
     for how many are in the animation and then use this loop in update_animation to change the player sprite
