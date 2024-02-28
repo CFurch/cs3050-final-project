@@ -99,7 +99,17 @@ class PlayerCharacter(arcade.Sprite):
             self.health = 100
 
     """
-    set_current_inv_slot(self, inventory_slot) - set the currently selected inventory slot
+    set_current_inv_slot(self, inventory_slot) - set the currently selected inventory slot, 
+                                                 unless there is a two handed object being held
     get_current_inv_slot(self) - getter
+    
+    future todo:
+    Add self.current_texture variable, set to 0. In init, load each texture (into self.walk_textures) 
+    for how many are in the animation and then use this loop in update_animation to change the player sprite
+    self.cur_texture += 1
+        if self.cur_texture > 7:
+            self.cur_texture = 0
+        self.texture = self.walk_textures[self.cur_texture]
+    additionally implement facing direction to this (although this will likely be rotating the sprite
     """
 
