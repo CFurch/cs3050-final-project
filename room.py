@@ -41,10 +41,10 @@ class Room(arcade.Sprite):
         self.wall_list = arcade.SpriteList()
 
         # Load room data from JSON file
-        with open("rooms.json") as f:
+        with open("resources/rooms.json") as f:
             rooms_data = json.load(f)
 
-        # Get walls data based on room type
+        # Get walls data based on room type bitwise representation
         walls_data = rooms_data["rooms"].get(room_type, {}).get("walls", [])
 
         # Create walls based on walls data
