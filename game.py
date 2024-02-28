@@ -134,13 +134,13 @@ class LethalGame(arcade.Window):
         """
         # Update movement speed if shift is pressed - if sprinting, base movement speed should be doubled
         # Check on the current movement speed to ensure this
-        if self.player.get_stam > 0 and self.shift_pressed and \
+        if self.player.get_stam() > 0 and self.shift_pressed and \
                 (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
             # nice to have: account for horizontal movement speed
             self.movement_speed = BASE_MOVEMENT_SPEED * 2
             # set sprinting to true if the player is actually moving in a direction
             self.sprinting = True  # Use sprinting variable to signal to update that sprint
-            # is happening and decrement player's sprint
+            # is happening and decrement player's stamina
         # Decrease to base movement speed if not sprinting - if the above conditions aren't true
         else:
             self.movement_speed = BASE_MOVEMENT_SPEED
@@ -284,7 +284,8 @@ class LethalGame(arcade.Window):
         elif self.player.get_stam() < MAX_STAM:
             self.player.increase_stam(STAM_DRAIN / 2)
 
-        # Update Animations
+        # Update Animations - this requires an update_animation function in each class.
+        # This is pretty straightforward to do and setup, and is worthwhile to do
         # self.scene.update_animation(
         #     delta_time,
         #     [
@@ -295,7 +296,7 @@ class LethalGame(arcade.Window):
         #     ],
         # )
 
-        # Update walls, used with moving platforms
+        # Update walls, used with moving platforms (may not be needed)
         self.scene.update(self.walls)
 
         # handle collisions - like this
