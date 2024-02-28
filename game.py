@@ -65,7 +65,6 @@ class LethalGame(arcade.Window):
         self.sprinting = False
 
         # Inventory slots
-        self.current_inv_slot = 1  # Start in first inventory slot
         self.try_pickup_item = False
         self.drop_item = False
 
@@ -165,13 +164,13 @@ class LethalGame(arcade.Window):
 
         # determine the current inventory slot to pull from
         if self.pressed_1:
-            self.current_inv_slot = 1
+            self.player.set_current_inv_slot(1)
         elif self.pressed_2:
-            self.current_inv_slot = 2
+            self.player.set_current_inv_slot(2)
         elif self.pressed_3:
-            self.current_inv_slot = 3
+            self.player.set_current_inv_slot(4)
         elif self.pressed_4:
-            self.current_inv_slot = 4
+            self.player.set_current_inv_slot(4)
 
         # Handling if attempting to pick something up
         if self.e_pressed:
@@ -305,18 +304,18 @@ class LethalGame(arcade.Window):
         # )
         # Handle checking if items are in hitbox and the player is attempting to pick something up
         # Add the item to inventory if the player's current slot is open
-        # if self.try_pickup_item and not self.player.get_inv(self.current_inv_slot):
+        # if self.try_pickup_item and not self.player.get_inv(self.player.get_current_inv_slot()):
         #     # Since we can only populate the player's inventory slot with a single item,
         #     # we will only try with the first item
         #     item_hit_list = arcade.check_for_collision_with_list(self.player, self.loot_items)
         #     if len(item_hit_list) > 0:
-        #         self.player.add_item(self.current_inv_slot, item_hit_list[0])
+        #         self.player.add_item(self.player.get_current_inv_slot, item_hit_list[0])
         #         self.loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
         #         item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
         #
         # # Handle checking if the player wants to drop items
-        # if self.drop_item and self.player.get_inv(self.current_inv_slot):
-        #     temp_item = self.player.remove_item(self.current_inv_slot)
+        # if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot):
+        #     temp_item = self.player.remove_item(self.player.get_current_inv_slot)
         #     # Currently I will be including all of this, I'm not sure if we need to have both
         #     self.scene.add_sprite(temp_item)
         #     self.loot_items.append(temp_item)
