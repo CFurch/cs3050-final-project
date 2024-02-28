@@ -1,0 +1,181 @@
+{
+  "rooms": {
+    "0000": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "1000": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0100": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0010": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0001": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+      ]
+    },
+    "1100": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0110": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0011": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "1001": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+      ]
+    },
+    "1010": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0101": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+      ]
+    },
+    "1110": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "1101": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+      ]
+    },
+    "1011": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
+        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
+        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+      ]
+    },
+    "0111": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+
+        {"center_x": 128, "center_y": 224, "width": 128, "height": 64}
+      ]
+    },
+    "1111": {
+      "walls": [
+        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
+        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": 32, "center_y": 224, "width": 64, "height": 64}
+      ]
+    }
+  }
+}
