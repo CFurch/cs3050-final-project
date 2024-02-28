@@ -21,7 +21,12 @@ class Map(arcade.Sprite):
         # Both of the above functions will use the procgen results to determine which rooms to spawn
 
         # Iterate through each room in the representation of the map and create a room
-
+        # for room in map
+        #      generate room based on bitwise rep, x, y, to_spawn_loot, etc
+        #      get room object and sub-objects, including the walls list, loot items spawned,
+        #      hazards spawned, spawners spawned
+        #      add each of these things to the lists of items with that
+        # return each of the lists
 
 def generate_map():
     """
