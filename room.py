@@ -27,13 +27,13 @@ class Room(arcade.Sprite):
         self.loot_item_spawn_list = loot_item_spawn_list
         self.spawners = spawners
         self.hazards = hazards
-        self.room_type = room_type 
+        self.room_type = room_type
         self.x_center = x_center
         self.y_center = y_center
         self.width = 2560
         self.height = 1440
     def get_walls():
-        return self.wall_list    
+        return self.wall_list
 
 """
 This class needs a get_walls method to return the walls of the room in the form of a list.

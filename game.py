@@ -45,6 +45,8 @@ class LethalGame(arcade.Window):
 
         # GUI variables
         self.camera = None
+        # Instead of using a scene, it may also be easier to just keep a sprite list
+        # for each individual thing.
         self.scene = None
 
         # Movement / inventory variables
@@ -69,7 +71,7 @@ class LethalGame(arcade.Window):
         self.drop_item = False
 
         # Set power levels - has to do with spawning mechanics
-        self.indoor_power = 4  # experimentation-40 levels
+        self.indoor_power = None  # experimentation-40 levels
 
     def setup(self, procgen_results):
         # Set up the Camera

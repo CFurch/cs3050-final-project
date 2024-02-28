@@ -7,8 +7,13 @@ class Item(arcade.Sprite):
         initialize value, size, type, is_two_handed
         """
         super().__init__()
+        self.weight = None
+        self.value = None
+        self.texture = None
+        self.type = None
+        self.two_handed = None
 
-    def setup(self, type, size, value, is_two_handed):
+    def setup(self, x_center, y_center, type, size, value, is_two_handed):
         """
         Update the variables based on these
         :param type:
@@ -16,5 +21,6 @@ class Item(arcade.Sprite):
         :param value:
         :return:
         """
+
 
 
