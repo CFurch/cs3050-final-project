@@ -33,7 +33,7 @@ class Room(arcade.Sprite):
         self.wall_list = arcade.SpriteList()
         self.loot_list = arcade.SpriteList()
         self.loot_item_spawn_list = loot_item_spawn_list
-        self.spawners = arcade.SpriteList # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
+        self.spawners = arcade.SpriteList() # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
         self.hazards = hazards
         self.room_type = room_type
         self.x_center = x_center

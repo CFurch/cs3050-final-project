@@ -21,17 +21,23 @@ class Item(arcade.Sprite):
         :param value:
         :return:
         """
+        """
+        Quick comments from Skyler:
+        I think that we will actually want to be loading the items from a json, somewhat like rooms.
+        - So, each item in the json will have weight and sprite png (so you can use arcades sprite from png to make the actual sprite)
+        
+        For value ranges, if a 0 is passed in, the value is 10-30, 1 is 30-60 and 2 is 60-100 (just use this to set the value of this sprite)
+        I would split up the json into two areas, being one handed and two handed, and then value range 
+        (i.e. "0" for 0 value items, see resources/items.json for this)
+        - for instance, if a 0 is passed in for value, and it isn't a two-handed item:
+                assign self.value of randint(10, 30), and randomly choose something from
+                Load the json (using json.load) and access the list of items of value 0 using following:
+                data_from_json["one_handed"]["0"]     Then randomly pull from this for the weight and specific sprite
+
+        Feel free to use my stuff in Room setup as an example for how to use the json with this. 
+        
+
+        """
 
 
-"""
-Quick comments from Skyler:
-I think that we will actually want to be loading the items from a json, like rooms.
-So, each item in the json will have weight and sprite png
-For value ranges, if a 0 is passed in, the value is 10-30, 1 is 30-60 and 2 is 30-100
-I would split up the json into two areas, being one handed and two handed, and then value range 
-(i.e. "0" for 0 value items, see the json for this)
-I'll make an example json of this, to show what I'm thinking. Feel free to use my stuff in Room setup
-as an example for how to use it
 
-
-"""
