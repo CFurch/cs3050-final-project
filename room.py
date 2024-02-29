@@ -57,44 +57,33 @@ class Room(arcade.Sprite):
         # Spawn loot
         # Get spawn location(s) of room
         item_spawn_areas = rooms_data.get("item_spawn_areas", [])
+        # Handle spawning item
+        is_two_handed = False
+        for temp_list in self.loot_item_spawn_list:
+            item_value = 0
+            for temp_item in temp_list:
+                if temp_item != 0:
+                    # spawn that many items that are being asked for
+                    for i in range(temp_item):
+                        # Choose a random loot spawn area
+                        spawn_area = random.randint(0, len(item_spawn_areas) - 1)
+                        # select a point in the spawn area - use of integer division to ensure integer bounds
+                        random_x_val = random.randint(self.center_x + item_spawn_areas[spawn_area]["center_x"] -
+                                                      item_spawn_areas[spawn_area]["width"] // 2, self.center_x +
+                                                      item_spawn_areas[spawn_area]["center_x"] + item_spawn_areas[spawn_area]["width"] // 2)
+                        random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
+                                                      item_spawn_areas[spawn_area]["height"] // 2, self.center_x +
+                                                      item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
+                                                          "height"] // 2)
+                        # Create a loot item
+                        loot_item = Item().setup(random_x_val, random_y_val, 20, item_value, is_two_handed) # Need to determine weight and value
 
-        one_handed_list = self.loot_item_spawn_list[0]
-        two_handed_list = self.loot_item_spawn_list[1]
-        for temp_item in one_handed_list:
-            if temp_item != 0:
-                # Choose a random loot spawn area
-                spawn_area = random.randint(0, len(item_spawn_areas) - 1)
-                # select a point in the spawn area - use of integer division to ensure integer bounds
-                random_x_val = random.randint(self.center_x + item_spawn_areas[spawn_area]["center_x"] -
-                                              item_spawn_areas[spawn_area]["width"] // 2, self.center_x +
-                                              item_spawn_areas[spawn_area]["center_x"] + item_spawn_areas[spawn_area]["width"] // 2)
-                random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
-                                              item_spawn_areas[spawn_area]["height"] // 2, self.center_x +
-                                              item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
-                                                  "height"] // 2)
-                # Create a loot item
-                loot_item = Item().setup(random_x_val, random_y_val, 20, 50, False) # Need to determine weight and value
+                        # Add the loot item to the room's item list
+                        self.loot_list.append(loot_item)
 
-                # Add the loot item to the room's item list
-                self.loot_list.append(loot_item)
+                item_value += 1
 
-        for temp_item in two_handed_list:
-            if temp_item != 0:
-                # Choose a random loot spawn area
-                spawn_area = random.randint(0, len(item_spawn_areas) - 1)
-                # select a point in the spawn area
-                random_x_val = random.randint(self.center_x + item_spawn_areas[spawn_area]["center_x"] -
-                                              item_spawn_areas[spawn_area]["width"]/2, self.center_x +
-                                              item_spawn_areas[spawn_area]["center_x"] + item_spawn_areas[spawn_area]["width"]/2)
-                random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
-                                              item_spawn_areas[spawn_area]["height"] / 2, self.center_x +
-                                              item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
-                                                  "height"] / 2)
-                # Create a loot item
-                loot_item = Item().setup(random_x_val, random_y_val, 20, 50, True) # Need to determine weight and value
-
-                # Add the loot item to the room's item list
-                self.loot_list.append(loot_item)
+            is_two_handed = True
 
         # We may need to add information to spawner class to actually indicate where the monsters will spawn out of a
         # vent. This could be done using a unit vector representation of a direction, and continuously attempt to spawn
