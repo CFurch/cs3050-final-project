@@ -78,7 +78,7 @@ class Room(arcade.Sprite):
                                                       item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
                                                           "height"] // 2)
                         # Create a loot item
-                        loot_item = Item().setup(random_x_val, random_y_val, 20, item_value, is_two_handed) # Need to determine weight and value
+                        loot_item = Item().setup(random_x_val, random_y_val, item_value, is_two_handed)
 
                         # Add the loot item to the room's item list
                         self.loot_list.append(loot_item)
