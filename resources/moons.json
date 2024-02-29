@@ -1,0 +1,17 @@
+[
+    {
+        "id": "experimentation",
+        "size": 1.0,
+        "difficulty": 1.0,
+        "loot-quantity": [8,11],
+        "loot-weight": {
+            "one_handed": [0.15,0.20,0.00],
+            "two_handed": [0.35,0.20,0.10]
+        },
+        "hazards": {
+            "mines": [5,10],
+            "turrets": [1,5]
+        }
+    }
+]
+    
