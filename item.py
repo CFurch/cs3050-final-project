@@ -13,7 +13,7 @@ class Item(arcade.Sprite):
         self.type = None
         self.two_handed = None
 
-    def setup(self, x_center, y_center, type, size, value, is_two_handed):
+    def setup(self, x_center, y_center, weight, value, is_two_handed): # Add type to this if need, skyler doesn't remember what that was for
         """
         Update the variables based on these
         :param type:

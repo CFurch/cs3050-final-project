@@ -2,179 +2,273 @@
   "rooms": {
     "0000": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1000": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0100": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0010": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0001": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1100": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0110": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0011": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1001": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1010": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 224, "center_y": 128, "width": 64, "height": 128},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0101": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1110": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1101": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64}
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1011": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64},
-        {"center_x": 128, "center_y": 32, "width": 128, "height": 64},
-        {"center_x": 32, "center_y": 128, "width": 64, "height": 128}
+        {"center_x": 96, "center_y": 0, "width": 64, "height": 128}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "0111": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 128, "center_y": 224, "width": 128, "height": 64}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     },
     "1111": {
       "walls": [
-        {"center_x": 32, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 32, "width": 64, "height": 64},
-        {"center_x": 224, "center_y": 224, "width": 64, "height": 64},
-        {"center_x": 32, "center_y": 224, "width": 64, "height": 64}
+        {"center_x": -96, "center_y": -96, "width": 64, "height": 64},
+        {"center_x": -96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
+        {"center_x": 96, "center_y": -96, "width": 64, "height": 64}
+      ],
+      "item_spawn_areas": [
+        {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+      ],
+      "spawner_locations": [
+        {"x": 0, "y": 0}
       ]
     }
   }

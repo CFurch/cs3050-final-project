@@ -1,10 +1,10 @@
 import json
+import random
 
 import arcade
 
+from item import Item
 
-# Update this based on tile size
-TILE_SIZE = 128
 
 
 class Room(arcade.Sprite):
@@ -16,6 +16,7 @@ class Room(arcade.Sprite):
         super().__init__()
         self.wall_list = None
         self.loot_item_spawn_list = None
+        self.loot_list = None # This list will be populated with loo class objects based off the above list
         self.spawners = None
         self.room_type = None
         self.doors = None
@@ -30,30 +31,84 @@ class Room(arcade.Sprite):
         :return:
         """
         self.wall_list = arcade.SpriteList()
-
+        self.loot_list = arcade.SpriteList()
         self.loot_item_spawn_list = loot_item_spawn_list
-        self.spawners = spawners
+        self.spawners = arcade.SpriteList # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
         self.hazards = hazards
         self.room_type = room_type
         self.x_center = x_center
         self.y_center = y_center
 
-        self.wall_list = arcade.SpriteList()
-
         # Load room data from JSON file
         with open("resources/rooms.json") as f:
             rooms_data = json.load(f)
-
+        rooms_data = rooms_data["rooms"].get(room_type, {})
         # Get walls data based on room type bitwise representation
-        walls_data = rooms_data["rooms"].get(room_type, {}).get("walls", [])
+        walls_data = rooms_data.get("walls", [])
 
         # Create walls based on walls data
         for wall_data in walls_data:
-            center_x = wall_data["center_x"] + self.x_center - TILE_SIZE
-            center_y = wall_data["center_y"] + self.y_center - TILE_SIZE
+            center_x = wall_data["center_x"] + self.x_center
+            center_y = wall_data["center_y"] + self.y_center
             width = wall_data["width"]
             height = wall_data["height"]
             self.create_wall(center_x, center_y, width, height)
+
+        # Spawn loot
+        # Get spawn location(s) of room
+        item_spawn_areas = rooms_data.get("item_spawn_areas", [])
+
+        one_handed_list = self.loot_item_spawn_list[0]
+        two_handed_list = self.loot_item_spawn_list[1]
+        for temp_item in one_handed_list:
+            if temp_item != 0:
+                # Choose a random loot spawn area
+                spawn_area = random.randint(0, len(item_spawn_areas) - 1)
+                # select a point in the spawn area - use of integer division to ensure integer bounds
+                random_x_val = random.randint(self.center_x + item_spawn_areas[spawn_area]["center_x"] -
+                                              item_spawn_areas[spawn_area]["width"] // 2, self.center_x +
+                                              item_spawn_areas[spawn_area]["center_x"] + item_spawn_areas[spawn_area]["width"] // 2)
+                random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
+                                              item_spawn_areas[spawn_area]["height"] // 2, self.center_x +
+                                              item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
+                                                  "height"] // 2)
+                # Create a loot item
+                loot_item = Item().setup(random_x_val, random_y_val, 20, 50, False) # Need to determine weight and value
+
+                # Add the loot item to the room's item list
+                self.loot_list.append(loot_item)
+
+        for temp_item in two_handed_list:
+            if temp_item != 0:
+                # Choose a random loot spawn area
+                spawn_area = random.randint(0, len(item_spawn_areas) - 1)
+                # select a point in the spawn area
+                random_x_val = random.randint(self.center_x + item_spawn_areas[spawn_area]["center_x"] -
+                                              item_spawn_areas[spawn_area]["width"]/2, self.center_x +
+                                              item_spawn_areas[spawn_area]["center_x"] + item_spawn_areas[spawn_area]["width"]/2)
+                random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
+                                              item_spawn_areas[spawn_area]["height"] / 2, self.center_x +
+                                              item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
+                                                  "height"] / 2)
+                # Create a loot item
+                loot_item = Item().setup(random_x_val, random_y_val, 20, 50, True) # Need to determine weight and value
+
+                # Add the loot item to the room's item list
+                self.loot_list.append(loot_item)
+
+        # We may need to add information to spawner class to actually indicate where the monsters will spawn out of a
+        # vent. This could be done using a unit vector representation of a direction, and continuously attempt to spawn
+        # a monster until it isn't clipping a wall with its hitbox
+        # Create spawners (later)
+        # spawn_locations = rooms_data.get("spawner_locations", [])
+        # attempts_made = 0
+        # while len(spawn_locations) > 0:
+        #     if attempts_made > spawners:
+        #         break
+        #     # Create spawner object, use and remove a random spawn location
+        #     random_index = random.randint(0, len(spawn_locations) - 1)
+        #     location_dict = spawn_locations.pop(random_index)
+        #     # call spawner creator with self.x_center + location_dict["x"] and similarly for y to make a spawner
 
     def create_wall(self, center_x, center_y, width, height):
         """
@@ -65,7 +120,8 @@ class Room(arcade.Sprite):
         :param height:
         :return:
         """
-        wall = arcade.SpriteSolidColor(width, height, arcade.csscolor.GRAY)
+        wall = arcade.SpriteSolidColor(width, height, arcade.csscolor.GRAY) # change this depending on what we want
+        # Will likely have to change how the walls are stored to instead store file locations to sprite pngs
         wall.center_x = center_x
         wall.center_y = center_y
         self.wall_list.append(wall)
