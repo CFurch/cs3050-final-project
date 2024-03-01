@@ -138,7 +138,7 @@ class Room(arcade.Sprite):
         return self.doors
     #Setters
     def set_center_x(self, center_x):
-        self.x_center = center_xx
+        self.x_center = center_x
     def set_center_y(self, center_y):
         self.y_center = center_y
     def set_spawners(self, spawnerss):
