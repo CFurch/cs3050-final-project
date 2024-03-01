@@ -16,6 +16,8 @@ class PlayerCharacter(arcade.Sprite):
         self.current_item_slot_selected = 1  # Default to first slot
         self.health = 100
         self.stamina = 100
+        # Need to update sprites with animations, directions, etc
+        self.texture = arcade.load_texture("resources/player_sprites/player_sprite_temp.png")
 
         """
         current item slot selected:
@@ -76,6 +78,9 @@ class PlayerCharacter(arcade.Sprite):
         slot_index = inventory_slot - 1
         removed_item = self.inventory[slot_index]
         self.inventory[slot_index] = None
+        # Update items coordinates to the player's coordinates
+        removed_item.center_x = self.center_x
+        removed_item.center_y = self.center_y
         return removed_item
 
     def decrease_stam(self, amount):
