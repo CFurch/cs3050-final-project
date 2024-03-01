@@ -1,12 +1,43 @@
 import arcade
+import json
 
 
 class Map(arcade.Sprite):
+    map_array = []
+    size = [0,0]
+    seed = 0
+    difficulty = 0
+
+    
     def __init__(self):
         """
         This needs to have an overall wall list, created when making all the rooms together.
         the Room class needs to implement a Room.get_walls method for this
         """
+
+    def __init__(self, moon_id, seed):
+        """
+        takes moon_id and optional seed and prepares data for setup
+        """
+
+        # grab all moon_data from file
+        with open("resources/moons.json",'r') as moon_file:
+            moon_data = json.load(moon_file)
+
+        # grab specific moon data
+        print(moon_data)
+        for moon in moon_data:
+            if moon[] == moon_id:
+                print("LOADING") 
+       
+        # store the data in the Map object
+        self.seed == seed
+        self.        
+        
+
+        # calculate map size
+
+
 
     def setup(self, procgen_results):
         """
@@ -33,6 +64,8 @@ def generate_map():
     Generate the array representation of the map
     :return:
     """
+    
+
 
 
 
