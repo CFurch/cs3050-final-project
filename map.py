@@ -4,10 +4,9 @@ import json
 
 class Map(arcade.Sprite):
     map_array = []
-    size = [0,0]
+    size = 0
     seed = 0
     difficulty = 0
-
     
     def __init__(self):
         """
@@ -27,12 +26,12 @@ class Map(arcade.Sprite):
         # grab specific moon data
         print(moon_data)
         for moon in moon_data:
-            if moon[] == moon_id:
+            if moon == moon_id:
                 print("LOADING") 
        
         # store the data in the Map object
         self.seed == seed
-        self.        
+        self.size == seed
         
 
         # calculate map size
@@ -65,6 +64,16 @@ def generate_map():
     :return:
     """
     
+def test_map():
+    return [[[0110,[[[1,0,0],[0,2,0]],[[1],[0]],0], # y = 0, x = 0
+             [1010,[[0,0,0],[0,0,1]],[[0],[1]],0], # y = 0, x = 1
+             [1100,[[1,0,0],[0,0,0]],[[0],[0]],0]], # y = 0, x = 2
+            [[1111,[[0,0,0],[0,0,0]],[[0],[1]],0], # y = 1, x = 0
+             [1000,[[2,0,0],[1,0,0]],[[2],[0]],0], # y = 1, x = 1
+             [0100,[[2,0,0],[0,0,0]],[[0],[0]],0]], # y = 1, x = 2
+            [[0011,[[3,0,0],[0,0,1]],[[0],[1]],0], # y = 2, x = 0
+             [1010,[[0,0,2],[0,1,0]],[[1],[0]],0], # y = 2, x = 1
+             [1001,[[0,0,0],[1,0,0]],[[0],[0]],0]]]] # y = 2, x = 2
 
 
 
