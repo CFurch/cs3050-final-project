@@ -23,7 +23,6 @@ class Room(arcade.Sprite):
         self.x_center = None
         self.y_center = None
         self.hazards = None
-        self.spawners = None
 
     def setup(self, room_type, item, x_center, y_center, spawners=None, hazards=None, loot_item_spawn_list = None):
         """
@@ -118,10 +117,42 @@ class Room(arcade.Sprite):
         wall.center_x = center_x
         wall.center_y = center_y
         self.wall_list.append(wall)
-
+    #Getters
     def get_walls(self):
         return self.wall_list
-
+    def get_center_x(self):
+        return self.x_center
+    def get_center_y(self):
+        return self.y_center
+    def get_spawners(self):
+        return self.spawners
+    def get_loot_list(self):
+        return self.loot_list
+    def get_loot_item_spawn_list(self):
+        return self.loot_item_spawn_list
+    def get_hazards(self):
+        return self.hazards
+    def get_room_type(self):
+        return self.room_type
+    def get_doors(self):
+        return self.doors
+    #Setters
+    def set_center_x(self, center_x):
+        self.x_center = center_xx
+    def set_center_y(self, center_y):
+        self.y_center = center_y
+    def set_spawners(self, spawnerss):
+        self.spawners = spawners
+    def set_loot_list(self, loot_list):
+        self.loot_list = loot_list
+    def set_loot_item_spawn_list(self, loot_item_spawn_list):
+        self.loot_item_spawn_list = loot_item_spawn_list
+    def set_hazards(self, hazards):
+        self.hazards = hazards
+    def set_room_type(self, room_type):
+        self.room_type = room_type
+    def set_doors(self, doors):
+        self.doors = doors
 """
 This class needs a get_walls method to return the walls of the room in the form of a list.
 """
@@ -129,6 +160,7 @@ This class needs a get_walls method to return the walls of the room in the form 
 """
 TO DO: Getters and Setters for all values
 """
+
 
 
 
