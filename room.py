@@ -94,12 +94,14 @@ class Room(arcade.Sprite):
         # spawn_locations = rooms_data.get("spawner_locations", [])
         # attempts_made = 0
         # while len(spawn_locations) > 0:
-        #     if attempts_made > spawners:
+        #     # ensure there are still valid spawn locations
+        #     if attempts_made > len(spawn_locations) or len(spawn_locations) == 0:
         #         break
         #     # Create spawner object, use and remove a random spawn location
         #     random_index = random.randint(0, len(spawn_locations) - 1)
         #     location_dict = spawn_locations.pop(random_index)
         #     # call spawner creator with self.x_center + location_dict["x"] and similarly for y to make a spawner
+        #     # additionally with other methods for determining spawner positioning (spawn direction)
 
     def create_wall(self, center_x, center_y, width, height):
         """
