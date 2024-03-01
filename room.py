@@ -23,7 +23,7 @@ class Room(arcade.Sprite):
         self.y_center = None
         self.hazards = None
 
-    def setup(self, room_type, item, x_center, y_center, spawners=None, hazards=None, loot_item_spawn_list=None):
+    def setup(self, room_type, x_center, y_center, spawners=None, hazards=None, loot_item_spawn_list=None):
         """
         loot_value, allow null for spawners and hazards to be null
         :return:
