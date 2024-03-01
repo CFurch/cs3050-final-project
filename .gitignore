@@ -2,4 +2,5 @@ idea/*
 bin/*
 include/*
 lib/*
+__pycache__/*
 pyenv.cfg
