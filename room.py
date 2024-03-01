@@ -6,7 +6,6 @@ import arcade
 from item import Item
 
 
-
 class Room(arcade.Sprite):
     def __init__(self):
         """
@@ -16,7 +15,7 @@ class Room(arcade.Sprite):
         super().__init__()
         self.wall_list = None
         self.loot_item_spawn_list = None
-        self.loot_list = None # This list will be populated with loo class objects based off the above list
+        self.loot_list = None  # This list will be populated with loo class objects based off the above list
         self.spawners = None
         self.room_type = None
         self.doors = None
@@ -24,7 +23,7 @@ class Room(arcade.Sprite):
         self.y_center = None
         self.hazards = None
 
-    def setup(self, room_type, item, x_center, y_center, spawners=None, hazards=None, loot_item_spawn_list = None):
+    def setup(self, room_type, item, x_center, y_center, spawners=None, hazards=None, loot_item_spawn_list=None):
         """
         loot_value, allow null for spawners and hazards to be null
         :return:
@@ -32,7 +31,7 @@ class Room(arcade.Sprite):
         self.wall_list = arcade.SpriteList()
         self.loot_list = arcade.SpriteList()
         self.loot_item_spawn_list = loot_item_spawn_list
-        self.spawners = arcade.SpriteList() # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
+        self.spawners = arcade.SpriteList()  # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
         self.hazards = hazards
         self.room_type = room_type
         self.x_center = x_center
@@ -71,10 +70,12 @@ class Room(arcade.Sprite):
                         # select a point in the spawn area - use of integer division to ensure integer bounds
                         random_x_val = random.randint(self.center_x + item_spawn_areas[spawn_area]["center_x"] -
                                                       item_spawn_areas[spawn_area]["width"] // 2, self.center_x +
-                                                      item_spawn_areas[spawn_area]["center_x"] + item_spawn_areas[spawn_area]["width"] // 2)
+                                                      item_spawn_areas[spawn_area]["center_x"] +
+                                                      item_spawn_areas[spawn_area]["width"] // 2)
                         random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
                                                       item_spawn_areas[spawn_area]["height"] // 2, self.center_x +
-                                                      item_spawn_areas[spawn_area]["center_y"] + item_spawn_areas[spawn_area][
+                                                      item_spawn_areas[spawn_area]["center_y"] +
+                                                      item_spawn_areas[spawn_area][
                                                           "height"] // 2)
                         # Create a loot item
                         loot_item = Item().setup(random_x_val, random_y_val, item_value, is_two_handed)
@@ -112,47 +113,66 @@ class Room(arcade.Sprite):
         :param height:
         :return:
         """
-        wall = arcade.SpriteSolidColor(width, height, arcade.csscolor.GRAY) # change this depending on what we want
+        wall = arcade.SpriteSolidColor(width, height, arcade.csscolor.GRAY)  # change this depending on what we want
         # Will likely have to change how the walls are stored to instead store file locations to sprite pngs
         wall.center_x = center_x
         wall.center_y = center_y
         self.wall_list.append(wall)
-    #Getters
+
+    # Getters
     def get_walls(self):
         return self.wall_list
+
     def get_center_x(self):
         return self.x_center
+
     def get_center_y(self):
         return self.y_center
+
     def get_spawners(self):
         return self.spawners
+
     def get_loot_list(self):
         return self.loot_list
+
     def get_loot_item_spawn_list(self):
         return self.loot_item_spawn_list
+
     def get_hazards(self):
         return self.hazards
+
     def get_room_type(self):
         return self.room_type
+
     def get_doors(self):
         return self.doors
-    #Setters
+
+    # Setters
     def set_center_x(self, center_x):
         self.x_center = center_x
+
     def set_center_y(self, center_y):
         self.y_center = center_y
-    def set_spawners(self, spawnerss):
+
+    def set_spawners(self, spawners):
         self.spawners = spawners
+
     def set_loot_list(self, loot_list):
         self.loot_list = loot_list
+
     def set_loot_item_spawn_list(self, loot_item_spawn_list):
         self.loot_item_spawn_list = loot_item_spawn_list
+
     def set_hazards(self, hazards):
         self.hazards = hazards
+
     def set_room_type(self, room_type):
         self.room_type = room_type
+
     def set_doors(self, doors):
         self.doors = doors
+
+
 """
 This class needs a get_walls method to return the walls of the room in the form of a list.
 """
@@ -160,7 +180,3 @@ This class needs a get_walls method to return the walls of the room in the form 
 """
 TO DO: Getters and Setters for all values
 """
-
-
-
-
