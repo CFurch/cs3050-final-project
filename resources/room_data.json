@@ -183,8 +183,10 @@
         {"center_x": 96, "center_y": 96, "width": 64, "height": 64},
         {"center_x": 96, "center_y": -96, "width": 64, "height": 64},
 
-        {"center_x": 96, "center_y": 0, "width": 64, "height": 128},
-        {"center_x": -96, "center_y": 0, "width": 64, "height": 128}
+        {"center_x": 0, "center_y": 96, "width": 128, "height": 64},
+
+        {"center_x": 0, "center_y": -96, "width": 128, "height": 64}
+
       ],
       "item_spawn_areas": [
         {"center_x": 0, "center_y": 0, "width": 128, "height": 128}

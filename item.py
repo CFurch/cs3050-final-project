@@ -54,7 +54,7 @@ class Item(arcade.Sprite):
         item_type = "one_handed" if not is_two_handed else "two_handed"
 
         # Load item data from JSON
-        with open("items.json", "r") as file:
+        with open("resources/items.json", "r") as file:
             data_from_json = json.load(file)
 
         # Choose random item from the specified range and type
@@ -64,6 +64,8 @@ class Item(arcade.Sprite):
         # Assign weight and texture
         self.weight = item["weight"]
         self.texture = arcade.load_texture(item["sprite_filename"])
+
+        return self
 
 
 

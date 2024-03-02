@@ -34,11 +34,11 @@ class Room(arcade.Sprite):
         self.spawners = arcade.SpriteList()  # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
         self.hazards = hazards
         self.room_type = room_type
-        self.x_center = x_center
-        self.y_center = y_center
-
+        self.center_x = x_center
+        self.center_y = y_center
+        # print(self.x_center)
         # Load room data from JSON file
-        with open("resources/rooms.json") as f:
+        with open("resources/room_data.json") as f:
             rooms_data = json.load(f)
 
         # Pull the specific rooms data from the json based on room type bitwise representation
@@ -48,8 +48,8 @@ class Room(arcade.Sprite):
 
         # Create walls based on walls data
         for wall_data in walls_data:
-            center_x = wall_data["center_x"] + self.x_center
-            center_y = wall_data["center_y"] + self.y_center
+            center_x = wall_data["center_x"] + self.center_x
+            center_y = wall_data["center_y"] + self.center_y
             width = wall_data["width"]
             height = wall_data["height"]
             self.create_wall(center_x, center_y, width, height)
@@ -73,10 +73,11 @@ class Room(arcade.Sprite):
                                                       item_spawn_areas[spawn_area]["center_x"] +
                                                       item_spawn_areas[spawn_area]["width"] // 2)
                         random_y_val = random.randint(self.center_y + item_spawn_areas[spawn_area]["center_y"] -
-                                                      item_spawn_areas[spawn_area]["height"] // 2, self.center_x +
+                                                      item_spawn_areas[spawn_area]["height"] // 2, self.center_y +
                                                       item_spawn_areas[spawn_area]["center_y"] +
                                                       item_spawn_areas[spawn_area][
                                                           "height"] // 2)
+
                         # Create a loot item
                         loot_item = Item().setup(random_x_val, random_y_val, item_value, is_two_handed)
 
@@ -102,6 +103,7 @@ class Room(arcade.Sprite):
         #     location_dict = spawn_locations.pop(random_index)
         #     # call spawner creator with self.x_center + location_dict["x"] and similarly for y to make a spawner
         #     # additionally with other methods for determining spawner positioning (spawn direction)
+        return self
 
     def create_wall(self, center_x, center_y, width, height):
         """
