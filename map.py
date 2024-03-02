@@ -3,10 +3,19 @@ import json
 
 
 class Map(arcade.Sprite):
-    map_array = []
-    size = 0
+
+    # variables
     seed = 0
+
+    # initialize map_array for later
+    map_array = []
+    
+    # moon_data to receive from file
+    size = 0
     difficulty = 0
+    loot_quantity = []
+    loot_weight = []
+    hazards = []
     
     def __init__(self):
         """
@@ -19,22 +28,22 @@ class Map(arcade.Sprite):
         takes moon_id and optional seed and prepares data for setup
         """
 
+        # initialize seed
+        self.seed = seed
+
         # grab all moon_data from file
         with open("resources/moons.json",'r') as moon_file:
             moon_data = json.load(moon_file)
 
-        # grab specific moon data
+        # grab specific moon data and store it in the object
         print(moon_data)
         for moon in moon_data:
-            if moon == moon_id:
-                print("LOADING") 
-       
-        # store the data in the Map object
-        self.seed == seed
-        self.size == seed
-        
-
-        # calculate map size
+            if moon.get("id") == moon_id:
+                self.size = moon.get("size")
+                self.difficulty = moon.get("difficulty")
+                self.loot_quantity = moon.get("loot-quantity")
+                self.loot_weight = moon.get("loot-weight")
+                self.hazards = moon.get("hazards")
 
 
 
@@ -65,15 +74,15 @@ def generate_map():
     """
     
 def test_map():
-    return [[[0110,[[[1,0,0],[0,2,0]],[[1],[0]],0], # y = 0, x = 0
-             [1010,[[0,0,0],[0,0,1]],[[0],[1]],0], # y = 0, x = 1
-             [1100,[[1,0,0],[0,0,0]],[[0],[0]],0]], # y = 0, x = 2
-            [[1111,[[0,0,0],[0,0,0]],[[0],[1]],0], # y = 1, x = 0
-             [1000,[[2,0,0],[1,0,0]],[[2],[0]],0], # y = 1, x = 1
-             [0100,[[2,0,0],[0,0,0]],[[0],[0]],0]], # y = 1, x = 2
-            [[0011,[[3,0,0],[0,0,1]],[[0],[1]],0], # y = 2, x = 0
-             [1010,[[0,0,2],[0,1,0]],[[1],[0]],0], # y = 2, x = 1
-             [1001,[[0,0,0],[1,0,0]],[[0],[0]],0]]]] # y = 2, x = 2
+    return [[['0110',[[[1,0,0],[0,2,0]],[[1],[0]],0], # y = 0, x = 0
+             ['0101',[[0,0,0],[0,0,1]],[[0],[1]],0], # y = 0, x = 1
+             ['0011',[[1,0,0],[0,0,0]],[[0],[0]],0]], # y = 0, x = 2
+            [['1111',[[0,0,0],[0,0,0]],[[0],[1]],0], # y = 1, x = 0
+             ['0001',[[2,0,0],[1,0,0]],[[2],[0]],0], # y = 1, x = 1
+             ['0010',[[2,0,0],[0,0,0]],[[0],[0]],0]], # y = 1, x = 2
+            [['1100',[[3,0,0],[0,0,1]],[[0],[1]],0], # y = 2, x = 0
+             ['0101',[[0,0,2],[0,1,0]],[[1],[0]],0], # y = 2, x = 1
+             ['1001',[[0,0,0],[1,0,0]],[[0],[0]],0]]]] # y = 2, x = 2
 
 
 
