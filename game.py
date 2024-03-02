@@ -19,8 +19,9 @@ SCREEN_TITLE = "2D Lethal Company"
 PLAYER_START_X = 500
 PLAYER_START_Y = 500
 MAX_STAM = 100
-STAM_DRAIN = 1  # Stam drain 2, will be divided by 2 for stamina increase rate
+STAM_DRAIN = 0.5  # Stam drain 2, will be divided by 2 for stamina increase rate
 BASE_MOVEMENT_SPEED = 2
+SPRINT_DELAY = 20
 
 
 class LethalGame(arcade.Window):
@@ -63,8 +64,8 @@ class LethalGame(arcade.Window):
         self.e_pressed = False
         self.g_pressed = False
 
-        self.movement_speed = BASE_MOVEMENT_SPEED  # speed is pixels per frame
         self.sprinting = False
+        self.delaying_stam = False
 
         # Inventory slots
         self.try_pickup_item = False
@@ -93,6 +94,7 @@ class LethalGame(arcade.Window):
         # Add logic for starting location of player
         self.player.center_x = PLAYER_START_X
         self.player.center_y = PLAYER_START_Y
+        self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
         # Add player to the scene
         # self.scene.add_sprite(self.player)
@@ -149,31 +151,35 @@ class LethalGame(arcade.Window):
         """
         # Update movement speed if shift is pressed - if sprinting, base movement speed should be doubled
         # Check on the current movement speed to ensure this
-        if self.player.get_stam() > 0 and self.shift_pressed and \
+        if not self.delaying_stam and self.player.get_stam() > 0 and self.shift_pressed and \
                 (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
-            # nice to have: account for horizontal movement speed
-            self.movement_speed = BASE_MOVEMENT_SPEED * 2
-            # set sprinting to true if the player is actually moving in a direction
-            self.sprinting = True  # Use sprinting variable to signal to update that sprint
-            # is happening and decrement player's stamina
+            if self.player.get_stam() >= SPRINT_DELAY:
+                # nice to have: account for horizontal movement speed
+                self.player.set_movement_speed(BASE_MOVEMENT_SPEED * 2)
+                # set sprinting to true if the player is actually moving in a direction
+                self.sprinting = True  # Use sprinting variable to signal to update that sprint
+                # is happening and decrement player's stamina
+            else:
+                self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
+                self.sprinting = False
         # Decrease to base movement speed if not sprinting - if the above conditions aren't true
         else:
-            self.movement_speed = BASE_MOVEMENT_SPEED
+            self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
             self.sprinting = False
 
         # Process up/down
         if self.up_pressed and not self.down_pressed:
-            self.player.change_y = self.movement_speed
+            self.player.change_y = self.player.get_movement_speed()
         elif self.down_pressed and not self.up_pressed:
-            self.player.change_y = -self.movement_speed
+            self.player.change_y = -self.player.get_movement_speed()
         else:
             self.player.change_y = 0
 
         # Process left/right
         if self.right_pressed and not self.left_pressed:
-            self.player.change_x = self.movement_speed
+            self.player.change_x = self.player.get_movement_speed()
         elif self.left_pressed and not self.right_pressed:
-            self.player.change_x = -self.movement_speed
+            self.player.change_x = -self.player.get_movement_speed()
         else:
             self.player.change_x = 0
 
@@ -183,7 +189,7 @@ class LethalGame(arcade.Window):
         elif self.pressed_2:
             self.player.set_current_inv_slot(2)
         elif self.pressed_3:
-            self.player.set_current_inv_slot(4)
+            self.player.set_current_inv_slot(3)
         elif self.pressed_4:
             self.player.set_current_inv_slot(4)
 
@@ -290,11 +296,27 @@ class LethalGame(arcade.Window):
         # Move the player with the physics engine
         self.physics_engine.update()
 
-        # Update player stamina based on sprinting or not
-        if self.sprinting:
-            self.player.decrease_stam(STAM_DRAIN)
-        elif self.player.get_stam() < MAX_STAM:
+        # Update player stamina based on sprinting or not - with sprint delay if there is less than
+        # 20% sprint left
+        if self.delaying_stam:
+            self.sprinting = False
             self.player.add_stam(STAM_DRAIN / 2)
+            if self.player.get_stam() >= SPRINT_DELAY:
+                self.delaying_stam = False
+
+        else:
+            if self.player.get_stam() == 0:
+                self.delaying_stam = True
+                self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
+                self.sprinting = False
+            elif self.sprinting and self.player.get_stam() > 0:
+                self.player.decrease_stam(STAM_DRAIN)
+                self.player.set_movement_speed(BASE_MOVEMENT_SPEED * 2)
+            elif self.player.get_stam() < MAX_STAM:
+                self.player.add_stam(STAM_DRAIN / 2)
+                self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
+                self.sprinting = False
+
 
         # Update Animations - this requires an update_animation function in each class.
         # This is pretty straightforward to do and setup, and is worthwhile to do

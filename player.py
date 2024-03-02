@@ -16,6 +16,7 @@ class PlayerCharacter(arcade.Sprite):
         self.current_item_slot_selected = 1  # Default to first slot
         self.health = 100
         self.stamina = 100
+        self.movement_speed = None
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_sprite_temp.png")
 
@@ -45,6 +46,7 @@ class PlayerCharacter(arcade.Sprite):
     - return false if player is holding a two-handed item (holding_two_handed is true), even if the other slot is full
     - this will be 1 indexed: first inventory slot is 1, second is 2, etc
     """
+
     def get_inv(self, inventory_slot):
         # Check if holding a two-handed item
         if self.holding_two_handed:
@@ -62,6 +64,7 @@ class PlayerCharacter(arcade.Sprite):
     - you don't need to handle for the inventory slot being open or closed
     - item will be an instance of the Item class, simply update the index of inventory_slot - 1 with this item
     """
+
     def add_item(self, inventory_slot, item):
         # Adjust for 1-indexed slots
         slot_index = inventory_slot - 1
@@ -73,6 +76,7 @@ class PlayerCharacter(arcade.Sprite):
       default empty value you decide for it) (the x and y coordinates of the item object need to be updated to the player's current location
       (This should be some sort of call to self.center_x and self.center_y to access the player Sprite's center
       """
+
     def remove_item(self, inventory_slot):
         # Adjust for 1-indexed slots
         slot_index = inventory_slot - 1
@@ -103,7 +107,6 @@ class PlayerCharacter(arcade.Sprite):
         if self.health > 100:  # Assuming max health is 100
             self.health = 100
 
-
     def set_current_inv_slot(self, inventory_slot):
         """
         Set the currently selected inventory slot, unless there is a two-handed object being held.
@@ -117,6 +120,12 @@ class PlayerCharacter(arcade.Sprite):
         """
         return self.current_item_slot_selected
 
+    def set_movement_speed(self, speed):
+        self.movement_speed = speed
+
+    def get_movement_speed(self):
+        return self.movement_speed
+
     """
     future todo:
     Add self.current_texture variable, set to 0. In init, load each texture (into self.walk_textures) 
@@ -127,4 +136,3 @@ class PlayerCharacter(arcade.Sprite):
         self.texture = self.walk_textures[self.cur_texture]
     additionally implement facing direction to this (although this will likely be rotating the sprite
     """
-
