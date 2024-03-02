@@ -3,10 +3,19 @@ import json
 
 
 class Map(arcade.Sprite):
-    map_array = []
-    size = 0
+
+    # variables
     seed = 0
+
+    # initialize map_array for later
+    map_array = []
+    
+    # moon_data to receive from file
+    size = 0
     difficulty = 0
+    loot_quantity = []
+    loot_weight = []
+    hazards = []
     
     def __init__(self):
         """
@@ -19,24 +28,22 @@ class Map(arcade.Sprite):
         takes moon_id and optional seed and prepares data for setup
         """
 
+        # initialize seed
+        self.seed = seed
+
         # grab all moon_data from file
         with open("resources/moons.json",'r') as moon_file:
             moon_data = json.load(moon_file)
 
-        # grab specific moon data
+        # grab specific moon data and store it in the object
         print(moon_data)
         for moon in moon_data:
             if moon.get("id") == moon_id:
                 self.size = moon.get("size")
-                self.
-                
-       
-        # store the data in the Map object
-        self.seed == seed
-        self.size == 0
-        
-
-        # calculate map size
+                self.difficulty = moon.get("difficulty")
+                self.loot_quantity = moon.get("loot-quantity")
+                self.loot_weight = moon.get("loot-weight")
+                self.hazards = moon.get("hazards")
 
 
 
