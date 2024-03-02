@@ -16,11 +16,11 @@ SCREEN_HEIGHT = 650
 SCREEN_TITLE = "2D Lethal Company"
 
 # Starting location of the player, and movement constants
-PLAYER_START_X = 2
-PLAYER_START_Y = 1
+PLAYER_START_X = 500
+PLAYER_START_Y = 500
 MAX_STAM = 100
-STAM_DRAIN = 2  # Stam drain 2, will be divided by 2 for stamina increase rate
-BASE_MOVEMENT_SPEED = 5
+STAM_DRAIN = 1  # Stam drain 2, will be divided by 2 for stamina increase rate
+BASE_MOVEMENT_SPEED = 2
 
 
 class LethalGame(arcade.Window):
@@ -47,7 +47,7 @@ class LethalGame(arcade.Window):
         self.camera = None
         # Instead of using a scene, it may also be easier to just keep a sprite list
         # for each individual thing.
-        self.scene = None
+        # self.scene = None
 
         # Movement / inventory variables
         self.left_pressed = False
@@ -73,7 +73,7 @@ class LethalGame(arcade.Window):
         # Set power levels - has to do with spawning mechanics
         self.indoor_power = None  # experimentation-40 levels
 
-    def setup(self, procgen_results):
+    def setup(self):
         # Set up the Camera
         self.camera = arcade.Camera(self.width, self.height)
 
@@ -81,11 +81,11 @@ class LethalGame(arcade.Window):
         # Ideally this would work using some sort of arcade.load_tilemap(map_name)
         # if we use this we need to use layers for the physics engine, otherwise add
         # all walls to the walls list
-        self.map = Map()
+        self.map = Map(0, 0)
         self.map.setup()
         # get the walls from the map
-        # self.walls = self.map.get_walls()
-
+        self.walls = self.map.get_walls()
+        self.loot_items = self.map.get_loot_list()
         # self.scene = arcade.Scene.from_tilemap(self.map)
 
         # Initialize player character
@@ -95,7 +95,7 @@ class LethalGame(arcade.Window):
         self.player.center_y = PLAYER_START_Y
 
         # Add player to the scene
-        self.scene.add_sprite(self.player)
+        # self.scene.add_sprite(self.player)
 
         # Add enemies to scene - spawner class needs to handle these
         # for enemy in self.enemy_entities:
@@ -113,6 +113,7 @@ class LethalGame(arcade.Window):
         self.physics_engine = arcade.PhysicsEnginePlatformer(
             self.player, walls=self.walls
         )
+        self.physics_engine.gravity_constant = 0
 
     def on_draw(self):
         """
@@ -121,14 +122,26 @@ class LethalGame(arcade.Window):
         # Clear the screen
         self.clear()
 
-        # Draw the scene
-        self.scene.draw()
+        # Start the camera
+        self.camera.use()
 
-        # Draw the health and stamina into upper left
+        # Draw the scene
+        self.walls.draw()
+        self.loot_items.draw()
+        self.player.draw()
+
+        # Draw the health and stamina on the camera view
         health_text = f"Health: {self.player.get_health()}"
         stamina_text = f"Stamina: {self.player.get_stam()}"
-        arcade.draw_text(health_text, 10, 10, arcade.csscolor.RED, 18)
-        arcade.draw_text(stamina_text, 10, 20, arcade.csscolor.ORANGE, 18)
+
+        # Calculate the position of the text relative to the camera's position
+        text_x = self.camera.position[0] + 20
+        text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
+
+        # Draw the text at the calculated position
+        arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)
+        arcade.draw_text(stamina_text, text_x, text_y - 20, arcade.csscolor.ORANGE, 18)
+
 
     def process_keychange(self):
         """
@@ -264,12 +277,9 @@ class LethalGame(arcade.Window):
         """
         Needed for centering the camera to the player on each game tick
         """
-        screen_center_x = self.player_sprite.center_x - (self.camera.viewport_width / 2)
-        screen_center_y = self.player_sprite.center_y - (self.camera.viewport_height / 2)
-        if screen_center_x < 0:
-            screen_center_x = 0
-        if screen_center_y < 0:
-            screen_center_y = 0
+        screen_center_x = self.player.center_x - (self.camera.viewport_width / 2)
+        screen_center_y = self.player.center_y - (self.camera.viewport_height / 2)
+
         player_centered = screen_center_x, screen_center_y
 
         self.camera.move_to(player_centered, 0.2)
@@ -284,7 +294,7 @@ class LethalGame(arcade.Window):
         if self.sprinting:
             self.player.decrease_stam(STAM_DRAIN)
         elif self.player.get_stam() < MAX_STAM:
-            self.player.increase_stam(STAM_DRAIN / 2)
+            self.player.add_stam(STAM_DRAIN / 2)
 
         # Update Animations - this requires an update_animation function in each class.
         # This is pretty straightforward to do and setup, and is worthwhile to do
@@ -299,29 +309,28 @@ class LethalGame(arcade.Window):
         # )
 
         # Update walls, used with moving platforms (may not be needed)
-        self.scene.update(self.walls)
+        # self.scene.update(self.walls)
 
         # handle collisions - like this
-        # item_hit_list = arcade.check_for_collision_with_list(
-        #     self.player_sprite, self.scene[LAYER_NAME_ITEMS] # may need to change layer name
-        # )
+        item_hit_list = arcade.check_for_collision_with_list(
+            self.player, self.loot_items # may need to change layer name
+        )
         # Handle checking if items are in hitbox and the player is attempting to pick something up
         # Add the item to inventory if the player's current slot is open
-        # if self.try_pickup_item and not self.player.get_inv(self.player.get_current_inv_slot()):
-        #     # Since we can only populate the player's inventory slot with a single item,
-        #     # we will only try with the first item
-        #     item_hit_list = arcade.check_for_collision_with_list(self.player, self.loot_items)
-        #     if len(item_hit_list) > 0:
-        #         self.player.add_item(self.player.get_current_inv_slot, item_hit_list[0])
-        #         self.loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
-        #         item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
-        #
-        # # Handle checking if the player wants to drop items
-        # if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot):
-        #     temp_item = self.player.remove_item(self.player.get_current_inv_slot)
-        #     # Currently I will be including all of this, I'm not sure if we need to have both
-        #     self.scene.add_sprite(temp_item)
-        #     self.loot_items.append(temp_item)
+        if self.try_pickup_item and not self.player.get_inv(self.player.get_current_inv_slot()):
+            # Since we can only populate the player's inventory slot with a single item,
+            # we will only try with the first item
+            item_hit_list = arcade.check_for_collision_with_list(self.player, self.loot_items)
+            if len(item_hit_list) > 0:
+                self.player.add_item(self.player.get_current_inv_slot(), item_hit_list[0])
+                self.loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
+                item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
+
+        # Handle checking if the player wants to drop items
+        if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()):
+            temp_item = self.player.remove_item(self.player.get_current_inv_slot())
+            # Currently I will be including all of this, I'm not sure if we need to have both
+            self.loot_items.append(temp_item)
 
         # Position the camera
         self.center_camera_to_player()
@@ -331,12 +340,11 @@ def main():
     """
     Main function
     """
-    # Generate the map representation
-    procgen_output = generate_map()
+
 
     # Initialize game and begin runtime
     window = LethalGame()
-    window.setup(procgen_output)
+    window.setup()
     arcade.run()
 
 
@@ -356,4 +364,11 @@ from game startup:
 - player entity is rendered
 
 
+"""
+
+
+"""
+Current glitches:
+- player will continue to sprint even when stamina is 0 while shift is held
+- items aren't being put into correct item slots in inventory
 """
