@@ -1,4 +1,5 @@
 import arcade
+import random
 import json
 
 
@@ -30,6 +31,7 @@ class Map(arcade.Sprite):
 
         # initialize seed
         self.seed = seed
+        random.seed = self.seed
 
         # grab all moon_data from file
         with open("resources/moons.json",'r') as moon_file:
@@ -49,7 +51,7 @@ class Map(arcade.Sprite):
 
     def setup(self, procgen_results):
         """
-        Generating
+        Calculates the map_array and
         :return:
         """
         # determine where to spawn loot on the map
@@ -67,12 +69,42 @@ class Map(arcade.Sprite):
         #      add each of these things to the lists of items with that
         # return each of the lists
 
-def generate_map():
-    """
-    Generate the array representation of the map
-    :return:
-    """
+def create_grid(map_size):
     
+    grid = []
+
+    for y in range(map_size):
+        grid.append([])
+        for x in range(map_size):
+            grid[y].append("0000")
+
+    return grid
+
+
+def gen_maze(map_size, seed, starting_node=-1):
+    maze = create_grid(map_size)
+
+    random.seed = seed
+
+    # default starting node
+    if starting_node == -1:
+        start_x = 0
+        start_y = map_size//2
+        starting_node = [0,start_y]
+
+
+    visited_nodes = []
+
+    # while the number of visited nodes is less than the maximum number of cells
+    # add the current node to the visited nodes list (unique)
+    # check available neighbors of the starting node
+    # if no neighbors are available, set the current node to the last visited node
+    # randomly choose one of the available neighbors
+    # update the current cell, and that neighbor
+    # change the current node to the neighbor node
+        
+
+
 def test_map():
     return [[['0110',[[[1,0,0],[0,2,0]],[[1],[0]],0], # y = 0, x = 0
              ['0101',[[0,0,0],[0,0,1]],[[0],[1]],0], # y = 0, x = 1
