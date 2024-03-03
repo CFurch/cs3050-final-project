@@ -48,9 +48,6 @@ class PlayerCharacter(arcade.Sprite):
     """
 
     def get_inv(self, inventory_slot):
-        # Check if holding a two-handed item
-        if self.holding_two_handed:
-            return False
         # Adjust for 1-indexed slots
         slot_index = inventory_slot - 1
         return self.inventory[slot_index] is not None
@@ -73,6 +70,7 @@ class PlayerCharacter(arcade.Sprite):
         slot_index = inventory_slot - 1
         item.set_inventory_texture()
         self.inventory[slot_index] = item
+        self.holding_two_handed = item.two_handed
 
     """
     remove_item(inventory_slot)
@@ -86,6 +84,9 @@ class PlayerCharacter(arcade.Sprite):
         slot_index = inventory_slot - 1
         removed_item = self.inventory[slot_index]
         self.inventory[slot_index] = None
+        # Set holding_two_handed to be false if item was two handed
+        if removed_item.two_handed:
+            self.holding_two_handed = False
         # Update items coordinates to the player's coordinates, and update items texture
         removed_item.set_map_texture()
         removed_item.center_x = self.center_x
@@ -131,6 +132,9 @@ class PlayerCharacter(arcade.Sprite):
 
     def get_movement_speed(self):
         return self.movement_speed
+
+    def get_two_handed(self):
+        return self.holding_two_handed
 
     """
     future todo:

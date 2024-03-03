@@ -68,6 +68,7 @@ class Item(arcade.Sprite):
         self.texture_map = item["sprite_filename"]
         self.texture = arcade.load_texture(item["sprite_filename"])
         self.texture_inventory = item["sprite_inventory_filename"]
+        self.two_handed = is_two_handed
 
         return self
 

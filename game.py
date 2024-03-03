@@ -156,11 +156,20 @@ class LethalGame(arcade.Window):
                 # print(item.center_x, item.center_y)
                 item.draw()
 
+        # Draw text for holding 2 handed item
+        print(self.player.get_two_handed())
+        print(self.player.get_full_inv())
+        if self.player.get_two_handed():
+            holding_text = arcade.Sprite("resources/player_sprites/full_hands.png")
+            holding_text.center_x = SCREEN_WIDTH // 2
+            holding_text.center_y = 50
+            holding_text.draw()
+
         # Draw the health and stamina on the camera view
-        health_text = f"Health: {self.player.get_health()}"
+        # health_text = f"Health: {self.player.get_health()}"
         stamina_text = f"Stamina: {self.player.get_stam()}"
 
-        # Calculate the position of the text relative to the camera's position
+        # Calculate the position for objects relative to the camera's position
         text_x = self.camera.position[0] + 20
         text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
 
@@ -169,7 +178,10 @@ class LethalGame(arcade.Window):
         health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{self.player.get_health() // 25}.png")
         health_sprite.center_x = self.camera.position[0] + 100
         health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 100
+        # health_sprite.alpha = 128 # use this to set opacity of objects
         health_sprite.draw()
+
+        # Stamina representation
         arcade.draw_text(stamina_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
 
@@ -277,15 +289,16 @@ class LethalGame(arcade.Window):
         elif key == arcade.key.G:
             self.g_pressed = True
 
-        # for changing selected inventory slots
-        if key == arcade.key.KEY_1:
-            self.pressed_1 = True
-        elif key == arcade.key.KEY_2:
-            self.pressed_2 = True
-        elif key == arcade.key.KEY_3:
-            self.pressed_3 = True
-        elif key == arcade.key.KEY_4:
-            self.pressed_4 = True
+        if not self.player.get_two_handed():
+            # for changing selected inventory slots
+            if key == arcade.key.KEY_1:
+                self.pressed_1 = True
+            elif key == arcade.key.KEY_2:
+                self.pressed_2 = True
+            elif key == arcade.key.KEY_3:
+                self.pressed_3 = True
+            elif key == arcade.key.KEY_4:
+                self.pressed_4 = True
 
         self.process_keychange()
 
@@ -313,14 +326,15 @@ class LethalGame(arcade.Window):
         elif key == arcade.key.G:
             self.g_pressed = False
 
-        if key == arcade.key.KEY_1:
-            self.pressed_1 = False
-        elif key == arcade.key.KEY_2:
-            self.pressed_2 = False
-        elif key == arcade.key.KEY_3:
-            self.pressed_3 = False
-        elif key == arcade.key.KEY_4:
-            self.pressed_4 = False
+        if not self.player.get_two_handed():
+            if key == arcade.key.KEY_1:
+                self.pressed_1 = False
+            elif key == arcade.key.KEY_2:
+                self.pressed_2 = False
+            elif key == arcade.key.KEY_3:
+                self.pressed_3 = False
+            elif key == arcade.key.KEY_4:
+                self.pressed_4 = False
 
         self.process_keychange()
 
