@@ -152,6 +152,8 @@ class LethalGame(arcade.Window):
             if item != None:
                 item.center_x = self.camera.position[0] + 300 + idx * 125
                 item.center_y = self.camera.position[1] + 50
+                # item.set_inventory_texture()
+                # print(item.center_x, item.center_y)
                 item.draw()
 
         # Draw the health and stamina on the camera view
@@ -172,22 +174,32 @@ class LethalGame(arcade.Window):
         This function is used for changing the state of the player
         """
         # Update movement speed if shift is pressed - if sprinting, base movement speed should be doubled
-        # Check on the current movement speed to ensure this
-        if not self.delaying_stam and self.player.get_stam() > 0 and self.shift_pressed and \
-                (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
-            if self.player.get_stam() >= SPRINT_DELAY:
-                # nice to have: account for horizontal movement speed
-                self.player.set_movement_speed(BASE_MOVEMENT_SPEED * 2)
-                # set sprinting to true if the player is actually moving in a direction
-                self.sprinting = True  # Use sprinting variable to signal to update that sprint
-                # is happening and decrement player's stamina
-            else:
-                self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
-                self.sprinting = False
-        # Decrease to base movement speed if not sprinting - if the above conditions aren't true
+        if not self.delaying_stam and self.shift_pressed and (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
+            self.sprinting = self.player.get_stam() > 0
+        else:
+            self.sprinting = False
+
+        # Set movement speed
+        if self.sprinting and not self.delaying_stam:
+            self.player.set_movement_speed(BASE_MOVEMENT_SPEED * 2)  # Double speed when sprinting
         else:
             self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
-            self.sprinting = False
+
+        # Delay stamina regeneration
+        if self.delaying_stam:
+            if self.player.get_stam() >= SPRINT_DELAY:
+                self.delaying_stam = False
+        # print(self.delaying_stam, self.sprinting)
+        # Handle sprinting and stamina depletion
+        if self.sprinting:
+            if self.player.get_stam() < 1:
+                self.delaying_stam = True
+            else:
+                self.player.decrease_stam(STAM_DRAIN)
+        else:
+            # Regenerate stamina if not sprinting
+            if self.player.get_stam() < MAX_STAM:
+                self.player.add_stam(STAM_DRAIN / 2)
 
         # Process up/down
         if self.up_pressed and not self.down_pressed:
@@ -318,27 +330,8 @@ class LethalGame(arcade.Window):
         # Move the player with the physics engine
         self.physics_engine.update()
 
-        # Update player stamina based on sprinting or not - with sprint delay if there is less than
-        # 20% sprint left
-        if self.delaying_stam:
-            self.sprinting = False
-            self.player.add_stam(STAM_DRAIN / 2)
-            if self.player.get_stam() >= SPRINT_DELAY:
-                self.delaying_stam = False
-
-        else:
-            if self.player.get_stam() == 0:
-                self.delaying_stam = True
-                self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
-                self.sprinting = False
-            elif self.sprinting and self.player.get_stam() > 0:
-                self.player.decrease_stam(STAM_DRAIN)
-                self.player.set_movement_speed(BASE_MOVEMENT_SPEED * 2)
-            elif self.player.get_stam() < MAX_STAM:
-                self.player.add_stam(STAM_DRAIN / 2)
-                self.player.set_movement_speed(BASE_MOVEMENT_SPEED)
-                self.sprinting = False
-
+        # Process movement based on keys
+        self.process_keychange()
 
         # Update Animations - this requires an update_animation function in each class.
         # This is pretty straightforward to do and setup, and is worthwhile to do
@@ -366,13 +359,16 @@ class LethalGame(arcade.Window):
             # we will only try with the first item
             item_hit_list = arcade.check_for_collision_with_list(self.player, self.loot_items)
             if len(item_hit_list) > 0:
-                self.player.add_item(self.player.get_current_inv_slot(), item_hit_list[0])
+                temp_item = item_hit_list[0]
+
+                self.player.add_item(self.player.get_current_inv_slot(), temp_item)
                 self.loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
                 item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
 
         # Handle checking if the player wants to drop items
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()):
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
+
             # Currently I will be including all of this, I'm not sure if we need to have both
             self.loot_items.append(temp_item)
 
@@ -413,6 +409,5 @@ from game startup:
 
 """
 Current glitches:
-- player will continue to sprint even when stamina is 0 while shift is held
-- items aren't being put into correct item slots in inventory
+- after picking up an item, dropping it, and picking it up again, the sprite in the inventory is not displayed
 """

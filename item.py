@@ -65,20 +65,22 @@ class Item(arcade.Sprite):
 
         # Assign weight and texture (for each of the two textures)
         self.weight = item["weight"]
-        self.texture_map = arcade.load_texture(item["sprite_filename"])
+        self.texture_map = item["sprite_filename"]
         self.texture = arcade.load_texture(item["sprite_filename"])
-        self.texture_inventory = arcade.load_texture(item["sprite_inventory_filename"])
+        self.texture_inventory = item["sprite_inventory_filename"]
 
         return self
 
-    def inventory_texture(self):
+    def set_inventory_texture(self):
         """
         Switch self.texture from map texture to inventory texture
         """
-        self.texture = self.texture_inventory
+        # print(f"texturing to inventory {self.texture_inventory}")
+        self.texture = arcade.load_texture(self.texture_inventory)
 
-    def map_texture(self):
+    def set_map_texture(self):
         """
         switch self.texture from inventory to map
         """
-        self.texture = self.texture_map
+        # print(f"texturing to map: {self.texture_map}")
+        self.texture = arcade.load_texture(self.texture_map)

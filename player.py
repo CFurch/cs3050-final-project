@@ -71,7 +71,7 @@ class PlayerCharacter(arcade.Sprite):
     def add_item(self, inventory_slot, item):
         # Adjust for 1-indexed slots
         slot_index = inventory_slot - 1
-        item.inventory_texture()
+        item.set_inventory_texture()
         self.inventory[slot_index] = item
 
     """
@@ -87,7 +87,7 @@ class PlayerCharacter(arcade.Sprite):
         removed_item = self.inventory[slot_index]
         self.inventory[slot_index] = None
         # Update items coordinates to the player's coordinates, and update items texture
-        removed_item.map_texture()
+        removed_item.set_map_texture()
         removed_item.center_x = self.center_x
         removed_item.center_y = self.center_y
         return removed_item
@@ -103,6 +103,7 @@ class PlayerCharacter(arcade.Sprite):
             self.health = 0
 
     def add_stam(self, amount):
+
         self.stamina += amount
         if self.stamina > 100:  # Assuming max stamina is 100
             self.stamina = 100
