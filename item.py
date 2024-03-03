@@ -28,6 +28,8 @@ class Item(arcade.Sprite):
         self.weight = None
         self.value = None
         self.texture = None
+        self.texture_inventory = None
+        self.texture_map = None
         self.type = None
         self.two_handed = None
 
@@ -61,11 +63,22 @@ class Item(arcade.Sprite):
         items = data_from_json[item_type][value_range]
         item = random.choice(items)
 
-        # Assign weight and texture
+        # Assign weight and texture (for each of the two textures)
         self.weight = item["weight"]
+        self.texture_map = arcade.load_texture(item["sprite_filename"])
         self.texture = arcade.load_texture(item["sprite_filename"])
+        self.texture_inventory = arcade.load_texture(item["sprite_inventory_filename"])
 
         return self
 
+    def inventory_texture(self):
+        """
+        Switch self.texture from map texture to inventory texture
+        """
+        self.texture = self.texture_inventory
 
-
+    def map_texture(self):
+        """
+        switch self.texture from inventory to map
+        """
+        self.texture = self.texture_map

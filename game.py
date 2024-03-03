@@ -6,7 +6,7 @@ CS 3050 Team 5
 
 import arcade
 from room import Room
-from map import Map, generate_map
+from map import Map
 from player import PlayerCharacter
 from item import Item
 
@@ -40,6 +40,7 @@ class LethalGame(arcade.Window):
         self.map = None
         self.walls = None
         self.player = None
+        self.hud = None
         self.enemy_entities = None
         self.loot_items = None
         self.physics_engine = None
@@ -96,8 +97,11 @@ class LethalGame(arcade.Window):
         self.player.center_y = PLAYER_START_Y
         self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
-        # Add player to the scene
-        # self.scene.add_sprite(self.player)
+        self.hud = arcade.SpriteList()
+        # Add the four sprite items to the list
+        for i in range(4):
+            temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.5)
+            self.hud.append(temp_sprite)
 
         # Add enemies to scene - spawner class needs to handle these
         # for enemy in self.enemy_entities:
@@ -131,6 +135,24 @@ class LethalGame(arcade.Window):
         self.walls.draw()
         self.loot_items.draw()
         self.player.draw()
+
+        # Draw the hud sprites
+        temp_x = 300
+        for slot in range(1, 5):
+            if slot == self.player.get_current_inv_slot():
+                sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.5)
+            else:
+                sprite = arcade.Sprite("resources/item_sprites/inventory_box_non_selected.png", scale=0.5)
+            sprite.center_x = self.camera.position[0] + temp_x
+            temp_x += 125
+            sprite.center_y = self.camera.position[1] + 50
+            sprite.draw()
+
+        for idx, item in enumerate(self.player.get_full_inv()):
+            if item != None:
+                item.center_x = self.camera.position[0] + 300 + idx * 125
+                item.center_y = self.camera.position[1] + 50
+                item.draw()
 
         # Draw the health and stamina on the camera view
         health_text = f"Health: {self.player.get_health()}"
