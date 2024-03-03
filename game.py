@@ -40,7 +40,7 @@ class LethalGame(arcade.Window):
         self.map = None
         self.walls = None
         self.player = None
-        self.hud = None
+        self.inventory_hud = None
         self.enemy_entities = None
         self.loot_items = None
         self.physics_engine = None
@@ -97,11 +97,11 @@ class LethalGame(arcade.Window):
         self.player.center_y = PLAYER_START_Y
         self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
-        self.hud = arcade.SpriteList()
+        self.inventory_hud = arcade.SpriteList()
         # Add the four sprite items to the list
         for i in range(4):
             temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.5)
-            self.hud.append(temp_sprite)
+            self.inventory_hud.append(temp_sprite)
 
         # Add enemies to scene - spawner class needs to handle these
         # for enemy in self.enemy_entities:
@@ -165,8 +165,12 @@ class LethalGame(arcade.Window):
         text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
 
         # Draw the text at the calculated position
-        arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)
-        arcade.draw_text(stamina_text, text_x, text_y - 20, arcade.csscolor.ORANGE, 18)
+        # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
+        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{self.player.get_health() // 25}.png")
+        health_sprite.center_x = self.camera.position[0] + 100
+        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 100
+        health_sprite.draw()
+        arcade.draw_text(stamina_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
 
     def process_keychange(self):
