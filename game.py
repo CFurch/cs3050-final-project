@@ -201,6 +201,13 @@ class LethalGame(arcade.Window):
             if self.player.get_stam() < MAX_STAM:
                 self.player.add_stam(STAM_DRAIN / 2)
 
+        # Account for diagonal movement speed
+        if self.up_pressed and self.right_pressed or self.down_pressed and self.right_pressed or \
+                self.up_pressed and self.left_pressed or self.down_pressed and self.left_pressed:
+            # Diagonal movement
+            diagonal_speed = self.player.get_movement_speed() * (2 ** 0.5) / 2  # Movement speed for diagonal movement
+            self.player.set_movement_speed(diagonal_speed)
+        # print(self.player.get_movement_speed())
         # Process up/down
         if self.up_pressed and not self.down_pressed:
             self.player.change_y = self.player.get_movement_speed()
