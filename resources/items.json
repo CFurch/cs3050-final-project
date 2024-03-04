@@ -3,43 +3,52 @@
     "0": [
       {
         "weight": 5,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 6,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 7,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       }
     ],
     "1": [
       {
         "weight": 6,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 7,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 8,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       }
     ],
     "2": [
       {
         "weight": 7,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 8,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 9,
-        "sprite_filename": "resources/item_sprites/temp.png"
+        "sprite_filename": "resources/item_sprites/temp.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       }
     ]
   },
@@ -47,43 +56,52 @@
     "0": [
       {
         "weight": 10,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 8,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 12,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       }
     ],
     "1": [
       {
         "weight": 11,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 9,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 13,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       }
     ],
     "2": [
       {
         "weight": 12,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 10,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       },
       {
         "weight": 14,
-        "sprite_filename": "resources/item_sprites/temp2.png"
+        "sprite_filename": "resources/item_sprites/temp2.png",
+        "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png"
       }
     ]
   }
