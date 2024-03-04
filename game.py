@@ -5,6 +5,7 @@ CS 3050 Team 5
 """
 
 import arcade
+import math
 from room import Room
 from map import Map
 from player import PlayerCharacter
@@ -19,9 +20,9 @@ SCREEN_TITLE = "2D Lethal Company"
 PLAYER_START_X = 500
 PLAYER_START_Y = 500
 MAX_STAM = 100
-STAM_DRAIN = 0.5  # Stam drain 2, will be divided by 2 for stamina increase rate
+STAM_DRAIN = 0.17
 BASE_MOVEMENT_SPEED = 2
-SPRINT_DELAY = 20
+SPRINT_DELAY = 30
 
 
 class LethalGame(arcade.Window):
@@ -166,7 +167,8 @@ class LethalGame(arcade.Window):
 
         # Draw the health and stamina on the camera view
         # health_text = f"Health: {self.player.get_health()}"
-        stamina_text = f"Stamina: {self.player.get_stam()}"
+        stamina_text = f"Stamina: {int(self.player.get_stam())}"
+        weight_text = f"Weight: {int(self.player.get_weight())}"
 
         # Calculate the position for objects relative to the camera's position
         text_x = self.camera.position[0] + 20
@@ -182,7 +184,7 @@ class LethalGame(arcade.Window):
 
         # Stamina representation
         arcade.draw_text(stamina_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
-
+        arcade.draw_text(weight_text, text_x, text_y - 210, arcade.csscolor.ORANGE, 18)
 
     def process_keychange(self):
         """
@@ -222,6 +224,13 @@ class LethalGame(arcade.Window):
             # Diagonal movement
             diagonal_speed = self.player.get_movement_speed() * (2 ** 0.5) / 2  # Movement speed for diagonal movement
             self.player.set_movement_speed(diagonal_speed)
+
+        # Account for weight
+        if self.player.get_weight() != 0:
+            # reverse exponential function to decrease weight
+            self.player.set_movement_speed(self.player.get_movement_speed() *
+                                           math.exp(-0.01 * self.player.get_weight()))
+
         # print(self.player.get_movement_speed())
         # Process up/down
         if self.up_pressed and not self.down_pressed:

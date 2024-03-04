@@ -17,6 +17,7 @@ class PlayerCharacter(arcade.Sprite):
         self.health = 100
         self.stamina = 100
         self.movement_speed = None
+        self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_sprite_temp.png")
 
@@ -71,6 +72,7 @@ class PlayerCharacter(arcade.Sprite):
         item.set_inventory_texture()
         self.inventory[slot_index] = item
         self.holding_two_handed = item.two_handed
+        self.total_weight += item.weight
 
     """
     remove_item(inventory_slot)
@@ -87,6 +89,7 @@ class PlayerCharacter(arcade.Sprite):
         # Set holding_two_handed to be false if item was two handed
         if removed_item.two_handed:
             self.holding_two_handed = False
+        self.total_weight -= removed_item.weight
         # Update items coordinates to the player's coordinates, and update items texture
         removed_item.set_map_texture()
         removed_item.center_x = self.center_x
@@ -135,6 +138,9 @@ class PlayerCharacter(arcade.Sprite):
 
     def get_two_handed(self):
         return self.holding_two_handed
+
+    def get_weight(self):
+        return self.total_weight
 
     """
     future todo:
