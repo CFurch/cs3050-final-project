@@ -312,7 +312,7 @@ class LethalGame(arcade.Window):
             elif key == arcade.key.KEY_4:
                 self.pressed_4 = True
 
-        self.process_keychange()
+        # self.process_keychange() # since these are already in on_update I think this is fine to not be here
 
     def on_key_release(self, key, modifiers):
         """
@@ -348,7 +348,7 @@ class LethalGame(arcade.Window):
             elif key == arcade.key.KEY_4:
                 self.pressed_4 = False
 
-        self.process_keychange()
+        # self.process_keychange()
 
     def center_camera_to_player(self):
         """
