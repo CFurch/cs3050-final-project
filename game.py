@@ -101,7 +101,7 @@ class LethalGame(arcade.Window):
         self.inventory_hud = arcade.SpriteList()
         # Add the four sprite items to the list
         for i in range(4):
-            temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.5)
+            temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
             self.inventory_hud.append(temp_sprite)
 
         # Add enemies to scene - spawner class needs to handle these
@@ -168,7 +168,7 @@ class LethalGame(arcade.Window):
         # Draw the health and stamina on the camera view
         # health_text = f"Health: {self.player.get_health()}"
         stamina_text = f"Stamina: {int(self.player.get_stam())}"
-        weight_text = f"Weight: {int(self.player.get_weight())}"
+        weight_text = f"{int(self.player.get_weight())} lb"
 
         # Calculate the position for objects relative to the camera's position
         text_x = self.camera.position[0] + 20
@@ -176,15 +176,15 @@ class LethalGame(arcade.Window):
 
         # Draw the text at the calculated position
         # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
-        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png")
-        health_sprite.center_x = self.camera.position[0] + 100
-        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 100
+        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
+        health_sprite.center_x = self.camera.position[0] + 75
+        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
         # health_sprite.alpha = 128 # use this to set opacity of objects
         health_sprite.draw()
 
         # Stamina representation
-        arcade.draw_text(stamina_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
-        arcade.draw_text(weight_text, text_x, text_y - 210, arcade.csscolor.ORANGE, 18)
+        arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
+        arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
     def process_keychange(self):
         """
