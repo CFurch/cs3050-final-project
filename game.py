@@ -20,7 +20,7 @@ SCREEN_TITLE = "2D Lethal Company"
 PLAYER_START_X = 500
 PLAYER_START_Y = 500
 MAX_STAM = 100
-STAM_DRAIN = 0.17
+STAM_DRAIN = 0.17 # set to match game
 BASE_MOVEMENT_SPEED = 2
 SPRINT_DELAY = 30
 
@@ -176,7 +176,7 @@ class LethalGame(arcade.Window):
 
         # Draw the text at the calculated position
         # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
-        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{self.player.get_health() // 25}.png")
+        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png")
         health_sprite.center_x = self.camera.position[0] + 100
         health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 100
         # health_sprite.alpha = 128 # use this to set opacity of objects
@@ -369,6 +369,9 @@ class LethalGame(arcade.Window):
 
         # Process movement based on keys
         self.process_keychange()
+        # For validating health sprites:
+        # print(self.player.get_health())
+        # self.player.decrease_health(0.1)
 
         # Update Animations - this requires an update_animation function in each class.
         # This is pretty straightforward to do and setup, and is worthwhile to do
