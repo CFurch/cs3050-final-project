@@ -212,7 +212,11 @@ class LethalGame(arcade.Window):
             if self.player.get_stam() < 1:
                 self.delaying_stam = True
             else:
-                self.player.decrease_stam(STAM_DRAIN)
+                # Decrease stamina based on players weight
+                stam_drain_amount = STAM_DRAIN
+                if self.player.get_weight() != 0:
+                    stam_drain_amount *= 1 + 0.01 * self.player.get_weight()
+                self.player.decrease_stam(stam_drain_amount)
         else:
             # Regenerate stamina if not sprinting
             if self.player.get_stam() < MAX_STAM:
