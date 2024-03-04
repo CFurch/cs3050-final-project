@@ -140,12 +140,13 @@ class LethalGame(arcade.Window):
         temp_x = 300
         for slot in range(1, 5):
             if slot == self.player.get_current_inv_slot():
-                sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.5)
+                sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
             else:
-                sprite = arcade.Sprite("resources/item_sprites/inventory_box_non_selected.png", scale=0.5)
+                sprite = arcade.Sprite("resources/item_sprites/inventory_box_non_selected.png", scale=0.55)
             sprite.center_x = self.camera.position[0] + temp_x
             temp_x += 125
             sprite.center_y = self.camera.position[1] + 50
+            sprite.alpha = 200
             sprite.draw()
 
         for idx, item in enumerate(self.player.get_full_inv()):
@@ -157,12 +158,10 @@ class LethalGame(arcade.Window):
                 item.draw()
 
         # Draw text for holding 2 handed item
-        print(self.player.get_two_handed())
-        print(self.player.get_full_inv())
         if self.player.get_two_handed():
-            holding_text = arcade.Sprite("resources/player_sprites/full_hands.png")
-            holding_text.center_x = SCREEN_WIDTH // 2
-            holding_text.center_y = 50
+            holding_text = arcade.Sprite("resources/player_sprites/full_hands.png", scale=0.67)
+            holding_text.center_x = self.camera.position[0] + SCREEN_WIDTH // 2 - 12
+            holding_text.center_y = self.camera.position[1] + 50
             holding_text.draw()
 
         # Draw the health and stamina on the camera view
