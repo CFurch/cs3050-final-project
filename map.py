@@ -109,27 +109,37 @@ def create_grid(map_size):
     return grid
 
 
-def gen_maze(map_size, seed, starting_node=-1):
+def gen_maze(map_size, seed=0, starting_node=-1):
     maze = create_grid(map_size)
 
     random.seed = seed
 
-    # default starting node
+    # default starting node, as X and Y
     if starting_node == -1:
         start_x = 0
         start_y = map_size//2
-        starting_node = [0,start_y]
+        starting_node = [start_x, start_y]
 
+    print(maze)
 
     visited_nodes = []
+    current_node = starting_node
+    
 
     # while the number of visited nodes is less than the maximum number of cells
-    # add the current node to the visited nodes list (unique)
-    # check available neighbors of the starting node
-    # if no neighbors are available, set the current node to the last visited node
-    # randomly choose one of the available neighbors
-    # update the current cell, and that neighbor
-    # change the current node to the neighbor node
+    while len(visited_nodes) < pow(map_size,2):
+        # add the current node to the visited nodes list if not already in it
+        if current_node not in visited_nodes: visited_nodes.append(current_node)
+        
+        print(current_node)
+        print(visited_nodes)
+
+        # check available neighbors of the starting node
+
+        # if no neighbors are available, set the current node to the last visited node
+        # randomly choose one of the available neighbors
+        # update the current cell, and that neighbor
+        # change the current node to the neighbor node
         
 
 
