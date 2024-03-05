@@ -1,10 +1,10 @@
 import arcade
 import random
 import json
-from utility_functions import calculate_direction_vector_positive, calculate_direction_vector_negative, is_within_facing_direction
+import utility_functions
 
 # half of turret sweep
-ANGLE_FROM_DEFAULT = 89 # To handle an bug with turret rotation
+ANGLE_FROM_DEFAULT = 89  # To handle an bug with turret rotation
 DELAY_TIME_END_OF_SWEEP = 20
 
 
@@ -99,7 +99,7 @@ class Turret(arcade.Sprite):
         self.texture = arcade.load_texture("resources/hazard_sprites/turret.png")
         self.center_x = center_x
         self.center_y = center_y
-        self.base_direction = calculate_direction_vector_negative(view_direction)
+        self.base_direction = utility_functions.calculate_direction_vector_negative(view_direction)
         # Initialize starting facing direction to be random direction within 90 degrees
         # from base position
         self.facing_direction = self.base_direction + random.randint(-ANGLE_FROM_DEFAULT, ANGLE_FROM_DEFAULT)
@@ -123,21 +123,28 @@ class Turret(arcade.Sprite):
         """
         previous_direction = self.facing_direction
 
+        distance_to_player = utility_functions.euclidean_distance([player.center_x, player.center_y], [self.center_x,
+                                                                                                       self.center_y])
+
         # Calculate the angle between the turret's facing direction and the player
-        if is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
-                                      [player.center_x, player.center_y]):
+        if utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
+                                                        [player.center_x, player.center_y]):
             # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
             # Otherwise, the turret jumps from where it was to higher or lower end.
             if self.lower_end > 0 or self.higher_end >= 360:
-                self.facing_direction = calculate_direction_vector_negative([player.center_x - self.center_x,
-                                                                             player.center_y - self.center_y])
+                player_vector = utility_functions.calculate_direction_vector_negative([player.center_x - self.center_x,
+                                                                                       player.center_y - self.center_y])
             else:
-                self.facing_direction = calculate_direction_vector_positive([player.center_x - self.center_x,
-                                                                             player.center_y - self.center_y])
-            if self.facing_direction - previous_direction > 45:
-                self.facing_direction -= 360
-            elif previous_direction - self.facing_direction > 45:
-                self.facing_direction += 360
+                player_vector = utility_functions.calculate_direction_vector_positive([player.center_x - self.center_x,
+                                                                                       player.center_y - self.center_y])
+            if player_vector - previous_direction > 45:
+                player_vector -= 360
+            elif previous_direction - player_vector > 45:
+                player_vector += 360
+            if self.facing_direction < player_vector:
+                self.facing_direction += self.rotate_speed * 200 / distance_to_player
+            elif self.facing_direction > player_vector:
+                self.facing_direction -= self.rotate_speed * 200 / distance_to_player
 
             if self.facing_direction >= self.higher_end:
                 self.facing_direction = self.higher_end
