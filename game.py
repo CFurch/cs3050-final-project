@@ -3,6 +3,7 @@ CS 3050 Team 5
 
 
 """
+import sys
 
 import arcade
 import math
@@ -10,6 +11,7 @@ from room import Room
 from map import Map
 from player import PlayerCharacter
 from item import Item
+from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -44,6 +46,10 @@ class LethalGame(arcade.Window):
         self.inventory_hud = None
         self.enemy_entities = None
         self.loot_items = None
+        self.mines = None
+        self.armed_mines = None
+        self.turrets = None
+        self.bullets = None
         self.physics_engine = None
 
         # GUI variables
@@ -89,19 +95,24 @@ class LethalGame(arcade.Window):
         # get the walls from the map
         self.walls = self.map.get_walls()
         self.loot_items = self.map.get_loot_list()
+        self.mines = self.map.get_mines()
+        self.armed_mines = arcade.SpriteList()
+        self.turrets = self.map.get_turrets()
+        self.bullets = arcade.SpriteList()
         # self.scene = arcade.Scene.from_tilemap(self.map)
 
         # Initialize player character
         self.player = PlayerCharacter()
+        player_start = self.map.get_player_start()
         # Add logic for starting location of player
-        self.player.center_x = PLAYER_START_X
-        self.player.center_y = PLAYER_START_Y
+        self.player.center_x = player_start[0]
+        self.player.center_y = player_start[1]
         self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
         self.inventory_hud = arcade.SpriteList()
         # Add the four sprite items to the list
         for i in range(4):
-            temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.5)
+            temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
             self.inventory_hud.append(temp_sprite)
 
         # Add enemies to scene - spawner class needs to handle these
@@ -114,7 +125,7 @@ class LethalGame(arcade.Window):
         #     self.scene.add_sprite(item)
 
         # Set background color to be black
-        arcade.set_background_color(arcade.color.BLACK)
+        arcade.set_background_color(arcade.color.DARK_GRAY)
 
         # Create physics engine - we can use the platformer without gravity to get the intended effect
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -134,6 +145,27 @@ class LethalGame(arcade.Window):
 
         # Draw the scene
         self.walls.draw()
+        for mine in self.mines:
+            if not mine.get_exploded():
+                mine.draw()
+
+        for armed_mine in self.armed_mines:
+            if armed_mine.get_exploded():
+                # see if the player is within the explosion distance
+                distance = euclidean_distance((self.player.center_x, self.player.center_y),
+                                              (armed_mine.center_x, armed_mine.center_y))
+                if distance <= armed_mine.get_explosion_distance():
+                    self.player.decrease_health(armed_mine.get_damage())
+                self.armed_mines.remove(armed_mine)
+            else:
+                armed_mine.draw()
+
+        # draw bullets and turrets at correct angles
+        for bullet in self.bullets:
+            bullet.draw_scaled()
+        for turret in self.turrets:
+            turret.draw_scaled()
+
         self.loot_items.draw()
         self.player.draw()
 
@@ -168,7 +200,7 @@ class LethalGame(arcade.Window):
         # Draw the health and stamina on the camera view
         # health_text = f"Health: {self.player.get_health()}"
         stamina_text = f"Stamina: {int(self.player.get_stam())}"
-        weight_text = f"Weight: {int(self.player.get_weight())}"
+        weight_text = f"{int(self.player.get_weight())} lb"
 
         # Calculate the position for objects relative to the camera's position
         text_x = self.camera.position[0] + 20
@@ -176,15 +208,15 @@ class LethalGame(arcade.Window):
 
         # Draw the text at the calculated position
         # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
-        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png")
-        health_sprite.center_x = self.camera.position[0] + 100
-        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 100
+        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
+        health_sprite.center_x = self.camera.position[0] + 75
+        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
         # health_sprite.alpha = 128 # use this to set opacity of objects
         health_sprite.draw()
 
         # Stamina representation
-        arcade.draw_text(stamina_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
-        arcade.draw_text(weight_text, text_x, text_y - 210, arcade.csscolor.ORANGE, 18)
+        arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
+        arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
     def process_keychange(self):
         """
@@ -363,30 +395,14 @@ class LethalGame(arcade.Window):
 
     def on_update(self, delta_time):
         """Movement and game logic"""
-
-        # Move the player with the physics engine
-        self.physics_engine.update()
+        # Handle dead state, reload ship with no loot items
+        # if self.player.get_health() == 0:
 
         # Process movement based on keys
         self.process_keychange()
-        # For validating health sprites:
-        # print(self.player.get_health())
-        # self.player.decrease_health(0.1)
 
-        # Update Animations - this requires an update_animation function in each class.
-        # This is pretty straightforward to do and setup, and is worthwhile to do
-        # self.scene.update_animation(
-        #     delta_time,
-        #     [
-        #         LAYER_NAME_COINS,
-        #         LAYER_NAME_BACKGROUND,
-        #         LAYER_NAME_PLAYER,
-        #         LAYER_NAME_ENEMIES,
-        #     ],
-        # )
-
-        # Update walls, used with moving platforms (may not be needed)
-        # self.scene.update(self.walls)
+        # Move the player with the physics engine
+        self.physics_engine.update()
 
         # handle collisions - like this
         item_hit_list = arcade.check_for_collision_with_list(
@@ -411,6 +427,45 @@ class LethalGame(arcade.Window):
 
             # Currently I will be including all of this, I'm not sure if we need to have both
             self.loot_items.append(temp_item)
+
+        # Check if a player is on a mine
+        mine_hit_list = arcade.check_for_collision_with_list(self.player, self.mines)
+        if len(mine_hit_list) > 0:
+            for mine in mine_hit_list:
+                mine.arm_mine()
+                self.mines.remove(mine)
+                self.armed_mines.append(mine)
+
+        # Decrease delay for armed mines not touching the player
+        for mine in self.armed_mines:
+            if not arcade.check_for_collision(self.player, mine):
+                mine.decrease_delay()
+
+        # Iterate through turrets and update
+        for turret in self.turrets:
+            turret.update_status(self.player, self.walls)
+            # Need to set this as a temporary variable, as these are wiped from turrets memory by getter
+            turret_bullets = turret.get_bullets()
+            if len(turret_bullets) > 0:
+                self.bullets.extend(turret_bullets)
+
+        # Check for bullet collisions with wall
+        for bullet in self.bullets:
+            bullet.update()
+            bullet_wall_list = arcade.check_for_collision_with_list(
+                bullet, self.walls
+            )
+            if len(bullet_wall_list) > 0:
+                self.bullets.remove(bullet)
+
+        # Check for bullet collisions with player, decrement health if hit
+        bullet_hit_list = arcade.check_for_collision_with_list(
+            self.player, self.bullets
+        )
+        for bullet in bullet_hit_list:
+            # remove from bullets
+            self.bullets.remove(bullet)
+            self.player.decrease_health(bullet.get_damage())
 
         # Position the camera
         self.center_camera_to_player()

@@ -25,6 +25,8 @@ class Map(arcade.Sprite):
         self.loot_quantity = []
         self.loot_weight = []
         self.hazards = []
+        self.mines = None
+        self.turrets = None
 
         self.seed = seed
         random.seed = self.seed
@@ -48,13 +50,24 @@ class Map(arcade.Sprite):
         self.hazards = arcade.SpriteList()
         self.spawners = arcade.SpriteList()
 
+        self.player_start_x = 0
+        self.player_start_y = 0
+
     def setup(self):
         """
         Calculates the map_array and
         :return:
         """
         # Procgen of map:
-        map = test_map()  # generate_map()
+        player_start, map = test_map()  # generate_map()
+
+        # Scale up player_start
+        self.player_start_x = player_start[0] * 256 + 128
+        self.player_start_y = player_start[1] * 256 + 128
+
+        self.mines = arcade.SpriteList()
+        self.turrets = arcade.SpriteList()
+
         # determine where to spawn loot on the map
 
         # determine where to spawn spawners on the map
@@ -85,6 +98,10 @@ class Map(arcade.Sprite):
                     self.loot_list.extend(temp_room.get_loot_list())
                 if temp_room.get_walls() != None:
                     self.wall_list.extend(temp_room.get_walls())
+                if temp_room.get_hazards()[0] != None:
+                    self.mines.extend(temp_room.get_hazards()[0])
+                if temp_room.get_hazards()[1] != None:
+                    self.turrets.extend(temp_room.get_hazards()[1])
                 # Update positions
                 x_temp += ROOM_SIZE
             x_temp = HALF_ROOM_SIZE
@@ -95,6 +112,15 @@ class Map(arcade.Sprite):
 
     def get_loot_list(self):
         return self.loot_list
+
+    def get_player_start(self):
+        return self.player_start_x, self.player_start_y
+
+    def get_mines(self):
+        return self.mines
+
+    def get_turrets(self):
+        return self.turrets
 
 
 def create_grid(map_size):
