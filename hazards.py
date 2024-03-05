@@ -122,39 +122,40 @@ class Turret(arcade.Sprite):
         Update turret rotation.
         """
         previous_direction = self.facing_direction
+
+        # Calculate the angle between the turret's facing direction and the player
+        if is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
+                                      [player.center_x, player.center_y]):
+            # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
+            # Otherwise, the turret jumps from where it was to higher or lower end.
+            if self.lower_end > 0 or self.higher_end >= 360:
+                self.facing_direction = calculate_direction_vector_negative([player.center_x - self.center_x,
+                                                                             player.center_y - self.center_y])
+            else:
+                self.facing_direction = calculate_direction_vector_positive([player.center_x - self.center_x,
+                                                                             player.center_y - self.center_y])
+            if self.facing_direction - previous_direction > 45:
+                self.facing_direction -= 360
+            elif previous_direction - self.facing_direction > 45:
+                self.facing_direction += 360
+
+            if self.facing_direction >= self.higher_end:
+                self.facing_direction = self.higher_end
+                self.delaying = True
+                self.rotate_direction = -1
+            elif self.facing_direction <= self.lower_end:
+                self.facing_direction = self.lower_end
+                self.delaying = True
+                self.rotate_direction = 1
+
         # Basic Turret movement
-        if not self.delaying:
+        elif not self.delaying:
             # Update the current facing direction based on direction and speed
             self.facing_direction += self.rotate_direction * self.rotate_speed
             # if angle is at end, spin
             if self.facing_direction <= self.lower_end or self.facing_direction >= self.higher_end:
                 self.rotate_direction *= -1
                 self.delaying = True
-
-            # Calculate the angle between the turret's facing direction and the player
-            if is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
-                                          [player.center_x, player.center_y]):
-                # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
-                # Otherwise, the turret jumps from where it was to higher or lower end.
-                if self.lower_end > 0 or self.higher_end >= 360:
-                    self.facing_direction = calculate_direction_vector_negative([player.center_x - self.center_x,
-                                                                    player.center_y - self.center_y])
-                else:
-                    self.facing_direction = calculate_direction_vector_positive([player.center_x - self.center_x,
-                                                                    player.center_y - self.center_y])
-                if self.facing_direction - previous_direction > 45:
-                    self.facing_direction -= 360
-                elif previous_direction - self.facing_direction > 45:
-                    self.facing_direction += 360
-
-                if self.facing_direction >= self.higher_end:
-                    self.facing_direction = self.higher_end
-                    self.delaying = True
-                    self.rotate_direction = -1
-                elif self.facing_direction <= self.lower_end:
-                    self.facing_direction = self.lower_end
-                    self.delaying = True
-                    self.rotate_direction = 1
 
         else:
             # Delaying the turret at the edges of sweep
