@@ -109,47 +109,85 @@ def create_grid(map_size):
     return grid
 
 
-def gen_maze(map_size, seed=0, starting_node=-1):
+def gen_dfs_maze(map_size, seed=0, starting_node=-1):
+
+    # initialize the maze with the map size
     maze = create_grid(map_size)
 
-    random.seed = seed
+    # use the provided seed
+    random.seed(seed)
 
-    # default starting node, as X and Y
+    # if another starting node is not provided, use the halfway node along the left side
     if starting_node == -1:
         start_x = 0
         start_y = map_size//2
         starting_node = [start_x, start_y]
 
-    print(maze)
+    steps = 0
 
+    # initialize lists for maze generation
     visited_nodes = []
+    visit_queue = []
     current_node = starting_node
     
+    # get possible neighbors of a node in room_id notation
+    def get_neighbors(node):
+
+        # get the x/y coordinates
+        x = node[0]
+        y = node[1]
+
+        # assume all possible
+        neighbors = [[x,y+1],[x+1,y],[x,y-1],[x-1,y]]
+
+        # establish bounds
+        if x == 0:
+            neighbors[3] = 0
+        if x == map_size:
+            neighbors[1] = 0
+        if y == 0:
+            neighbors[2] = 0
+        if y == map_size:
+            neighbors[0] = 0
+
+        # clear all invalid transitions
+        neighbors = [node for node in neighbors if node != 0]
+        
+        return neighbors
+
 
     # while the number of visited nodes is less than the maximum number of cells
-    while len(visited_nodes) < pow(map_size,2):
+    while len(visited_nodes) < pow(map_size+1,2):
         # add the current node to the visited nodes list if not already in it
         if current_node not in visited_nodes: visited_nodes.append(current_node)
         
+        # DEBUG, REMOVE LATER
+        print(steps)
+        steps += 1
         print(current_node)
         print(visited_nodes)
 
-        # check available neighbors of the starting node
+        # store current coordinates for reference
+        x = current_node[0]
+        y = current_node[1]
 
-        # if no neighbors are available, set the current node to the last visited node
-        # randomly choose one of the available neighbors
-        # update the current cell, and that neighbor
-        # change the current node to the neighbor node
+        # get neighbor absolute positions
+        neighbors = get_neighbors(current_node)
+
+        # randomize neighbor ordering
+        random.shuffle(neighbors)
+
+        # 
+        current_node = neighbors[0]
+
         
-
-
 def test_map():
-    return [[['0110', [[1, 0, 0], [0, 2, 0]], [[1], [0]], 0],  # y = 0, x = 0
-             ['0101', [[0, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 0, x = 1
-             ['0011', [[1, 0, 0], [0, 0, 0]], [[0], [0]], 0]],  # y = 0, x = 2
-            [['1111', [[0, 0, 0], [0, 0, 0]], [[0], [1]], 0],  # y = 1, x = 0
-             ['0001', [[2, 0, 0], [1, 0, 0]], [[2], [0]], 0],  # y = 1, x = 1
-             ['0010', [[2, 0, 0], [0, 0, 0]], [[0], [0]], 0]],  # y = 1, x = 2
-            [['1100', [[3, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 2, x = 0
-             ['0101', [[0, 0, 2], [0, 1, 0]], [[1], [0]], 0],  # y = 2, x = 1
-             ['1001', [[0, 0, 0], [1, 0, 0]], [[0], [0]], 0]]]  # y = 2, x = 2
+    return  [0,1], [[['0110', [[1, 0, 0], [0, 2, 0]], [[1], [0]], 0],  # y = 0, x = 0
+                    ['0101', [[0, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 0, x = 1
+                    ['0011', [[1, 0, 0], [0, 0, 0]], [[0], [0]], 0]],  # y = 0, x = 2
+                    [['1111', [[0, 0, 0], [0, 0, 0]], [[0], [1]], 0],  # y = 1, x = 0
+                    ['0001', [[2, 0, 0], [1, 0, 0]], [[2], [0]], 0],  # y = 1, x = 1
+                    ['0010', [[2, 0, 0], [0, 0, 0]], [[0], [0]], 0]],  # y = 1, x = 2
+                    [['1100', [[3, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 2, x = 0
+                    ['0101', [[0, 0, 2], [0, 1, 0]], [[1], [0]], 0],  # y = 2, x = 1
+                    ['1001', [[0, 0, 0], [1, 0, 0]], [[0], [0]], 0]]]  # y = 2, x = 2
