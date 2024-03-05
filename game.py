@@ -11,7 +11,7 @@ from room import Room
 from map import Map
 from player import PlayerCharacter
 from item import Item
-from utility_functions import euclidean_distance, calculate_direction_vector, is_within_facing_direction
+from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -439,7 +439,7 @@ class LethalGame(arcade.Window):
 
         # Iterate through turrets and update
         for turret in self.turrets:
-            turret.update()
+            turret.update_status(self.player)
 
         # Position the camera
         self.center_camera_to_player()

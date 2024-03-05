@@ -1,10 +1,10 @@
 import arcade
 import random
 import json
-from utility_functions import calculate_direction_vector
+from utility_functions import calculate_direction_vector_positive, calculate_direction_vector_negative, is_within_facing_direction
 
 # half of turret sweep
-ANGLE_FROM_DEFAULT = 90
+ANGLE_FROM_DEFAULT = 89 # To handle an bug with turret rotation
 DELAY_TIME_END_OF_SWEEP = 20
 
 
@@ -12,6 +12,7 @@ class Mine(arcade.Sprite):
     def __init__(self):
         """
         Basic initialization
+        # TODO: Add dropping weight sets off mine
         """
 
         # initialize seed
@@ -98,10 +99,13 @@ class Turret(arcade.Sprite):
         self.texture = arcade.load_texture("resources/hazard_sprites/turret.png")
         self.center_x = center_x
         self.center_y = center_y
-        self.base_direction = calculate_direction_vector(view_direction)
-        self.facing_direction = self.base_direction
+        self.base_direction = calculate_direction_vector_negative(view_direction)
+        # Initialize starting facing direction to be random direction within 90 degrees
+        # from base position
+        self.facing_direction = self.base_direction + random.randint(-ANGLE_FROM_DEFAULT, ANGLE_FROM_DEFAULT)
         self.lower_end = self.base_direction - ANGLE_FROM_DEFAULT
         self.higher_end = self.base_direction + ANGLE_FROM_DEFAULT
+        print(self.lower_end, self.higher_end)
         return self
 
     def rotate(self, angle_degrees):
@@ -113,10 +117,12 @@ class Turret(arcade.Sprite):
     def get_angle(self):
         return self.facing_direction
 
-    def update(self):
+    def update_status(self, player):
         """
         Update turret rotation.
         """
+        previous_direction = self.facing_direction
+        # Basic Turret movement
         if not self.delaying:
             # Update the current facing direction based on direction and speed
             self.facing_direction += self.rotate_direction * self.rotate_speed
@@ -125,13 +131,38 @@ class Turret(arcade.Sprite):
                 self.rotate_direction *= -1
                 self.delaying = True
 
+            # Calculate the angle between the turret's facing direction and the player
+            if is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
+                                          [player.center_x, player.center_y]):
+                # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
+                # Otherwise, the turret jumps from where it was to higher or lower end.
+                if self.lower_end > 0 or self.higher_end >= 360:
+                    self.facing_direction = calculate_direction_vector_negative([player.center_x - self.center_x,
+                                                                    player.center_y - self.center_y])
+                else:
+                    self.facing_direction = calculate_direction_vector_positive([player.center_x - self.center_x,
+                                                                    player.center_y - self.center_y])
+                if self.facing_direction - previous_direction > 45:
+                    self.facing_direction -= 360
+                elif previous_direction - self.facing_direction > 45:
+                    self.facing_direction += 360
+
+                if self.facing_direction >= self.higher_end:
+                    self.facing_direction = self.higher_end
+                    self.delaying = True
+                    self.rotate_direction = -1
+                elif self.facing_direction <= self.lower_end:
+                    self.facing_direction = self.lower_end
+                    self.delaying = True
+                    self.rotate_direction = 1
+
         else:
+            # Delaying the turret at the edges of sweep
             if self.delay_at_edges != 0:
                 self.delay_at_edges -= 1
             else:
                 self.delaying = False
                 self.delay_at_edges = DELAY_TIME_END_OF_SWEEP
-
 
     def draw_scaled(self):
         """
