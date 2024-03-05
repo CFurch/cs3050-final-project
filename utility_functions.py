@@ -1,4 +1,5 @@
 import math
+import arcade
 
 
 def euclidean_distance(point1, point2):
@@ -51,3 +52,38 @@ def is_within_facing_direction(self_position, self_facing_direction, target_posi
     # Check if the absolute angle difference is within the swath degrees
     return abs(angle_diff_degrees) <= swath_degrees
 
+
+def is_clear_line_of_sight(point1_x, point1_y, point2_x, point2_y, walls):
+    """
+    Check if there's a clear line of sight between a turret and a player, considering walls.
+    """
+    # Create a line segment between turret and player
+    line = LineSegment(point1_x, point1_y, point2_x, point2_y)
+    line_of_sight_collisions = arcade.check_for_collision_with_list(line, walls)
+
+    # Line of sight is clear
+    return not line_of_sight_collisions
+
+
+class LineSegment(arcade.Sprite):
+    """
+    Needed for calculating angle - easiest way to implement this
+    """
+    def __init__(self, point1_x, point1_y, point2_x, point2_y, color=arcade.color.WHITE, thickness=1):
+        super().__init__()
+
+        # Calculate the center of the line segment
+        self.center_x = (point1_x + point2_x) / 2
+        self.center_y = (point1_y + point2_y) / 2
+
+        # Calculate the width and height of the line segment
+        self.width = arcade.get_distance(point1_x, point1_y, point2_x, point2_y)
+        self.height = thickness
+
+        # Calculate the angle of the line segment using arctan2
+        delta_x = point2_x - point1_x
+        delta_y = point2_y - point1_y
+        self.angle = math.degrees(math.atan2(delta_y, delta_x))
+
+        # Set the color of the line segment
+        self.color = color

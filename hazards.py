@@ -1,6 +1,7 @@
 import arcade
 import random
 import json
+import math
 import utility_functions
 
 # half of turret sweep
@@ -8,6 +9,12 @@ ANGLE_FROM_DEFAULT = 89  # To handle an bug with turret rotation
 DELAY_TIME_END_OF_SWEEP = 20
 AGRO_DETECTION_ANGLE = 45
 BASE_DETECTION_ANGLE = 30
+BULLET_SPEED = 10
+BULLETS_TO_FIRE = 100 # This modulus time between bullets is the amount fired
+DELAY_BEFORE_FIRING = 50
+FIRING_ANGLE = 5
+TIME_BETWEEN_BULLETS = 5
+BULLET_SPREAD = 3
 
 
 class Mine(arcade.Sprite):
@@ -93,6 +100,14 @@ class Turret(arcade.Sprite):
         self.delaying = False
         self.detection_angle = 30
 
+        self.line_of_sight = False
+
+        self.firing = False
+        self.delay_firing = DELAY_BEFORE_FIRING
+        self.fire_duration = BULLETS_TO_FIRE # Number of bullets to fire upon update
+        self.aiming = False
+        self.bullets = None
+
     def setup(self, center_x, center_y, view_direction):
         """
         Load texture and place onto map
@@ -108,7 +123,10 @@ class Turret(arcade.Sprite):
         self.facing_direction = self.base_direction + random.randint(-ANGLE_FROM_DEFAULT, ANGLE_FROM_DEFAULT)
         self.lower_end = self.base_direction - ANGLE_FROM_DEFAULT
         self.higher_end = self.base_direction + ANGLE_FROM_DEFAULT
-        print(self.lower_end, self.higher_end)
+
+
+        self.bullets = arcade.SpriteList()
+
         return self
 
     def rotate(self, angle_degrees):
@@ -120,17 +138,60 @@ class Turret(arcade.Sprite):
     def get_angle(self):
         return self.facing_direction
 
-    def update_status(self, player):
+    def get_bullets(self):
+        temp_bullets = self.bullets
+        # Need to wipe the bullets from here so that an infinite number of bullets aren't passed to main
+        self.bullets = arcade.SpriteList()
+        return temp_bullets
+
+    def update_status(self, player, wall_list):
         """
         Update turret rotation.
         """
+        # previous direction, used for bugs with turret movement
         previous_direction = self.facing_direction
 
+        # Calculate distance to player
         distance_to_player = utility_functions.euclidean_distance([player.center_x, player.center_y], [self.center_x,
                                                                                                        self.center_y])
+        # Determine if there is a clear possible line of sight to the player
+        self.line_of_sight = utility_functions.is_clear_line_of_sight(player.center_x, player.center_y, self.center_x,
+                                                                      self.center_y, wall_list)
 
-        # Calculate the angle between the turret's facing direction and the player
-        if utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
+        if self.line_of_sight and utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
+                                                        [player.center_x, player.center_y],
+                                                        swath_degrees=FIRING_ANGLE):
+            # Check to see if the turret is currently firing, if not then decrease the timer before firing
+            if self.delay_firing > 0 and not self.firing:
+                self.delay_firing -= 1
+            else:
+                self.aiming = True
+                self.firing = True
+                self.delay_firing = DELAY_BEFORE_FIRING
+        else:
+            self.aiming = False
+        # separate if statement so that if turret is looking at player it will continue to fire
+        # (or if it has firing duration left)
+        if self.firing and self.fire_duration > 0:
+            # Create bullets and add to list if the firing counter is still greater than zero and mod the fire rate
+            if (self.fire_duration - 1) % TIME_BETWEEN_BULLETS == 0:
+                bullet_spread = self.facing_direction + random.uniform(-BULLET_SPREAD, BULLET_SPREAD)
+                self.bullets.append(Bullet().setup(self.center_x, self.center_y, self.damage, bullet_spread))
+                if self.aiming:
+                    self.fire_duration = BULLETS_TO_FIRE
+            # Otherwise, ignore and wait to fire until next bullet
+            self.fire_duration -= 1
+            # Delay current turret movement after player is lost by turret
+            self.delaying = True
+        # Done firing
+        elif self.fire_duration <= 0:
+            self.delay_firing = DELAY_BEFORE_FIRING
+            self.firing = False
+            self.fire_duration = BULLETS_TO_FIRE
+
+        # Move the turret
+        # Calculate the angle between the turret's facing direction and the player, and move the turret
+        if self.line_of_sight and utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
                                                         [player.center_x, player.center_y],
                                                         swath_degrees=self.detection_angle):
             # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
@@ -186,3 +247,56 @@ class Turret(arcade.Sprite):
 
         arcade.draw_texture_rectangle(self.center_x, self.center_y, self.texture.width * self.scale,
                                       self.texture.height * self.scale, self.texture, self.facing_direction)
+
+
+class Bullet(arcade.Sprite):
+    def __init__(self):
+        """
+        Basic initialization
+        """
+
+        # initialize seed
+        super().__init__()
+
+        self.damage = 0
+        self.direction = None
+        self.movement_speed = BULLET_SPEED
+        self.texture = None
+        # For drawing:
+        self.scale = 1
+
+    def setup(self, center_x, center_y, damage, direction):
+        """
+        Setup bullet using starting position, damage of bullet, and direction to fire
+        :return: self
+        """
+        self.damage = damage
+        self.center_x = center_x
+        self.center_y = center_y
+        self.direction = direction
+        self.texture = arcade.load_texture("resources/hazard_sprites/bullet.png")
+
+        return self
+
+    def get_damage(self):
+        return self.damage
+
+    def update(self):
+        """
+        Update bullets movement
+        """
+        # Calculate the change in position using trigonometry
+        self.change_x = math.cos(math.radians(self.direction)) * self.movement_speed
+        self.change_y = math.sin(math.radians(self.direction)) * self.movement_speed
+
+        # Update the bullet's position
+        self.center_x += self.change_x
+        self.center_y += self.change_y
+
+    def draw_scaled(self):
+        """
+        Draw the turret with scaled texture and rotation.
+        """
+
+        arcade.draw_texture_rectangle(self.center_x, self.center_y, self.texture.width * self.scale,
+                                      self.texture.height * self.scale, self.texture, self.direction)

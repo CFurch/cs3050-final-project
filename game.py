@@ -49,6 +49,7 @@ class LethalGame(arcade.Window):
         self.mines = None
         self.armed_mines = None
         self.turrets = None
+        self.bullets = None
         self.physics_engine = None
 
         # GUI variables
@@ -97,6 +98,7 @@ class LethalGame(arcade.Window):
         self.mines = self.map.get_mines()
         self.armed_mines = arcade.SpriteList()
         self.turrets = self.map.get_turrets()
+        self.bullets = arcade.SpriteList()
         # self.scene = arcade.Scene.from_tilemap(self.map)
 
         # Initialize player character
@@ -158,7 +160,9 @@ class LethalGame(arcade.Window):
             else:
                 armed_mine.draw()
 
-        # draw turrets at their correct angle
+        # draw bullets and turrets at correct angles
+        for bullet in self.bullets:
+            bullet.draw_scaled()
         for turret in self.turrets:
             turret.draw_scaled()
 
@@ -439,7 +443,29 @@ class LethalGame(arcade.Window):
 
         # Iterate through turrets and update
         for turret in self.turrets:
-            turret.update_status(self.player)
+            turret.update_status(self.player, self.walls)
+            # Need to set this as a temporary variable, as these are wiped from turrets memory by getter
+            turret_bullets = turret.get_bullets()
+            if len(turret_bullets) > 0:
+                self.bullets.extend(turret_bullets)
+
+        # Check for bullet collisions with wall
+        for bullet in self.bullets:
+            bullet.update()
+            bullet_wall_list = arcade.check_for_collision_with_list(
+                bullet, self.walls
+            )
+            if len(bullet_wall_list) > 0:
+                self.bullets.remove(bullet)
+
+        # Check for bullet collisions with player, decrement health if hit
+        bullet_hit_list = arcade.check_for_collision_with_list(
+            self.player, self.bullets
+        )
+        for bullet in bullet_hit_list:
+            # remove from bullets
+            self.bullets.remove(bullet)
+            self.player.decrease_health(bullet.get_damage())
 
         # Position the camera
         self.center_camera_to_player()
