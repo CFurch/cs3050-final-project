@@ -6,6 +6,8 @@ import utility_functions
 # half of turret sweep
 ANGLE_FROM_DEFAULT = 89  # To handle an bug with turret rotation
 DELAY_TIME_END_OF_SWEEP = 20
+AGRO_DETECTION_ANGLE = 45
+BASE_DETECTION_ANGLE = 30
 
 
 class Mine(arcade.Sprite):
@@ -89,6 +91,7 @@ class Turret(arcade.Sprite):
         self.higher_end = None
         self.delay_at_edges = DELAY_TIME_END_OF_SWEEP
         self.delaying = False
+        self.detection_angle = 30
 
     def setup(self, center_x, center_y, view_direction):
         """
@@ -128,7 +131,8 @@ class Turret(arcade.Sprite):
 
         # Calculate the angle between the turret's facing direction and the player
         if utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
-                                                        [player.center_x, player.center_y]):
+                                                        [player.center_x, player.center_y],
+                                                        swath_degrees=self.detection_angle):
             # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
             # Otherwise, the turret jumps from where it was to higher or lower end.
             if self.lower_end > 0 or self.higher_end >= 360:
@@ -142,9 +146,9 @@ class Turret(arcade.Sprite):
             elif previous_direction - player_vector > 45:
                 player_vector += 360
             if self.facing_direction < player_vector:
-                self.facing_direction += self.rotate_speed * 200 / distance_to_player
+                self.facing_direction += self.rotate_speed * 200 / distance_to_player + self.rotate_speed * distance_to_player / 500
             elif self.facing_direction > player_vector:
-                self.facing_direction -= self.rotate_speed * 200 / distance_to_player
+                self.facing_direction -= self.rotate_speed * 200 / distance_to_player + self.rotate_speed * distance_to_player / 500
 
             if self.facing_direction >= self.higher_end:
                 self.facing_direction = self.higher_end
@@ -154,6 +158,7 @@ class Turret(arcade.Sprite):
                 self.facing_direction = self.lower_end
                 self.delaying = True
                 self.rotate_direction = 1
+            self.detection_angle = AGRO_DETECTION_ANGLE
 
         # Basic Turret movement
         elif not self.delaying:
@@ -163,6 +168,7 @@ class Turret(arcade.Sprite):
             if self.facing_direction <= self.lower_end or self.facing_direction >= self.higher_end:
                 self.rotate_direction *= -1
                 self.delaying = True
+            self.detection_angle = BASE_DETECTION_ANGLE
 
         else:
             # Delaying the turret at the edges of sweep
@@ -171,6 +177,7 @@ class Turret(arcade.Sprite):
             else:
                 self.delaying = False
                 self.delay_at_edges = DELAY_TIME_END_OF_SWEEP
+            self.detection_angle = BASE_DETECTION_ANGLE
 
     def draw_scaled(self):
         """
