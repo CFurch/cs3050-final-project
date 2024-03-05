@@ -3,6 +3,7 @@ CS 3050 Team 5
 
 
 """
+import sys
 
 import arcade
 import math
@@ -44,6 +45,9 @@ class LethalGame(arcade.Window):
         self.inventory_hud = None
         self.enemy_entities = None
         self.loot_items = None
+        self.mines = None
+        self.armed_mines = None
+        self.turrets = None
         self.physics_engine = None
 
         # GUI variables
@@ -89,13 +93,17 @@ class LethalGame(arcade.Window):
         # get the walls from the map
         self.walls = self.map.get_walls()
         self.loot_items = self.map.get_loot_list()
+        self.mines = self.map.get_mines()
+        self.armed_mines = arcade.SpriteList()
+        self.turrets = self.map.get_turrets()
         # self.scene = arcade.Scene.from_tilemap(self.map)
 
         # Initialize player character
         self.player = PlayerCharacter()
+        player_start = self.map.get_player_start()
         # Add logic for starting location of player
-        self.player.center_x = PLAYER_START_X
-        self.player.center_y = PLAYER_START_Y
+        self.player.center_x = player_start[0]
+        self.player.center_y = player_start[1]
         self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
         self.inventory_hud = arcade.SpriteList()
@@ -114,7 +122,7 @@ class LethalGame(arcade.Window):
         #     self.scene.add_sprite(item)
 
         # Set background color to be black
-        arcade.set_background_color(arcade.color.BLACK)
+        arcade.set_background_color(arcade.color.DARK_GRAY)
 
         # Create physics engine - we can use the platformer without gravity to get the intended effect
         self.physics_engine = arcade.PhysicsEnginePlatformer(
@@ -134,6 +142,22 @@ class LethalGame(arcade.Window):
 
         # Draw the scene
         self.walls.draw()
+        for mine in self.mines:
+            if not mine.get_exploded():
+                mine.draw()
+
+        for armed_mine in self.armed_mines:
+            if armed_mine.get_exploded():
+                # see if the player is within the explosion distance
+                distance = euclidean_distance((self.player.center_x, self.player.center_y),
+                                              (armed_mine.center_x, armed_mine.center_y))
+                if distance <= armed_mine.get_explosion_distance():
+                    self.player.decrease_health(armed_mine.get_damage())
+                self.armed_mines.remove(armed_mine)
+            else:
+                armed_mine.draw()
+
+        self.turrets.draw()
         self.loot_items.draw()
         self.player.draw()
 
@@ -363,6 +387,10 @@ class LethalGame(arcade.Window):
 
     def on_update(self, delta_time):
         """Movement and game logic"""
+        # Handle dead state, reload ship with no loot items
+        # if self.player.get_health() == 0:
+
+
 
         # Move the player with the physics engine
         self.physics_engine.update()
@@ -412,9 +440,33 @@ class LethalGame(arcade.Window):
             # Currently I will be including all of this, I'm not sure if we need to have both
             self.loot_items.append(temp_item)
 
+        # Check if a player is on a mine
+        mine_hit_list = arcade.check_for_collision_with_list(self.player, self.mines)
+        if len(mine_hit_list) > 0:
+            for mine in mine_hit_list:
+                mine.arm_mine()
+                self.mines.remove(mine)
+                self.armed_mines.append(mine)
+
+        # Decrease delay for armed mines not touching the player
+        for mine in self.armed_mines:
+            if not arcade.check_for_collision(self.player, mine):
+                mine.decrease_delay()
+
         # Position the camera
         self.center_camera_to_player()
 
+
+def euclidean_distance(point1, point2):
+    """
+    for use in several functions to calculate the pixel distance
+    :param point1: (x, y) both integers
+    :param point2: (x, y)
+    :return: float distance between points
+    """
+    x1, y1 = point1
+    x2, y2 = point2
+    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 def main():
     """

@@ -4,6 +4,7 @@ import random
 import arcade
 
 from item import Item
+from hazards import Mine, Turret
 
 
 class Room(arcade.Sprite):
@@ -21,7 +22,7 @@ class Room(arcade.Sprite):
         self.doors = None
         self.x_center = None
         self.y_center = None
-        self.hazards = None
+        self.hazards = [None, None]
 
     def setup(self, room_type, x_center, y_center, spawners=None, hazards=None, loot_item_spawn_list=None):
         """
@@ -32,7 +33,7 @@ class Room(arcade.Sprite):
         self.loot_list = arcade.SpriteList()
         self.loot_item_spawn_list = loot_item_spawn_list
         self.spawners = arcade.SpriteList()  # spawners will be an arcade sprite list, the value passed into spawners is int of how many to have
-        self.hazards = hazards
+        self.hazards = [arcade.SpriteList(), arcade.SpriteList()]
         self.room_type = room_type
         self.center_x = x_center
         self.center_y = y_center
@@ -87,6 +88,51 @@ class Room(arcade.Sprite):
                 item_value += 1
 
             is_two_handed = True
+
+        # Spawn hazards - mines
+        hazard_spawn_areas = rooms_data.get("hazard_spawn_locations", [])
+        for i in range(hazards[0][0]):
+            # Choose a random loot spawn area
+            spawn_area = random.randint(0, len(hazard_spawn_areas) - 1)
+            # select a point in the spawn area - use of integer division to ensure integer bounds
+            random_x_val = random.randint(self.center_x + hazard_spawn_areas[spawn_area]["x"] -
+                                          hazard_spawn_areas[spawn_area]["width"] // 2, self.center_x +
+                                          hazard_spawn_areas[spawn_area]["x"] +
+                                          hazard_spawn_areas[spawn_area]["width"] // 2)
+            random_y_val = random.randint(self.center_y + hazard_spawn_areas[spawn_area]["y"] -
+                                          hazard_spawn_areas[spawn_area]["height"] // 2, self.center_y +
+                                          hazard_spawn_areas[spawn_area]["y"] +
+                                          hazard_spawn_areas[spawn_area][
+                                              "height"] // 2)
+
+            # Create a loot item
+            loot_item = Mine().setup(random_x_val, random_y_val)
+
+            # Add the hazard item to the room's item list
+            self.hazards[0].append(loot_item)
+        # Spawn hazards - mines
+        for i in range(hazards[1][0]):
+            # Choose a random loot spawn area
+            spawn_area = random.randint(0, len(hazard_spawn_areas) - 1)
+            # select a point in the spawn area - use of integer division to ensure integer bounds
+            random_x_val = random.randint(self.center_x + hazard_spawn_areas[spawn_area]["x"] -
+                                          hazard_spawn_areas[spawn_area]["width"] // 2, self.center_x +
+                                          hazard_spawn_areas[spawn_area]["x"] +
+                                          hazard_spawn_areas[spawn_area]["width"] // 2)
+            random_y_val = random.randint(self.center_y + hazard_spawn_areas[spawn_area]["y"] -
+                                          hazard_spawn_areas[spawn_area]["height"] // 2, self.center_y +
+                                          hazard_spawn_areas[spawn_area]["y"] +
+                                          hazard_spawn_areas[spawn_area][
+                                              "height"] // 2)
+
+            # Generate random view direction
+            view_direction = [random.randint(-1, 1), random.randint(-1, 1)]
+
+            # Create a loot item
+            loot_item = Turret().setup(random_x_val, random_y_val, view_direction)
+
+            # Add the loot item to the room's item list
+            self.hazards[1].append(loot_item)
 
         # We may need to add information to spawner class to actually indicate where the monsters will spawn out of a
         # vent. This could be done using a unit vector representation of a direction, and continuously attempt to spawn
