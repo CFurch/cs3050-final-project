@@ -158,7 +158,10 @@ class LethalGame(arcade.Window):
             else:
                 armed_mine.draw()
 
-        self.turrets.draw()
+        # draw turrets at their correct angle
+        for turret in self.turrets:
+            turret.draw_scaled()
+
         self.loot_items.draw()
         self.player.draw()
 
@@ -433,6 +436,10 @@ class LethalGame(arcade.Window):
         for mine in self.armed_mines:
             if not arcade.check_for_collision(self.player, mine):
                 mine.decrease_delay()
+
+        # Iterate through turrets and update
+        for turret in self.turrets:
+            turret.update()
 
         # Position the camera
         self.center_camera_to_player()
