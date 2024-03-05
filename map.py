@@ -6,7 +6,6 @@ from room import Room
 ROOM_SIZE = 256
 HALF_ROOM_SIZE = 128
 
-
 class Map(arcade.Sprite):
     def __init__(self, moon_id, seed):
         """
@@ -127,10 +126,12 @@ def create_grid(map_size):
     
     grid = []
 
-    for y in range(map_size):
+    for x in range(map_size):
         grid.append([])
-        for x in range(map_size):
-            grid[y].append("0000")
+        for y in range(map_size):
+            grid[x].append("0000")
+
+    print(grid)
 
     return grid
 
@@ -149,8 +150,6 @@ def gen_dfs_maze(map_size, seed=0, starting_node=-1):
         start_y = map_size//2
         starting_node = [start_x, start_y]
 
-    steps = 0
-
     # initialize lists for maze generation
     visited_nodes = []
     visit_queue = []
@@ -163,17 +162,17 @@ def gen_dfs_maze(map_size, seed=0, starting_node=-1):
         x = node[0]
         y = node[1]
 
-        # assume all possible
+        # assume all transitions possible
         neighbors = [[x,y+1],[x+1,y],[x,y-1],[x-1,y]]
 
         # establish bounds
         if x == 0:
             neighbors[3] = 0
-        if x == map_size:
+        if x == map_size-1:
             neighbors[1] = 0
         if y == 0:
             neighbors[2] = 0
-        if y == map_size:
+        if y == map_size-1:
             neighbors[0] = 0
 
         # clear all invalid transitions
@@ -181,17 +180,13 @@ def gen_dfs_maze(map_size, seed=0, starting_node=-1):
         
         return neighbors
 
-
     # while the number of visited nodes is less than the maximum number of cells
-    while len(visited_nodes) < pow(map_size+1,2):
+    while len(visited_nodes) < pow(map_size,2):
+
         # add the current node to the visited nodes list if not already in it
         if current_node not in visited_nodes: visited_nodes.append(current_node)
-        
-        # DEBUG, REMOVE LATER
-        print(steps)
-        steps += 1
+
         print(current_node)
-        print(visited_nodes)
 
         # store current coordinates for reference
         x = current_node[0]
@@ -199,14 +194,53 @@ def gen_dfs_maze(map_size, seed=0, starting_node=-1):
 
         # get neighbor absolute positions
         neighbors = get_neighbors(current_node)
+        neighbor_dupes = []
 
         # randomize neighbor ordering
         random.shuffle(neighbors)
 
-        # 
-        current_node = neighbors[0]
+        # check if the neighbor is already in the list
+        for neighbor in neighbors:
+            if neighbor not in visited_nodes: neighbor_dupes.append(neighbor)
 
+        # if no neighbors exist, backtrack.
+        if len(neighbor_dupes) == 0:
+            current_node = visit_queue.pop()
+        # otherwise, append the current node to the visit queue, and update the paths
+        else: 
+            visit_queue.append(current_node)
+
+            # compute directional difference
+            dir_diff = []
+            # computing x
+            dir_diff.append(neighbor_dupes[0][0] - current_node[0])
+            # computing y
+            dir_diff.append(neighbor_dupes[0][1] - current_node[1])
+
+            # depending on the matrix result
+            match dir_diff:
+                case [1,0]:
+                    # assign the path values
+                    outpath = 100
+                case [-1,0]:
+                    # assign the path values
+                    outpath = 1
+                case [0,1]:
+                    # assign the path values
+                    outpath = 1000
+                case [0,-1]:
+                    # assign the path values
+                    outpath = 10
         
+            # assign the map values
+            
+            maze[x-1][y-1] = str(int(maze[x-1][y-1]) + outpath).zfill(4)
+
+            current_node = neighbor_dupes[0]
+
+    print(visited_nodes)
+    print(maze)
+
 def test_map():
     return  [0,1], [[['0110', [[1, 0, 0], [0, 2, 0]], [[1], [0]], 0],  # y = 0, x = 0
                     ['0101', [[0, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 0, x = 1
