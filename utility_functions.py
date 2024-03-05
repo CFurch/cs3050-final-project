@@ -65,11 +65,36 @@ def is_clear_line_of_sight(point1_x, point1_y, point2_x, point2_y, walls):
     return not line_of_sight_collisions
 
 
+def draw_line_until_collision(start_x, start_y, angle_degrees, max_length, walls, alpha=255, step=2):
+    """
+    Draw a line segment until it hits a wall
+    """
+    # Convert angle to radians
+    angle_radians = math.radians(angle_degrees)
+
+    # Initialize line segment with start point and angle
+    line = LineSegment(start_x, start_y, start_x + math.cos(angle_radians) * max_length,
+                       start_y + math.sin(angle_radians) * max_length, color=arcade.color.ORANGE, alpha=alpha)
+
+    # Iterate until collision with wall or max_length reached
+    while line.width < max_length:
+        # Extend the line segment
+        line.extend(step)
+
+        # Check for collision with walls
+        if len(arcade.check_for_collision_with_list(line, walls)) > 0:
+            # If collision detected, return the current line segment
+            return line
+
+    # If no collision detected, return the line segment of max length
+    return line
+
+
 class LineSegment(arcade.Sprite):
     """
     Needed for calculating angle - easiest way to implement this
     """
-    def __init__(self, point1_x, point1_y, point2_x, point2_y, color=arcade.color.WHITE, thickness=1):
+    def __init__(self, point1_x, point1_y, point2_x, point2_y, color=arcade.color.WHITE, thickness=1, alpha=255):
         super().__init__()
 
         # Calculate the center of the line segment
@@ -87,3 +112,9 @@ class LineSegment(arcade.Sprite):
 
         # Set the color of the line segment
         self.color = color
+
+    def extend(self, step):
+        """
+        Extend the line segment by a specified step.
+        """
+        self.width += step

@@ -102,11 +102,14 @@ class Turret(arcade.Sprite):
 
         self.line_of_sight = False
 
+        self.delay_after_firing = False
         self.firing = False
         self.delay_firing = DELAY_BEFORE_FIRING
         self.fire_duration = BULLETS_TO_FIRE # Number of bullets to fire upon update
         self.aiming = False
         self.bullets = None
+
+        self.turret_laser = None
 
     def setup(self, center_x, center_y, view_direction):
         """
@@ -123,7 +126,6 @@ class Turret(arcade.Sprite):
         self.facing_direction = self.base_direction + random.randint(-ANGLE_FROM_DEFAULT, ANGLE_FROM_DEFAULT)
         self.lower_end = self.base_direction - ANGLE_FROM_DEFAULT
         self.higher_end = self.base_direction + ANGLE_FROM_DEFAULT
-
 
         self.bullets = arcade.SpriteList()
 
@@ -158,14 +160,19 @@ class Turret(arcade.Sprite):
         self.line_of_sight = utility_functions.is_clear_line_of_sight(player.center_x, player.center_y, self.center_x,
                                                                       self.center_y, wall_list)
 
+        # Determine turret laser
+        self.turret_laser = utility_functions.draw_line_until_collision(self.center_x, self.center_y,
+                                                                        self.facing_direction, 1000, wall_list,
+                                                                        alpha=128, step=2)
+
         if self.line_of_sight and utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
                                                         [player.center_x, player.center_y],
                                                         swath_degrees=FIRING_ANGLE):
             # Check to see if the turret is currently firing, if not then decrease the timer before firing
             if self.delay_firing > 0 and not self.firing:
                 self.delay_firing -= 1
-            else:
                 self.aiming = True
+            else:
                 self.firing = True
                 self.delay_firing = DELAY_BEFORE_FIRING
         else:
@@ -189,11 +196,17 @@ class Turret(arcade.Sprite):
             self.firing = False
             self.fire_duration = BULLETS_TO_FIRE
 
+            self.turret_laser = None
+        elif not self.aiming:
+            self.turret_laser = None
+
+
         # Move the turret
         # Calculate the angle between the turret's facing direction and the player, and move the turret
         if self.line_of_sight and utility_functions.is_within_facing_direction([self.center_x, self.center_y], self.facing_direction,
                                                         [player.center_x, player.center_y],
                                                         swath_degrees=self.detection_angle):
+
             # The following if statements handle if the turret passes from 360 to 0 degrees or 180 to -180 degrees
             # Otherwise, the turret jumps from where it was to higher or lower end.
             if self.lower_end > 0 or self.higher_end >= 360:
@@ -239,6 +252,9 @@ class Turret(arcade.Sprite):
                 self.delaying = False
                 self.delay_at_edges = DELAY_TIME_END_OF_SWEEP
             self.detection_angle = BASE_DETECTION_ANGLE
+
+    def get_turret_laser(self):
+        return self.turret_laser
 
     def draw_scaled(self):
         """
