@@ -160,6 +160,9 @@ class LethalGame(arcade.Window):
             else:
                 armed_mine.draw()
 
+        # Draw loot after mines but before turrets
+        self.loot_items.draw()
+
         # draw bullets and turrets at correct angles
         for bullet in self.bullets:
             bullet.draw_scaled()
@@ -168,7 +171,6 @@ class LethalGame(arcade.Window):
             if turret.get_turret_laser() != None:
                 turret.get_turret_laser().draw()
 
-        self.loot_items.draw()
         self.player.draw()
 
         # Draw the hud sprites
