@@ -11,6 +11,7 @@ from room import Room
 from map import Map
 from player import PlayerCharacter
 from item import Item
+from utility_functions import euclidean_distance, calculate_direction_vector, is_within_facing_direction
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -390,31 +391,11 @@ class LethalGame(arcade.Window):
         # Handle dead state, reload ship with no loot items
         # if self.player.get_health() == 0:
 
-
+        # Process movement based on keys
+        self.process_keychange()
 
         # Move the player with the physics engine
         self.physics_engine.update()
-
-        # Process movement based on keys
-        self.process_keychange()
-        # For validating health sprites:
-        # print(self.player.get_health())
-        # self.player.decrease_health(0.1)
-
-        # Update Animations - this requires an update_animation function in each class.
-        # This is pretty straightforward to do and setup, and is worthwhile to do
-        # self.scene.update_animation(
-        #     delta_time,
-        #     [
-        #         LAYER_NAME_COINS,
-        #         LAYER_NAME_BACKGROUND,
-        #         LAYER_NAME_PLAYER,
-        #         LAYER_NAME_ENEMIES,
-        #     ],
-        # )
-
-        # Update walls, used with moving platforms (may not be needed)
-        # self.scene.update(self.walls)
 
         # handle collisions - like this
         item_hit_list = arcade.check_for_collision_with_list(
@@ -456,17 +437,6 @@ class LethalGame(arcade.Window):
         # Position the camera
         self.center_camera_to_player()
 
-
-def euclidean_distance(point1, point2):
-    """
-    for use in several functions to calculate the pixel distance
-    :param point1: (x, y) both integers
-    :param point2: (x, y)
-    :return: float distance between points
-    """
-    x1, y1 = point1
-    x2, y2 = point2
-    return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 def main():
     """

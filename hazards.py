@@ -63,7 +63,6 @@ class Mine(arcade.Sprite):
             self.exploded = True
 
 
-
 class Turret(arcade.Sprite):
     ANGLE_FROM_DEFAULT = 90
 
@@ -79,6 +78,7 @@ class Turret(arcade.Sprite):
         self.texture = None
         self.damage = 40
         self.base_direction = None
+        self.facing_direction = None
 
     def setup(self, center_x, center_y, view_direction):
         """
@@ -90,5 +90,5 @@ class Turret(arcade.Sprite):
         self.center_x = center_x
         self.center_y = center_y
         self.base_direction = view_direction
-        print(self.base_direction)
+        self.facing_direction = view_direction
         return self
