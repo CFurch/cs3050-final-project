@@ -39,7 +39,7 @@ class Room(arcade.Sprite):
         self.center_y = y_center
         # print(self.x_center)
         # Load room data from JSON file
-        with open("resources/room_data.json") as f:
+        with open("resources/room_data_with_textures.json") as f:
             rooms_data = json.load(f)
 
         # Pull the specific rooms data from the json based on room type bitwise representation
@@ -51,9 +51,11 @@ class Room(arcade.Sprite):
         for wall_data in walls_data:
             center_x = wall_data["center_x"] + self.center_x
             center_y = wall_data["center_y"] + self.center_y
-            width = wall_data["width"]
-            height = wall_data["height"]
-            self.create_wall(center_x, center_y, width, height)
+            #width = wall_data["width"]
+            #height = wall_data["height"]
+            filename = wall_data["texture"]
+            #self.create_wall(center_x, center_y, width, height)
+            self.create_wall_from_texture(center_x, center_y, filename)
 
         # Spawn loot
         # Get spawn location(s) of room
@@ -162,6 +164,21 @@ class Room(arcade.Sprite):
         :return:
         """
         wall = arcade.SpriteSolidColor(width, height, arcade.csscolor.GRAY)  # change this depending on what we want
+        # Will likely have to change how the walls are stored to instead store file locations to sprite pngs
+        wall.center_x = center_x
+        wall.center_y = center_y
+        self.wall_list.append(wall)
+
+    def create_wall_from_texture(self, center_x, center_y, texture):
+        """
+        Need to adapt this function for the texture of each wall (assuming base texture for now,
+           loaded using the room type)
+        :param center_x:
+        :param center_y:
+        :param texture:
+        :return:
+        """
+        wall = arcade.Sprite(texture)  # change this depending on what we want
         # Will likely have to change how the walls are stored to instead store file locations to sprite pngs
         wall.center_x = center_x
         wall.center_y = center_y

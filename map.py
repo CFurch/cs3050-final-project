@@ -35,7 +35,7 @@ class Map(arcade.Sprite):
             moon_data = json.load(moon_file)
 
         # grab specific moon data and store it in the object
-        #print(moon_data)
+        # print(moon_data)
         for moon in moon_data:
             if moon.get("id") == moon_id:
                 self.size = moon.get("size")
@@ -54,15 +54,15 @@ class Map(arcade.Sprite):
 
     def setup(self):
         """
-        Calculates the map_array and
+        Calculates the map_array and loot spawns
         :return:
         """
         # Procgen of map:
         player_start, map = test_map()  # generate_map()
 
         # gen_dfs_maze takes: size and seed
-        #player_start, map = gen_dfs_maze(3, 0)
-
+        TEST_player_start, TEST_map = gen_dfs_maze(3, 0)
+        
         # Scale up player_start
         self.player_start_x = player_start[0] * 256 + 128
         self.player_start_y = player_start[1] * 256 + 128
@@ -70,12 +70,18 @@ class Map(arcade.Sprite):
         self.mines = arcade.SpriteList()
         self.turrets = arcade.SpriteList()
 
+        # populate the maze with empties
+        for room in TEST_map:
+            new_room = [room, [[0,0,0],[0,0,0]],[1,0],0]
+
+
         # determine where to spawn loot on the map
+        
+        
 
         # determine where to spawn spawners on the map
 
-        # determine where to spawn hazards
-        # Both of the above functions will use the procgen results to determine which rooms to spawn
+
 
         # Iterate through each room in the representation of the map and create a room
         x_temp = HALF_ROOM_SIZE
@@ -135,17 +141,15 @@ def create_grid(map_size):
 
     return grid
 
-def gen_dfs_maze(map_size, seed=0, starting_node=-1):
+def gen_dfs_maze(map_size, seed):
 
     # initialize the maze with the map size
     maze = create_grid(map_size)
 
-
-    # if another starting node is not provided, use the halfway node along the left side
-    if starting_node == -1:
-        start_x = 0
-        start_y = map_size // 2
-        starting_node = [start_x, start_y]
+    # assign default starting node
+    start_x = 0
+    start_y = map_size // 2
+    starting_node = [start_x, start_y]
 
     # initialize lists for maze generation
     visited_nodes = []
@@ -241,12 +245,12 @@ def gen_dfs_maze(map_size, seed=0, starting_node=-1):
     return starting_node, maze
 
 def test_map():
-    return  [0,1], [[['0110', [[1, 0, 0], [0, 2, 0]], [[1], [0]], 0],  # y = 0, x = 0
-                    ['0101', [[0, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 0, x = 1
-                    ['0011', [[1, 0, 0], [0, 0, 0]], [[0], [0]], 0]],  # y = 0, x = 2
-                    [['1111', [[0, 0, 0], [0, 0, 0]], [[0], [1]], 0],  # y = 1, x = 0
-                    ['0001', [[2, 0, 0], [1, 0, 0]], [[2], [0]], 0],  # y = 1, x = 1
-                    ['0010', [[2, 0, 0], [0, 0, 0]], [[0], [0]], 0]],  # y = 1, x = 2
-                    [['1100', [[3, 0, 0], [0, 0, 1]], [[0], [1]], 0],  # y = 2, x = 0
-                    ['0101', [[0, 0, 2], [0, 1, 0]], [[1], [0]], 0],  # y = 2, x = 1
-                    ['1001', [[0, 0, 0], [1, 0, 0]], [[0], [0]], 0]]]  # y = 2, x = 2
+    return  [0,1], [[['0110', [[1, 0, 0], [0, 2, 0]], [1, 0], 0],  # y = 0, x = 0
+                    ['0101', [[0, 0, 0], [0, 0, 1]], [0, 1], 0],  # y = 0, x = 1
+                    ['0011', [[1, 0, 0], [0, 0, 0]], [0, 0], 0]],  # y = 0, x = 2
+                    [['1111', [[0, 0, 0], [0, 0, 0]], [0, 1], 0],  # y = 1, x = 0
+                    ['0001', [[2, 0, 0], [1, 0, 0]], [2, 0], 0],  # y = 1, x = 1
+                    ['0010', [[2, 0, 0], [0, 0, 0]], [0, 0], 0]],  # y = 1, x = 2
+                    [['1100', [[3, 0, 0], [0, 0, 1]], [0, 1], 0],  # y = 2, x = 0
+                    ['0101', [[0, 0, 2], [0, 1, 0]], [1, 0], 0],  # y = 2, x = 1
+                    ['1001', [[0, 0, 0], [1, 0, 0]], [0, 0], 0]]]  # y = 2, x = 2
