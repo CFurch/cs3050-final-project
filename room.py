@@ -39,7 +39,7 @@ class Room(arcade.Sprite):
         self.center_y = y_center
         # print(self.x_center)
         # Load room data from JSON file
-        with open("resources/room_data_with_textures.json") as f:
+        with open("resources/rooms_data_with_textures.json") as f:
             rooms_data = json.load(f)
 
         # Pull the specific rooms data from the json based on room type bitwise representation
