@@ -58,10 +58,10 @@ class Map(arcade.Sprite):
         :return:
         """
         # Procgen of map:
-        #player_start, map = test_map()  # generate_map()
+        player_start, map = test_map()  # generate_map()
 
         # gen_dfs_maze takes: size and seed
-        player_start, map = gen_dfs_maze(3, 0)
+        #player_start, map = gen_dfs_maze(3, 0)
 
         # Scale up player_start
         self.player_start_x = player_start[0] * 256 + 128
@@ -139,6 +139,7 @@ def gen_dfs_maze(map_size, seed=0, starting_node=-1):
 
     # initialize the maze with the map size
     maze = create_grid(map_size)
+
 
     # if another starting node is not provided, use the halfway node along the left side
     if starting_node == -1:
