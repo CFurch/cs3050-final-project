@@ -63,6 +63,10 @@ class Item(arcade.Sprite):
         items = data_from_json[item_type][value_range]
         item = random.choice(items)
 
+        # Generate random value within the specified range
+        value_lower, value_upper = item["value_range"]
+        self.value = random.randint(value_lower, value_upper)
+
         # Assign weight and texture (for each of the two textures)
         self.weight = item["weight"]
         self.texture_map = item["sprite_filename"]
@@ -76,12 +80,10 @@ class Item(arcade.Sprite):
         """
         Switch self.texture from map texture to inventory texture
         """
-        # print(f"texturing to inventory {self.texture_inventory}")
         self.texture = arcade.load_texture(self.texture_inventory)
 
     def set_map_texture(self):
         """
         switch self.texture from inventory to map
         """
-        # print(f"texturing to map: {self.texture_map}")
         self.texture = arcade.load_texture(self.texture_map)
