@@ -112,7 +112,7 @@ class LethalGame(arcade.Window):
         self.inventory_hud = arcade.SpriteList()
         # Add the four sprite items to the list
         for i in range(4):
-            temp_sprite = arcade.Sprite("resources/tool_sprites/inventory_box.png", scale=0.55)
+            temp_sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
             self.inventory_hud.append(temp_sprite)
 
         # Add enemies to scene - spawner class needs to handle these
@@ -177,9 +177,9 @@ class LethalGame(arcade.Window):
         temp_x = 300
         for slot in range(1, 5):
             if slot == self.player.get_current_inv_slot():
-                sprite = arcade.Sprite("resources/tool_sprites/inventory_box.png", scale=0.55)
+                sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
             else:
-                sprite = arcade.Sprite("resources/tool_sprites/inventory_box_non_selected.png", scale=0.55)
+                sprite = arcade.Sprite("resources/item_sprites/inventory_box_non_selected.png", scale=0.55)
             sprite.center_x = self.camera.position[0] + temp_x
             temp_x += 125
             sprite.center_y = self.camera.position[1] + 50
