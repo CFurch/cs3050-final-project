@@ -167,9 +167,9 @@ class LethalGame(arcade.Window):
         for bullet in self.bullets:
             bullet.draw_scaled()
         for turret in self.turrets:
-            turret.draw_scaled()
             if turret.get_turret_laser() != None:
                 turret.get_turret_laser().draw()
+            turret.draw_scaled()
 
         self.player.draw()
 
@@ -230,7 +230,7 @@ class LethalGame(arcade.Window):
         if not self.delaying_stam and self.shift_pressed and (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
             self.sprinting = self.player.get_stam() > 0
         else:
-            self.sprinting = False
+            self.sprinting = Falsechan
 
         # Set movement speed
         if self.sprinting and not self.delaying_stam:
