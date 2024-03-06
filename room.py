@@ -39,7 +39,7 @@ class Room(arcade.Sprite):
         self.center_y = y_center
         # print(self.x_center)
         # Load room data from JSON file
-        with open("resources/room_data_with_textures.json") as f:
+        with open("resources/rooms_data_with_textures.json") as f:
             rooms_data = json.load(f)
 
         # Pull the specific rooms data from the json based on room type bitwise representation
@@ -93,7 +93,7 @@ class Room(arcade.Sprite):
 
         # Spawn hazards - mines
         hazard_spawn_areas = rooms_data.get("hazard_spawn_locations", [])
-        for i in range(hazards[0][0]):
+        for i in range(hazards[0]):
             # Choose a random loot spawn area
             spawn_area = random.randint(0, len(hazard_spawn_areas) - 1)
             # select a point in the spawn area - use of integer division to ensure integer bounds
@@ -113,7 +113,7 @@ class Room(arcade.Sprite):
             # Add the hazard item to the room's item list
             self.hazards[0].append(loot_item)
         # Spawn hazards - mines
-        for i in range(hazards[1][0]):
+        for i in range(hazards[1]):
             # Choose a random loot spawn area
             spawn_area = random.randint(0, len(hazard_spawn_areas) - 1)
             # select a point in the spawn area - use of integer division to ensure integer bounds
