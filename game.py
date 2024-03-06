@@ -167,9 +167,9 @@ class LethalGame(arcade.Window):
         for bullet in self.bullets:
             bullet.draw_scaled()
         for turret in self.turrets:
-            turret.draw_scaled()
             if turret.get_turret_laser() != None:
                 turret.get_turret_laser().draw()
+            turret.draw_scaled()
 
         self.player.draw()
 
