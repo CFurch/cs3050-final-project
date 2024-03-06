@@ -57,7 +57,7 @@ class Map(arcade.Sprite):
         :return:
         """
         # Procgen of map:
-        #player_start, map = test_map()  # generate_map()
+        # player_start, map = test_map()  # generate_map()
 
         # gen_dfs_maze takes: size and seed
         player_start, map = gen_dfs_maze(3, self.seed)
@@ -73,6 +73,7 @@ class Map(arcade.Sprite):
         # for each column in the map
         # for each room in the column
         # add the empty data to the room
+        print(map)
         for x, column in enumerate(map):
             for y, row in enumerate(column):
                 new_room = [column[y], [[0,0,0],[0,0,0]],[0,0],0]
@@ -89,9 +90,10 @@ class Map(arcade.Sprite):
         x_temp = HALF_ROOM_SIZE
         y_temp = HALF_ROOM_SIZE
         # Switch y direction
-        for y, row in enumerate(map):
+        for y, col in enumerate(map):
             # row = map[y]
-            for x, item in enumerate(row):
+            for x, item in enumerate(col):
+                print(item)
                 #print(x_temp, y_temp, item)
                 # generate room based on bitwise rep, x, y, to_spawn_loot, etc
                 bitwise_room_rep = item[0]
@@ -113,9 +115,9 @@ class Map(arcade.Sprite):
                 if temp_room.get_hazards()[1] != None:
                     self.turrets.extend(temp_room.get_hazards()[1])
                 # Update positions
-                x_temp += ROOM_SIZE
-            x_temp = HALF_ROOM_SIZE
-            y_temp += ROOM_SIZE
+                y_temp += ROOM_SIZE
+            y_temp = HALF_ROOM_SIZE
+            x_temp += ROOM_SIZE
 
     def get_walls(self):
         return self.wall_list
