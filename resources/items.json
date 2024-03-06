@@ -43,7 +43,7 @@
     "2": [
       {
         "weight": 24,
-        "sprite_filename": "resources/item_sprites/brassbell.png",
+        "sprite_filename": "resources/item_sprites/brassbell-1.png",
         "sprite_inventory_filename": "resources/item_sprites/inventory_loot_item.png",
         "value_range": [60, 100]
       },
