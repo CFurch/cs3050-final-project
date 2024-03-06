@@ -60,8 +60,10 @@ class Map(arcade.Sprite):
         #player_start, map = test_map()  # generate_map()
 
         # gen_dfs_maze takes: size and seed
-        player_start, map = gen_dfs_maze(3, self.seed)
+        player_start, maze = gen_dfs_maze(3, self.seed)
         
+        map = maze
+
         # Scale up player_start
         self.player_start_x = player_start[0] * 256 + 128
         self.player_start_y = player_start[1] * 256 + 128
@@ -73,7 +75,7 @@ class Map(arcade.Sprite):
         # for each column in the map
         # for each room in the column
         # add the empty data to the room
-        for x, column in enumerate(map):
+        for x, column in enumerate(maze):
             for y, row in enumerate(column):
                 new_room = [column[y], [[0,0,0],[0,0,0]],[0,0],0]
                 map[x][y] = new_room
@@ -82,7 +84,6 @@ class Map(arcade.Sprite):
         print(map)
 
         # determine where to spawn spawners on the map
-
 
 
         # Iterate through each room in the representation of the map and create a room
