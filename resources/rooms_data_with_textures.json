@@ -1,0 +1,325 @@
+{
+    "rooms": {
+      "0000": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"},
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1000": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"},
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0100": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0010": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0001": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"},
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1100": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0110": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0011": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1001": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"},
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1010": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"},
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0101": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"},
+  
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"}
+  
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1110": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": -96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1101": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1011": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 96, "center_y": 0, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x128.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "0111": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+  
+          {"center_x": 0, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_128x64.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      },
+      "1111": {
+        "walls": [
+          {"center_x": -96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": -96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": 96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"},
+          {"center_x": 96, "center_y": -96, "texture": "arcade.load_texture(resources/wall_sprites/wall_64x64.png)"}
+        ],
+        "item_spawn_areas": [
+          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+        ],
+        "spawner_locations": [
+          {"x": 0, "y": 0}
+        ],
+        "hazard_spawn_locations": [
+          {"x":  0, "y": 0, "width": 128, "height":  128}
+        ]
+      }
+    }
+  }
