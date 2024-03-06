@@ -230,7 +230,7 @@ class LethalGame(arcade.Window):
         if not self.delaying_stam and self.shift_pressed and (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
             self.sprinting = self.player.get_stam() > 0
         else:
-            self.sprinting = Falsechan
+            self.sprinting = False
 
         # Set movement speed
         if self.sprinting and not self.delaying_stam:
