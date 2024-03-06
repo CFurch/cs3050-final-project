@@ -74,9 +74,8 @@ class Map(arcade.Sprite):
         for room in TEST_map:
             new_room = [room, [[0,0,0],[0,0,0]],[1,0],0]
 
-
         # determine where to spawn loot on the map
-        
+        print(self.loot_quantity)
         
 
         # determine where to spawn spawners on the map
