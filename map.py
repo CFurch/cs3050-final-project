@@ -24,7 +24,7 @@ class Map(arcade.Sprite):
         self.difficulty = 0
         self.loot_quantity = []
         self.loot_weight = []
-        self.hazards = []
+        self.hazard_quantity = []
         self.mines = None
         self.turrets = None
         self.seed = seed
@@ -42,7 +42,7 @@ class Map(arcade.Sprite):
                 self.difficulty = moon.get("difficulty")
                 self.loot_quantity = moon.get("loot-quantity")
                 self.loot_weight = moon.get("loot-weight")
-                self.hazards = moon.get("hazards")
+                self.hazard_quantity = moon.get("hazards")
 
         self.loot_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
@@ -83,17 +83,14 @@ class Map(arcade.Sprite):
         # determine where to spawn loot, hazards, and vents
         # will only spawn in rooms that have transitions
         # this is to ensure forward compatability with different map generation styles
-               
         # loot pre-processing and preparation
         # loot quantity
         rand_loot_quant = random.randrange(self.loot_quantity[0],self.loot_quantity[1])
-        print(rand_loot_quant)
         total_loot = 0
 
         # join loot weights and define population
         loot_population = ['one_low','one_mid','one_high','two_low','two_mid','two_high']
         loot_weights_total = self.loot_weight['one_handed'] + self.loot_weight['two_handed']
-
 
         # while there is still
         # loot to be placed, randomly select a room and check it's ID
@@ -123,8 +120,30 @@ class Map(arcade.Sprite):
 
                 total_loot += 1
 
-        print
 
+        # hazard pre-processing
+        max_mines = self.hazard_quantity['mines'][0]
+        max_turrets = self.hazard_quantity['turrets'][0]
+        total_mines = 0
+        total_turrets = 0
+
+        # while there are still mines and turrets to be placed
+        # randomly select a room and check it's ID
+        while total_mines < max_mines:
+            rand_x = random.randrange(0,self.size)
+            rand_y = random.randrange(0,self.size)
+
+            if map[rand_x][rand_y][0] != "0000":
+                map[rand_x][rand_y][2][0] += 1
+                total_mines += 1
+
+        while total_turrets < max_turrets:
+            rand_x = random.randrange(0,self.size)
+            rand_y = random.randrange(0,self.size)
+
+            if map[rand_x][rand_y][0] != "0000":
+                map[rand_x][rand_y][2][1] += 1
+                total_turrets += 1
 
         # Iterate through each room in the representation of the map and create a room
         x_temp = HALF_ROOM_SIZE
