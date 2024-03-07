@@ -8,7 +8,7 @@ HALF_ROOM_SIZE = 128
 MAP_SIZE = 10
 
 class Map(arcade.Sprite):
-    def __init__(self, moon_id, seed):
+    def __init__(self, moon_id, seed=random.randrange(0,2**31-1)):
         """
         takes moon_id and optional seed and prepares data for setup
         """
