@@ -3,7 +3,7 @@
         "id": "experimentation",
         "size": 1.0,
         "difficulty": 1.0,
-        "loot-quantity": [8,11],
+        "loot-quantity": [10,15],
         "loot-weight": {
             "one_handed": [0.15,0.20,0.00],
             "two_handed": [0.35,0.20,0.10]
