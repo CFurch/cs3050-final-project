@@ -90,7 +90,7 @@ class LethalGame(arcade.Window):
         # Ideally this would work using some sort of arcade.load_tilemap(map_name)
         # if we use this we need to use layers for the physics engine, otherwise add
         # all walls to the walls list
-        self.map = Map("experimentation", 0)
+        self.map = Map("experimentation")
         self.map.setup()
         # get the walls from the map
         self.walls = self.map.get_walls()
