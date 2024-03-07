@@ -5,6 +5,7 @@ from room import Room
 
 ROOM_SIZE = 256
 HALF_ROOM_SIZE = 128
+MAP_SIZE = 10
 
 class Map(arcade.Sprite):
     def __init__(self, moon_id, seed):
@@ -37,7 +38,7 @@ class Map(arcade.Sprite):
         # print(moon_data)
         for moon in moon_data:
             if moon.get("id") == moon_id:
-                self.size = moon.get("size")
+                self.size = moon.get("size") * MAP_SIZE
                 self.difficulty = moon.get("difficulty")
                 self.loot_quantity = moon.get("loot-quantity")
                 self.loot_weight = moon.get("loot-weight")
@@ -56,11 +57,9 @@ class Map(arcade.Sprite):
         Calculates the map_array and loot spawns
         :return:
         """
-        # Procgen of map:
-        #player_start, map = test_map()  # generate_map()
 
         # gen_dfs_maze takes: size and seed
-        player_start, maze = gen_dfs_maze(3, self.seed)
+        player_start, maze = gen_dfs_maze(int(self.size) , self.seed)
         
         map = maze
 
@@ -76,34 +75,78 @@ class Map(arcade.Sprite):
         # for each room in the column
         # add the empty data to the room
         for x, column in enumerate(maze):
+
             for y, row in enumerate(column):
                 new_room = [column[y], [[0,0,0],[0,0,0]],[0,0],0]
                 map[x][y] = new_room
 
-        # determine where to spawn  loot on the map
-        print(map)
+        # determine where to spawn loot, hazards, and vents
+        # will only spawn in rooms that have transitions
+        # this is to ensure forward compatability with different map generation styles
+               
+        # loot pre-processing and preparation
+        # loot quantity
+        rand_loot_quant = random.randrange(self.loot_quantity[0],self.loot_quantity[1])
+        print(rand_loot_quant)
+        total_loot = 0
 
-        # determine where to spawn spawners on the map
+        # join loot weights and define population
+        loot_population = ['one_low','one_mid','one_high','two_low','two_mid','two_high']
+        loot_weights_total = self.loot_weight['one_handed'] + self.loot_weight['two_handed']
+
+
+        # while there is still
+        # loot to be placed, randomly select a room and check it's ID
+        while total_loot < rand_loot_quant:
+            # randomly generate X and Y coordinates within the map bounds
+            rand_x = random.randrange(0,self.size)
+            rand_y = random.randrange(0,self.size)
+
+            # if the room has transitions
+            if map[rand_x][rand_y][0] != "0000":
+                # use the weights to calculate what item will spawn
+                choice = random.choices(loot_population,loot_weights_total)
+                
+                match choice[0]:
+                    case 'one_low':
+                        map[rand_x][rand_y][1][0][0] += 1
+                    case 'one_mid':
+                        map[rand_x][rand_y][1][0][1] += 1
+                    case 'one_high':
+                        map[rand_x][rand_y][1][0][2] += 1
+                    case 'two_low':
+                        map[rand_x][rand_y][1][1][0] += 1
+                    case 'two_mid':
+                        map[rand_x][rand_y][1][1][1] += 1
+                    case 'two_high':
+                        map[rand_x][rand_y][1][1][2] += 1
+
+                total_loot += 1
+
+        print
 
 
         # Iterate through each room in the representation of the map and create a room
         x_temp = HALF_ROOM_SIZE
         y_temp = HALF_ROOM_SIZE
         # Switch y direction
-        for y, row in enumerate(map):
+        for y, col in enumerate(map):
             # row = map[y]
-            for x, item in enumerate(row):
+            for x, item in enumerate(col):
+                #print(item)
                 #print(x_temp, y_temp, item)
                 # generate room based on bitwise rep, x, y, to_spawn_loot, etc
                 bitwise_room_rep = item[0]
+                
                 # item list, hazards spawned, spawners spawned
                 items_to_spawn = item[1]
                 hazards = item[2]
                 spawners = item[3]
-                # Generate room using Room().setup
 
+                # Generate room using Room().setup
                 temp_room = Room().setup(bitwise_room_rep, x_temp, y_temp, spawners=spawners,
                                          hazards=hazards, loot_item_spawn_list=items_to_spawn)
+                
                 # Add each room to the spritelist
                 if temp_room.get_loot_list() != None:
                     self.loot_list.extend(temp_room.get_loot_list())
@@ -114,9 +157,9 @@ class Map(arcade.Sprite):
                 if temp_room.get_hazards()[1] != None:
                     self.turrets.extend(temp_room.get_hazards()[1])
                 # Update positions
-                x_temp += ROOM_SIZE
-            x_temp = HALF_ROOM_SIZE
-            y_temp += ROOM_SIZE
+                y_temp += ROOM_SIZE
+            y_temp = HALF_ROOM_SIZE
+            x_temp += ROOM_SIZE
 
     def get_walls(self):
         return self.wall_list
@@ -248,14 +291,3 @@ def gen_dfs_maze(map_size, seed):
             current_node = valid_neighbors[0]
 
     return starting_node, maze
-
-def test_map():
-    return  [0,1], [[['0110', [[1, 0, 0], [0, 2, 0]], [1, 0], 0],  # y = 0, x = 0
-                    ['0101', [[0, 0, 0], [0, 0, 1]], [0, 1], 0],  # y = 0, x = 1
-                    ['0011', [[1, 0, 0], [0, 0, 0]], [0, 0], 0]],  # y = 0, x = 2
-                    [['1111', [[0, 0, 0], [0, 0, 0]], [0, 1], 0],  # y = 1, x = 0
-                    ['0001', [[2, 0, 0], [1, 0, 0]], [2, 0], 0],  # y = 1, x = 1
-                    ['0010', [[2, 0, 0], [0, 0, 0]], [0, 0], 0]],  # y = 1, x = 2
-                    [['1100', [[3, 0, 0], [0, 0, 1]], [0, 1], 0],  # y = 2, x = 0
-                    ['0101', [[0, 0, 2], [0, 1, 0]], [1, 0], 0],  # y = 2, x = 1
-                    ['1001', [[0, 0, 0], [1, 0, 0]], [0, 0], 0]]]  # y = 2, x = 2
