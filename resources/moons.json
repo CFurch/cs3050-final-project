@@ -23,8 +23,8 @@
             "two_handed": [0.15,0.05,0.10]
         },
         "hazards": {
-            "mines": [10,15],
-            "turrets": [8,20]
+            "mines": [20,48],
+            "turrets": [20,35]
         }
     }
 ]
