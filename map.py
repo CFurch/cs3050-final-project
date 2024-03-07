@@ -60,7 +60,6 @@ class Map(arcade.Sprite):
 
         # gen_dfs_maze takes: size and seed
         player_start, maze = gen_dfs_maze(int(self.size) , self.seed)
-        
         map = maze
 
         # Scale up player_start
@@ -247,7 +246,8 @@ def gen_dfs_maze(map_size, seed):
         neighbors = [node for node in neighbors if node != 0]
         
         return neighbors
-
+    
+    # calculate the room ID based on node positions
     def calc_roomid(source_node, dest_node):
         
         dir_diff = []
@@ -265,6 +265,7 @@ def gen_dfs_maze(map_size, seed):
         paths = direction_decision[dir_diff[0]][dir_diff[1]]
         
         return paths
+
 
     # while the number of visited nodes is less than the maximum number of cells
     while len(visited_nodes) < pow(map_size,2):
