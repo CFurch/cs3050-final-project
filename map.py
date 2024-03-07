@@ -309,4 +309,7 @@ def gen_dfs_maze(map_size, seed):
 
             current_node = valid_neighbors[0]
 
+    # create a doorway for the starting node
+    maze[start_x][start_y] = str(int(maze[start_x][start_y]) + 1).zfill(4)
+
     return starting_node, maze
