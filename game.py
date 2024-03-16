@@ -409,12 +409,14 @@ class LethalGame(arcade.Window):
         self.physics_engine.update()
 
         # handle collisions - like this
-        item_hit_list = arcade.check_for_collision_with_list(
-            self.player, self.loot_items # may need to change layer name
-        )
+        # item_hit_list = arcade.check_for_collision_with_list(
+        #     self.player, self.loot_items # may need to change layer name
+        # )
+        self.player.decrease_pd_delay()
         # Handle checking if items are in hitbox and the player is attempting to pick something up
         # Add the item to inventory if the player's current slot is open
-        if self.try_pickup_item and not self.player.get_inv(self.player.get_current_inv_slot()):
+        if self.try_pickup_item and not self.player.get_inv(self.player.get_current_inv_slot()) and \
+                self.player.get_pd_delay() == 0:
             # Since we can only populate the player's inventory slot with a single item,
             # we will only try with the first item
             item_hit_list = arcade.check_for_collision_with_list(self.player, self.loot_items)
@@ -426,9 +428,9 @@ class LethalGame(arcade.Window):
                 item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
 
         # Handle checking if the player wants to drop items
-        if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()):
+        if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
+                self.player.get_pd_delay() == 0:
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
-
             # Currently I will be including all of this, I'm not sure if we need to have both
             self.loot_items.append(temp_item)
 

@@ -1,5 +1,7 @@
 import arcade
 
+PLAYER_DELAY_PICKUP_DROP = 20
+
 
 class PlayerCharacter(arcade.Sprite):
     def __init__(self):
@@ -20,6 +22,9 @@ class PlayerCharacter(arcade.Sprite):
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_sprite_temp.png")
+
+        # Block pickup if player is just dropped something or just picked something up
+        self.pickup_drop_delay = 0
 
         """
         current item slot selected:
@@ -74,6 +79,9 @@ class PlayerCharacter(arcade.Sprite):
         self.holding_two_handed = item.two_handed
         self.total_weight += item.weight
 
+        # reset item drop/pickup delay
+        self.reset_pd_delay()
+
     """
     remove_item(inventory_slot)
     - remove and return the object of the index of inventor_slot - 1, then set that index to be None (or whatever the 
@@ -94,6 +102,10 @@ class PlayerCharacter(arcade.Sprite):
         removed_item.set_map_texture()
         removed_item.center_x = self.center_x
         removed_item.center_y = self.center_y
+
+        # reset pickup drop delay
+        self.reset_pd_delay()
+
         return removed_item
 
     def decrease_stam(self, amount):
@@ -141,6 +153,16 @@ class PlayerCharacter(arcade.Sprite):
 
     def get_weight(self):
         return self.total_weight
+
+    def get_pd_delay(self):
+        return self.pickup_drop_delay
+
+    def decrease_pd_delay(self):
+        if self.pickup_drop_delay > 0:
+            self.pickup_drop_delay -= 1
+
+    def reset_pd_delay(self):
+        self.pickup_drop_delay = PLAYER_DELAY_PICKUP_DROP
 
     """
     future todo:
