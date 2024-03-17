@@ -43,6 +43,14 @@ class Map(arcade.Sprite):
                 self.loot_quantity = moon.get("loot-quantity")
                 self.loot_weight = moon.get("loot-weight")
                 self.hazard_quantity = moon.get("hazards")
+                # load outdoor attributes
+                self.outdoor_tilemap_name = moon.get("outdoor_tilemap")
+                self.outdoor_starting_position = moon.get("outdoor_starting_position", [])
+                self.indoor_power = moon.get("indoor_power", int)
+                self.outdoor_power = moon.get("outdoor_power", int)
+                self.indoor_main_entrance_sprite = moon.get("indoor_main_comp_spawn", {})
+                self.indoor_main_entrance_image = moon.get("indoor_main_image", {})
+                self.outdoor_leave_position = moon.get("outdoor_leave_main_position", [])
 
         self.loot_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
@@ -65,6 +73,17 @@ class Map(arcade.Sprite):
         # Scale up player_start
         self.player_start_x = player_start[0] * 256 + 128
         self.player_start_y = player_start[1] * 256 + 128
+
+        # Set the indoor main entrance collision box
+        temp_sprite = arcade.Sprite(self.indoor_main_entrance_sprite["texture"])
+        temp_sprite.center_x = self.indoor_main_entrance_sprite["center_x"] + self.player_start_x
+        temp_sprite.center_y = self.indoor_main_entrance_sprite["center_y"] + self.player_start_y
+        self.indoor_main_entrance_sprite = temp_sprite
+
+        temp_sprite = arcade.Sprite(self.indoor_main_entrance_image["texture"])
+        temp_sprite.center_x = self.indoor_main_entrance_image["center_x"] + self.player_start_x
+        temp_sprite.center_y = self.indoor_main_entrance_image["center_y"] + self.player_start_y
+        self.wall_list.append(temp_sprite)
 
         self.mines = arcade.SpriteList()
         self.turrets = arcade.SpriteList()
@@ -193,6 +212,11 @@ class Map(arcade.Sprite):
 
     def get_turrets(self):
         return self.turrets
+
+    def get_map_data(self):
+        return self.outdoor_tilemap_name, self.outdoor_starting_position, self.indoor_power, self.outdoor_power, \
+               self.indoor_main_entrance_sprite, self.outdoor_leave_position
+
 
 def create_grid(map_size):
     

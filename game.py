@@ -26,6 +26,9 @@ STAM_DRAIN = 0.17 # set to match game
 BASE_MOVEMENT_SPEED = 2
 SPRINT_DELAY = 30
 
+# delay for entering and leaving building
+ENTER_EXIT_DELAY = 50
+
 
 class LethalGame(arcade.Window):
     """
@@ -40,17 +43,34 @@ class LethalGame(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
         # Initialize variables for spawning / map / other important variables
-        self.map = None
-        self.walls = None
+        self.is_outdoors = True
+        self.indoor_map = None
+        self.indoor_walls = None
+        self.indoor_main_position = None
+        self.indoor_main_bounding_box = None
+        self.outdoor_starting_position = None
+        self.outdoor_main_position = None
+
+        self.outdoor_map = None
+        self.outdoor_walls = None
+        self.outdoor_main_box = None
+
         self.player = None
         self.inventory_hud = None
-        self.enemy_entities = None
+
+        self.indoor_enemy_entities = None
+        self.indoor_enemy_entities = None
+
+        self.indoor_loot_items = None
+        self.outdoor_loot_items = arcade.SpriteList()
         self.loot_items = None
+
         self.mines = None
         self.armed_mines = None
         self.turrets = None
         self.bullets = None
-        self.physics_engine = None
+        self.indoor_physics_engine = None
+        self.outdoor_physics_engine = None
 
         # GUI variables
         self.camera = None
@@ -75,12 +95,15 @@ class LethalGame(arcade.Window):
         self.sprinting = False
         self.delaying_stam = False
 
+        self.delay_main_enter_exit = ENTER_EXIT_DELAY
+
         # Inventory slots
         self.try_pickup_item = False
         self.drop_item = False
 
         # Set power levels - has to do with spawning mechanics
         self.indoor_power = None  # experimentation-40 levels
+        self.outdoor_power = None
 
     def setup(self):
         # Set up the Camera
@@ -90,23 +113,32 @@ class LethalGame(arcade.Window):
         # Ideally this would work using some sort of arcade.load_tilemap(map_name)
         # if we use this we need to use layers for the physics engine, otherwise add
         # all walls to the walls list
-        self.map = Map("experimentation")
-        self.map.setup()
+        self.indoor_map = Map("experimentation") # Will update later based on start screen inputs
+        self.indoor_map.setup()
+
         # get the walls from the map
-        self.walls = self.map.get_walls()
-        self.loot_items = self.map.get_loot_list()
-        self.mines = self.map.get_mines()
+        self.indoor_walls = self.indoor_map.get_walls()
+        self.indoor_loot_items = self.indoor_map.get_loot_list()
+        self.mines = self.indoor_map.get_mines()
         self.armed_mines = arcade.SpriteList()
-        self.turrets = self.map.get_turrets()
+        self.turrets = self.indoor_map.get_turrets()
         self.bullets = arcade.SpriteList()
-        # self.scene = arcade.Scene.from_tilemap(self.map)
+
+        # Again, update later to be from user input
+        map_settings = self.indoor_map.get_map_data()
+        self.outdoor_map = arcade.Scene.from_tilemap(arcade.load_tilemap(map_settings[0]))
+        self.outdoor_starting_position = map_settings[1]
+        self.indoor_power = map_settings[2]
+        self.outdoor_power = map_settings[3]
+        self.indoor_main_bounding_box = map_settings[4]
+        self.outdoor_main_position = map_settings[5]
 
         # Initialize player character
         self.player = PlayerCharacter()
-        player_start = self.map.get_player_start()
-        # Add logic for starting location of player
-        self.player.center_x = player_start[0]
-        self.player.center_y = player_start[1]
+        self.indoor_main_position = self.indoor_map.get_player_start()
+        # Add logic for starting location of player (from outdoors)
+        self.player.center_x = self.outdoor_starting_position[0]
+        self.player.center_y = self.outdoor_starting_position[1]
         self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
         self.inventory_hud = arcade.SpriteList()
@@ -127,11 +159,17 @@ class LethalGame(arcade.Window):
         # Set background color to be black
         arcade.set_background_color(arcade.color.DARK_GRAY)
 
-        # Create physics engine - we can use the platformer without gravity to get the intended effect
-        self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player, walls=self.walls
+        # Create indoor physics engine - we can use the platformer without gravity to get the intended effect
+        self.indoor_physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player, walls=self.indoor_walls
         )
-        self.physics_engine.gravity_constant = 0
+        self.indoor_physics_engine.gravity_constant = 0
+
+        # Create outdoor physics engine - we can use the platformer without gravity to get the intended effect
+        self.outdoor_physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.outdoor_map["walls"]
+        )
+        self.outdoor_physics_engine.gravity_constant = 0
 
     def on_draw(self):
         """
@@ -143,33 +181,38 @@ class LethalGame(arcade.Window):
         # Start the camera
         self.camera.use()
 
-        # Draw the scene
-        self.walls.draw()
-        for mine in self.mines:
-            if not mine.get_exploded():
-                mine.draw()
+        # Draw the scene depending on indoors or outdoors
+        if self.is_outdoors:
+            self.outdoor_map.draw()
+            # print("outdoors")
+        else:
+            # print("indoors")
+            self.indoor_walls.draw()
+            for mine in self.mines:
+                if not mine.get_exploded():
+                    mine.draw()
 
-        for armed_mine in self.armed_mines:
-            if armed_mine.get_exploded():
-                # see if the player is within the explosion distance
-                distance = euclidean_distance((self.player.center_x, self.player.center_y),
-                                              (armed_mine.center_x, armed_mine.center_y))
-                if distance <= armed_mine.get_explosion_distance():
-                    self.player.decrease_health(armed_mine.get_damage())
-                self.armed_mines.remove(armed_mine)
-            else:
-                armed_mine.draw()
+            for armed_mine in self.armed_mines:
+                if armed_mine.get_exploded():
+                    # see if the player is within the explosion distance
+                    distance = euclidean_distance((self.player.center_x, self.player.center_y),
+                                                  (armed_mine.center_x, armed_mine.center_y))
+                    if distance <= armed_mine.get_explosion_distance():
+                        self.player.decrease_health(armed_mine.get_damage())
+                    self.armed_mines.remove(armed_mine)
+                else:
+                    armed_mine.draw()
 
-        # Draw loot after mines but before turrets
-        self.loot_items.draw()
+            # Draw loot after mines but before turrets
+            self.loot_items.draw()
 
-        # draw bullets and turrets at correct angles
-        for bullet in self.bullets:
-            bullet.draw_scaled()
-        for turret in self.turrets:
-            if turret.get_turret_laser() != None:
-                turret.get_turret_laser().draw()
-            turret.draw_scaled()
+            # draw bullets and turrets at correct angles
+            for bullet in self.bullets:
+                bullet.draw_scaled()
+            for turret in self.turrets:
+                if turret.get_turret_laser() != None:
+                    turret.get_turret_laser().draw()
+                turret.draw_scaled()
 
         self.player.draw()
 
@@ -406,7 +449,14 @@ class LethalGame(arcade.Window):
         self.process_keychange()
 
         # Move the player with the physics engine
-        self.physics_engine.update()
+        if self.is_outdoors:
+            self.loot_items = self.outdoor_loot_items
+            self.outdoor_physics_engine.update()
+        else:
+            self.loot_items = self.indoor_loot_items
+            self.indoor_physics_engine.update()
+
+
 
         # handle collisions - like this
         # item_hit_list = arcade.check_for_collision_with_list(
@@ -435,43 +485,74 @@ class LethalGame(arcade.Window):
             self.loot_items.append(temp_item)
 
         # Check if a player is on a mine
-        mine_hit_list = arcade.check_for_collision_with_list(self.player, self.mines)
-        if len(mine_hit_list) > 0:
-            for mine in mine_hit_list:
-                mine.arm_mine()
-                self.mines.remove(mine)
-                self.armed_mines.append(mine)
+        if not self.is_outdoors:
+            mine_hit_list = arcade.check_for_collision_with_list(self.player, self.mines)
+            if len(mine_hit_list) > 0:
+                for mine in mine_hit_list:
+                    mine.arm_mine()
+                    self.mines.remove(mine)
+                    self.armed_mines.append(mine)
 
-        # Decrease delay for armed mines not touching the player
-        for mine in self.armed_mines:
-            if not arcade.check_for_collision(self.player, mine):
-                mine.decrease_delay()
+            # Decrease delay for armed mines not touching the player
+            for mine in self.armed_mines:
+                if not arcade.check_for_collision(self.player, mine):
+                    mine.decrease_delay()
 
-        # Iterate through turrets and update
-        for turret in self.turrets:
-            turret.update_status(self.player, self.walls)
-            # Need to set this as a temporary variable, as these are wiped from turrets memory by getter
-            turret_bullets = turret.get_bullets()
-            if len(turret_bullets) > 0:
-                self.bullets.extend(turret_bullets)
+            # Iterate through turrets and update
+            for turret in self.turrets:
+                turret.update_status(self.player, self.indoor_walls)
+                # Need to set this as a temporary variable, as these are wiped from turrets memory by getter
+                turret_bullets = turret.get_bullets()
+                if len(turret_bullets) > 0:
+                    self.bullets.extend(turret_bullets)
 
-        # Check for bullet collisions with wall
-        for bullet in self.bullets:
-            bullet.update()
-            bullet_wall_list = arcade.check_for_collision_with_list(
-                bullet, self.walls
+            # Will have to change bullets if implement shotguns - allows bullets outside
+            # Check for bullet collisions with wall
+            for bullet in self.bullets:
+                bullet.update()
+                bullet_wall_list = arcade.check_for_collision_with_list(
+                    bullet, self.indoor_walls
+                )
+                if len(bullet_wall_list) > 0:
+                    self.bullets.remove(bullet)
+
+            # Check for bullet collisions with player, decrement health if hit
+            bullet_hit_list = arcade.check_for_collision_with_list(
+                self.player, self.bullets
             )
-            if len(bullet_wall_list) > 0:
+            for bullet in bullet_hit_list:
+                # remove from bullets
                 self.bullets.remove(bullet)
+                self.player.decrease_health(bullet.get_damage())
 
-        # Check for bullet collisions with player, decrement health if hit
-        bullet_hit_list = arcade.check_for_collision_with_list(
-            self.player, self.bullets
-        )
-        for bullet in bullet_hit_list:
-            # remove from bullets
-            self.bullets.remove(bullet)
-            self.player.decrease_health(bullet.get_damage())
+        # Check for collision with entrances (enter indoors if outside)
+        if self.is_outdoors and len(arcade.check_for_collision_with_list(self.player, self.outdoor_map["entrance"])) > 0:
+
+            if self.e_pressed:
+                if self.delay_main_enter_exit == 0:
+                    print("entered")
+                    self.is_outdoors = False
+                    self.delay_main_enter_exit = ENTER_EXIT_DELAY
+                    # Move player to indoors starting position
+                    self.player.center_x = self.indoor_main_position[0]
+                    self.player.center_y = self.indoor_main_position[1]
+                elif self.e_pressed:
+                    print("delaying")
+                    self.delay_main_enter_exit -= 1
+        # Exit if inside
+        elif arcade.check_for_collision(self.player, self.indoor_main_bounding_box):
+
+            if self.e_pressed:
+                if self.delay_main_enter_exit == 0:
+                    print("exitting")
+                    self.is_outdoors = True
+                    self.delay_main_enter_exit = ENTER_EXIT_DELAY
+                    # set player to outdoor main position
+                    self.player.center_x = self.outdoor_main_position[0]
+                    self.player.center_y = self.outdoor_main_position[1]
+                else:
+                    print("delaying")
+                    self.delay_main_enter_exit -= 1
 
         # Position the camera
         self.center_camera_to_player()

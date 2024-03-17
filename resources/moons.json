@@ -11,7 +11,14 @@
         "hazards": {
             "mines": [1,5],
             "turrets": [2,6]
-        }
+        },
+        "outdoor_tilemap": "resources/tilemaps/experimentation.tmx",
+        "outdoor_starting_position": [1600, 3750],
+        "outdoor_leave_main_position": [1760, 4448],
+        "indoor_power": 4,
+        "outdoor_power": 3,
+        "indoor_main_comp_spawn": {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"},
+        "indoor_main_image": {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/main_entrance.png"}
     },
     {
         "id": "titan",
@@ -25,7 +32,13 @@
         "hazards": {
             "mines": [20,48],
             "turrets": [20,35]
-        }
+        },
+        "outdoor_tilemap": "resources/tilemaps/experimentation.tmx",
+        "outdoor_starting_position": [500, 500],
+        "outdoor_leave_main_position": [1775, 4475],
+        "indoor_power": 4,
+        "outdoor_power": 3,
+        "indoor_main_comp_spawn": {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
     }
 ]
     
