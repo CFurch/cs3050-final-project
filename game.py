@@ -63,7 +63,6 @@ class LethalGame(arcade.Window):
 
         self.indoor_loot_items = None
         self.outdoor_loot_items = arcade.SpriteList()
-        self.loot_items = None
 
         self.mines = None
         self.armed_mines = None
@@ -184,6 +183,7 @@ class LethalGame(arcade.Window):
         # Draw the scene depending on indoors or outdoors
         if self.is_outdoors:
             self.outdoor_map.draw()
+            self.outdoor_loot_items.draw()
             # print("outdoors")
         else:
             # print("indoors")
@@ -204,7 +204,7 @@ class LethalGame(arcade.Window):
                     armed_mine.draw()
 
             # Draw loot after mines but before turrets
-            self.loot_items.draw()
+            self.indoor_loot_items.draw()
 
             # draw bullets and turrets at correct angles
             for bullet in self.bullets:
@@ -450,10 +450,10 @@ class LethalGame(arcade.Window):
 
         # Move the player with the physics engine
         if self.is_outdoors:
-            self.loot_items = self.outdoor_loot_items
+
             self.outdoor_physics_engine.update()
         else:
-            self.loot_items = self.indoor_loot_items
+
             self.indoor_physics_engine.update()
 
 
@@ -469,20 +469,35 @@ class LethalGame(arcade.Window):
                 self.player.get_pd_delay() == 0:
             # Since we can only populate the player's inventory slot with a single item,
             # we will only try with the first item
-            item_hit_list = arcade.check_for_collision_with_list(self.player, self.loot_items)
-            if len(item_hit_list) > 0:
-                temp_item = item_hit_list[0]
+            if self.is_outdoors:
+                # Check outdoor loot items
+                item_hit_list = arcade.check_for_collision_with_list(self.player, self.outdoor_loot_items)
+                if len(item_hit_list) > 0:
+                    temp_item = item_hit_list[0]
 
-                self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                self.loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
-                item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
+                    self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+                    self.outdoor_loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
+                    item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
+            else:
+                # Check indoor loot items
+                item_hit_list = arcade.check_for_collision_with_list(self.player, self.indoor_loot_items)
+                if len(item_hit_list) > 0:
+                    temp_item = item_hit_list[0]
+
+                    self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+                    self.indoor_loot_items.remove(
+                        item_hit_list[0])  # I'm not too sure how well this will work, have to try later
+                    item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
 
         # Handle checking if the player wants to drop items
+
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
                 self.player.get_pd_delay() == 0:
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
-            # Currently I will be including all of this, I'm not sure if we need to have both
-            self.loot_items.append(temp_item)
+            if self.is_outdoors:
+                self.outdoor_loot_items.append(temp_item)
+            else:
+                self.indoor_loot_items.append(temp_item)
 
         # Check if a player is on a mine
         if not self.is_outdoors:
