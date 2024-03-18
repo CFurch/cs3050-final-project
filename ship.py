@@ -27,13 +27,13 @@ class Ship(arcade.Sprite):
 
         # Interaction areas are handled in the tilemap
 
-        self.in_orbit = False
+        self.in_orbit = True # Ship starts in orbit
 
-        # Door movement
-        self.door_closed = False
+        # Door movement (starts shut with no battery drain)
+        self.door_closed = True
         self.door_sprite = None
         self.door_battery = MAX_DOOR_BATTERY
-        self.door_battery_drain = DOOR_BATTERY_DRAIN
+        self.door_battery_drain = 0
         self.interact_delay = 0
         # Need delay starting at max
         self.lever_delay = DELAY_INTERACTIONS
@@ -41,30 +41,37 @@ class Ship(arcade.Sprite):
         self.ship_loot = None
         self.total_loot_value = 0
 
+        self.player_interacting_with_terminal = False
+
     def setup(self):
         # Load tilemap
         self.tilemap = arcade.Scene.from_tilemap(arcade.load_tilemap("resources/tilemaps/ship.tmx"))
         # The door sprite
         self.door_sprite = arcade.Sprite("resources/wall_sprites/closed_door.png")
+        self.door_sprite.center_x += DOOR_SPRITE_X
+        self.door_sprite.center_y += DOOR_SPRITE_Y
         # The loot present on the ship
         self.ship_loot = arcade.SpriteList()
 
         return self
 
-    def update_position(self, x, y):
+    def update_position(self, delta_x, delta_y):
         # Update the position of the ship sprite
-        self.center_x = x
-        self.center_y = y
+        self.center_x += delta_x
+        self.center_y += delta_y
 
         # Update the position of each sprite within the tilemap
         for layer_name in SHIP_LAYER_NAMES:
             layer = self.tilemap[layer_name]
             for sprite in layer:
-                sprite.center_x += x
-                sprite.center_y += y
+                sprite.center_x += delta_x
+                sprite.center_y += delta_y
 
-        self.door_sprite.center_x = x + DOOR_SPRITE_X
-        self.door_sprite.center_y = y + DOOR_SPRITE_Y
+        self.door_sprite.center_x += delta_x
+        self.door_sprite.center_y += delta_y
+
+    def get_pos(self):
+        return self.center_x, self.center_y
 
     def draw_self(self, camera, gamestate):
         # Only draw the layers we want to have drawn - bounding boxes and interaction boxes aren't needed
@@ -135,7 +142,6 @@ class Ship(arcade.Sprite):
         elif arcade.check_for_collision_with_list(player, self.tilemap["lever"]):
             if self.lever_delay <= 0:
                 self.lever_delay = DELAY_INTERACTIONS
-                # possibly call self.change_orbit
                 # print("lever manip")
                 return SHIP_INTERACTION_OPTIONS["lever"]
             self.lever_delay -= DELAY_DRAIN
@@ -168,6 +174,14 @@ class Ship(arcade.Sprite):
             self.in_orbit = True
             self.door_battery_drain = 0
             self.door_closed = True
+
+    def interact_terminal(self):
+        """
+        This will handle terminal interaction, which will require a different UI than normal. However, this can be drawn
+        over the rest of the screen with some opacity. (like in game)
+        :return:
+        """
+        return ""
 
     def get_door(self):
         return self.door_closed

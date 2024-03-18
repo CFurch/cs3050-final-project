@@ -33,6 +33,7 @@ ENTER_EXIT_DELAY = 50
 
 # Game loop variables
 INITIAL_QUOTA = 130
+MAX_DAYS = 3
 
 TILE_SCALING = 0.5
 
@@ -51,6 +52,7 @@ class LethalGame(arcade.Window):
 
         # Initialize variables for spawning / map / other important variables
         self.gamestate = GAMESTATE_OPTIONS["orbit"]
+        self.moon_name = None
         self.indoor_map = None
         self.indoor_walls = None
         self.indoor_main_position = None
@@ -119,8 +121,10 @@ class LethalGame(arcade.Window):
         # https://lethal-company.fandom.com/wiki/Profit_Quota
         self.quota = INITIAL_QUOTA
         self.quotas_hit = 0
+        self.days_left = MAX_DAYS
 
-    def setup(self):
+    def setup(self, moons_name):
+        self.moon_name = moons_name
         # Set up the Camera
         self.camera = arcade.Camera(self.width, self.height)
 
@@ -128,7 +132,7 @@ class LethalGame(arcade.Window):
         # Ideally this would work using some sort of arcade.load_tilemap(map_name)
         # if we use this we need to use layers for the physics engine, otherwise add
         # all walls to the walls list
-        self.indoor_map = Map("experimentation") # Will update later based on start screen inputs
+        self.indoor_map = Map(self.moon_name) # Will update later based on start screen inputs
         self.indoor_map.setup()
 
         # get the walls from the map
@@ -194,10 +198,12 @@ class LethalGame(arcade.Window):
         )
         self.ship_physics_engine.gravity_constant = 0
 
-        self.gamestate = GAMESTATE_OPTIONS["outdoors"] # Change once ship implemented
+        # self.gamestate = GAMESTATE_OPTIONS["outdoors"] # Change once ship implemented
 
-        # Also change this
-        self.ship.update_position(self.outdoor_starting_position[0] - 64, self.outdoor_starting_position[1] - 128)
+        # Ship update position uses delta_x and y
+        ship_position = self.ship.get_pos()
+        self.ship.update_position(self.outdoor_starting_position[0] - 64 - ship_position[0],
+                                  self.outdoor_starting_position[1] - 128 - ship_position[1])
 
     def on_draw(self):
         """
@@ -484,7 +490,7 @@ class LethalGame(arcade.Window):
         """Movement and game logic"""
         # Handle dead state, reload ship with no loot items
         # if self.player.get_health() == 0:
-
+        print(self.gamestate)
         # Process movement based on keys
         self.process_keychange()
 
@@ -502,9 +508,18 @@ class LethalGame(arcade.Window):
             # Interact with the ship
             if self.e_pressed:
                 ship_action = self.ship.interact_ship(self.player)
+                # The following is changing from landing to orbit
                 if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
                     self.gamestate = GAMESTATE_OPTIONS["orbit"]
                     self.ship.change_orbit()
+                    # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+                    self.days_left -= 1
+                    if self.days_left < 0:
+                        # Tushar: game over screen
+                        pass
+                        # reset the game by exitting to the outer game loop and starting over from start screen
+                elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
+                    self.ship.interact_terminal()
         elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
             self.indoor_physics_engine.update()
         elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
@@ -519,6 +534,9 @@ class LethalGame(arcade.Window):
                 if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
                     self.gamestate = GAMESTATE_OPTIONS["outdoors"]
                     self.ship.change_orbit()
+                    # Setup and generate the new map (maybe show a loading screen before this and remove it after done)
+                    # Like in game
+                    self.setup(self.moon_name)
 
         # handle collisions - like this
         # item_hit_list = arcade.check_for_collision_with_list(
@@ -656,10 +674,9 @@ def main():
     Main function
     """
 
-
     # Initialize game and begin runtime
     window = LethalGame()
-    window.setup()
+    window.setup("experimentation")
     arcade.run()
 
 

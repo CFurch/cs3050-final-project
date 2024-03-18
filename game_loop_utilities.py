@@ -18,9 +18,8 @@ def increase_quota(current_quota, quotas_fulfilled):
     random_choice = np.random.choice(randomizer_curve, 1)
     next_quota = current_quota + 100 * (1 + quotas_fulfilled ** 2 / 16) * (random_choice + 1)
 
-    print(next_quota)
-
-    # Plot the curve
+    # Code to plot the curve
+    """
     plt.figure(figsize=(8, 6))
     plt.hist(randomizer_curve, bins=30, density=True, color='skyblue', edgecolor='black', alpha=0.7)
     plt.title('Randomizer Curve')
@@ -28,6 +27,8 @@ def increase_quota(current_quota, quotas_fulfilled):
     plt.ylabel('Frequency')
     plt.grid(True)
     plt.show()
+    """
+    return next_quota
 
 
 def generate_randomizer_curve(size):
