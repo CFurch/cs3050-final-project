@@ -10,6 +10,7 @@ DOOR_SPRITE_Y = 248
 SHIP_LAYER_NAMES = ["walls", "background", "door_control", "lever", "terminal"]
 DELAY_INTERACTIONS = 5
 DELAY_DRAIN = 0.1
+SHIP_INTERACTION_OPTIONS = {"lever": 0, "door": 1, "terminal": 2}
 
 
 class Ship(arcade.Sprite):
@@ -81,7 +82,9 @@ class Ship(arcade.Sprite):
 
     def interact_ship(self, player):
         """
-        This function has to do with interaction between the player and things on the ship
+        This function has to do with interaction between the player and things on the ship.
+        Having the delays in here makes it so that player interaction using the "e" key
+        makes delays only happen when the player is interacting. In practice this is honestly fine.
         :param player: PlayerCharacter object
         :return: String, result of interaction
         """
@@ -95,20 +98,20 @@ class Ship(arcade.Sprite):
                     self.door_closed = not self.door_closed
                 else:
                     self.door_closed = True
-                return "door"
+                return SHIP_INTERACTION_OPTIONS["door"]
             self.interact_delay -= DELAY_DRAIN
         elif arcade.check_for_collision_with_list(player, self.tilemap["lever"]):
             if self.lever_delay <= 0:
                 self.lever_delay = DELAY_INTERACTIONS
                 # possibly call self.change_orbit
                 # print("lever manip")
-                return "lever"
+                return SHIP_INTERACTION_OPTIONS["lever"]
             self.lever_delay -= DELAY_DRAIN
         elif arcade.check_for_collision_with_list(player, self.tilemap["terminal"]):
             if self.interact_delay <= 0:
                 self.interact_delay = DELAY_INTERACTIONS
                 # print("terminal manip")
-                return "terminal"
+                return SHIP_INTERACTION_OPTIONS["terminal"]
             self.interact_delay -= DELAY_DRAIN
 
     def update_ship(self):
@@ -128,9 +131,12 @@ class Ship(arcade.Sprite):
         if self.in_orbit:
             self.in_orbit = False
             self.door_battery_drain = DOOR_BATTERY_DRAIN
+            self.door_closed = False
         else:
             self.in_orbit = True
             self.door_battery_drain = 0
+            self.door_closed = True
+
 
     def get_door(self):
         return self.door_closed

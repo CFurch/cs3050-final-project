@@ -31,6 +31,9 @@ SPRINT_DELAY = 30
 ENTER_EXIT_DELAY = 50
 
 GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2}
+SHIP_INTERACTION_OPTIONS = {"lever": 0, "door": 1, "terminal": 2}
+
+TILE_SCALING = 0.5
 
 
 class LethalGame(arcade.Window):
@@ -209,8 +212,8 @@ class LethalGame(arcade.Window):
             self.ship.draw_self()
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
-            self.outdoor_loot_items.draw()
             self.ship.draw_self()
+            self.outdoor_loot_items.draw()
             # print("outdoors")
         else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
             # print("indoors")
@@ -334,6 +337,10 @@ class LethalGame(arcade.Window):
             # Diagonal movement
             diagonal_speed = self.player.get_movement_speed() * (2 ** 0.5) / 2  # Movement speed for diagonal movement
             self.player.set_movement_speed(diagonal_speed)
+
+        # Adjust speed for outdoors (since for some reason this is twice the speed of orbit and indoors
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+            self.player.set_movement_speed(self.player.get_movement_speed() / 2)
 
         # Account for weight
         if self.player.get_weight() != 0:
@@ -478,23 +485,34 @@ class LethalGame(arcade.Window):
         # Move the player with the physics engine
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_physics_engine.update()
-            self.ship_physics_engine.update()
             self.ship.update_ship()
             # This method will auto-update physics engine for if door is open or shut
             self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
                 self.player, self.ship.get_walls()
             )
             self.ship_physics_engine.gravity_constant = 0
+            self.ship_physics_engine.update()
 
             # Interact with the ship
             if self.e_pressed:
-                self.ship.interact_ship(self.player)
+                ship_action = self.ship.interact_ship(self.player)
+                if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
+                    self.gamestate = GAMESTATE_OPTIONS["orbit"]
+                    self.ship.change_orbit()
         elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
             self.indoor_physics_engine.update()
         elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
+            # This method will auto-update physics engine for if door is open or shut
+            self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
+                self.player, self.ship.get_walls()
+            )
+            self.ship_physics_engine.gravity_constant = 0
             self.ship_physics_engine.update()
             if self.e_pressed:
-                self.ship.interact_ship(self.player)
+                ship_action = self.ship.interact_ship(self.player)
+                if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
+                    self.gamestate = GAMESTATE_OPTIONS["outdoors"]
+                    self.ship.change_orbit()
 
         # handle collisions - like this
         # item_hit_list = arcade.check_for_collision_with_list(
@@ -586,23 +604,23 @@ class LethalGame(arcade.Window):
                     self.gamestate = GAMESTATE_OPTIONS["indoors"]
                     self.delay_main_enter_exit = ENTER_EXIT_DELAY
                     # Move player to indoors starting position
-                    self.player.center_x = self.indoor_main_position[0]
+                    self.player.center_x = self.indoor_main_position[0] - 64
                     self.player.center_y = self.indoor_main_position[1]
                 elif self.e_pressed:
                     self.delay_main_enter_exit -= 1
         # Exit if inside
-        elif arcade.check_for_collision(self.player, self.indoor_main_bounding_box):
+        elif self.gamestate == GAMESTATE_OPTIONS["indoors"] and arcade.check_for_collision(self.player, self.indoor_main_bounding_box):
 
             if self.e_pressed:
                 if self.delay_main_enter_exit == 0:
-                    print("exitting")
+                    # print("exitting")
                     self.gamestate = GAMESTATE_OPTIONS["outdoors"]
                     self.delay_main_enter_exit = ENTER_EXIT_DELAY
                     # set player to outdoor main position
                     self.player.center_x = self.outdoor_main_position[0]
                     self.player.center_y = self.outdoor_main_position[1]
                 else:
-                    print("delaying")
+                    # print("delaying")
                     self.delay_main_enter_exit -= 1
 
         # Position the camera
