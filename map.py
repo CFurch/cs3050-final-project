@@ -2,13 +2,14 @@ import arcade
 import random
 import json
 from room import Room
+import time
 
 ROOM_SIZE = 256
 HALF_ROOM_SIZE = 128
 MAP_SIZE = 10
 
 class Map(arcade.Sprite):
-    def __init__(self, moon_id, seed=random.randrange(0,2**31-1)):
+    def __init__(self, moon_id, seed=0):
         """
         takes moon_id and optional seed and prepares data for setup
         """
@@ -27,7 +28,9 @@ class Map(arcade.Sprite):
         self.hazard_quantity = []
         self.mines = None
         self.turrets = None
-        self.seed = seed
+        # previous seed: random.randrange(0,2**31-1)
+        self.seed = XORshift(int(time.time()))
+
         random.seed(self.seed)
 
         # grab all moon_data from file
@@ -338,3 +341,17 @@ def gen_dfs_maze(map_size, seed):
     maze[start_x][start_y] = str(int(maze[start_x][start_y]) + 1).zfill(4)
 
     return starting_node, maze
+
+
+def XORshift(state):
+    """
+    This is for producing a random state
+    :param state:
+    :return:
+    """
+    x = state
+    x ^= (x << 13) & 0xFFFFFFFF
+    x ^= (x >> 17) & 0xFFFFFFFF
+    x ^= (x << 5) & 0xFFFFFFFF
+    return x
+
