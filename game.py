@@ -525,43 +525,19 @@ class LethalGame(arcade.Window):
             # First, check to see if the player is in the ship (functions for orbit and outdoors)
             if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
                 # Check ship loot items
-                item_hit_list = arcade.check_for_collision_with_list(self.player, self.ship.get_loot())
-                if len(item_hit_list) > 0:
-                    temp_item = item_hit_list[0]
+                self.ship.set_loot(self.check_player_list_collision(self.ship.get_loot()))
 
-                    self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                    self.ship.remove_item(
-                        item_hit_list[0])  # I'm not too sure how well this will work, have to try later
-                    item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
             else:
                 if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
                     # Check outdoor loot items
-                    item_hit_list = arcade.check_for_collision_with_list(self.player, self.outdoor_loot_items)
-                    if len(item_hit_list) > 0:
-                        temp_item = item_hit_list[0]
+                    self.outdoor_loot_items = self.check_player_list_collision(self.outdoor_loot_items)
 
-                        self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                        self.outdoor_loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
-                        item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
                     # also check for collision with ship
-                    item_hit_list = arcade.check_for_collision_with_list(self.player, self.ship.get_loot())
-                    if len(item_hit_list) > 0:
-                        temp_item = item_hit_list[0]
-
-                        self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                        self.ship.remove_item(
-                            item_hit_list[0])  # I'm not too sure how well this will work, have to try later
-                        item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
+                    self.ship.set_loot(self.check_player_list_collision(self.ship.get_loot()))
                 else:
                     # Check indoor loot items
-                    item_hit_list = arcade.check_for_collision_with_list(self.player, self.indoor_loot_items)
-                    if len(item_hit_list) > 0:
-                        temp_item = item_hit_list[0]
+                    self.indoor_loot_items = self.check_player_list_collision(self.indoor_loot_items)
 
-                        self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                        self.indoor_loot_items.remove(
-                            item_hit_list[0])  # I'm not too sure how well this will work, have to try later
-                        item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
 
         # Handle checking if the player wants to drop items
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
@@ -649,6 +625,22 @@ class LethalGame(arcade.Window):
         # Position the camera
         self.center_camera_to_player()
 
+    def check_player_list_collision(self, check_list):
+        """
+        :param check_list: List to check
+        :return: the list
+        """
+        item_hit_list = arcade.check_for_collision_with_list(self.player, check_list)
+        if len(item_hit_list) > 0:
+            temp_item = item_hit_list[0]
+
+            self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+            check_list.remove(
+                item_hit_list[0])  # I'm not too sure how well this will work, have to try later
+            item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
+        if check_list is None:
+            return arcade.SpriteList()
+        return check_list
 
 def main():
     """

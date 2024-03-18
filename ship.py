@@ -171,3 +171,6 @@ class Ship(arcade.Sprite):
 
     def get_loot(self):
         return self.ship_loot
+
+    def set_loot(self, spritelist):
+        self.ship_loot = spritelist
