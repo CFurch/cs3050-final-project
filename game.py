@@ -12,10 +12,11 @@ from map import Map
 from player import PlayerCharacter
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
-from ship import Ship, SCREEN_HEIGHT, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
+from ship import Ship, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
 
 # Constants
 SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 650
 
 SCREEN_TITLE = "2D Lethal Company"
 
@@ -29,6 +30,9 @@ SPRINT_DELAY = 30
 
 # delay for entering and leaving building
 ENTER_EXIT_DELAY = 50
+
+# Game loop variables
+INITIAL_QUOTA = 130
 
 TILE_SCALING = 0.5
 
@@ -110,6 +114,11 @@ class LethalGame(arcade.Window):
         # Set power levels - has to do with spawning mechanics
         self.indoor_power = None  # experimentation-40 levels
         self.outdoor_power = None
+
+        # Game loop settings - some of these are off of the given ones from the wiki
+        # https://lethal-company.fandom.com/wiki/Profit_Quota
+        self.quota = INITIAL_QUOTA
+        self.quotas_hit = 0
 
     def setup(self):
         # Set up the Camera

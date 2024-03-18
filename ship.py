@@ -15,6 +15,7 @@ GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2}
 SHIP_INTERACTION_OPTIONS = {"lever": 0, "door": 1, "terminal": 2}
 SCREEN_HEIGHT = 650
 
+
 class Ship(arcade.Sprite):
     def __init__(self):
         """
@@ -93,6 +94,8 @@ class Ship(arcade.Sprite):
     def remove_item(self, item):
         self.ship_loot.remove(item)
         self.total_loot_value -= item.get_value()
+        if self.total_loot_value < 0:
+            self.total_loot_value = 0
 
     def get_walls(self):
         # Create a SpriteList containing the walls
