@@ -21,7 +21,7 @@ class PlayerCharacter(arcade.Sprite):
         self.movement_speed = None
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
-        self.texture = arcade.load_texture("resources/player_sprites/player_sprite_temp.png")
+        self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
 
         # Block pickup if player is just dropped something or just picked something up
         self.pickup_drop_delay = 0

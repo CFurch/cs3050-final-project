@@ -12,6 +12,7 @@ from map import Map
 from player import PlayerCharacter
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
+from ship import Ship
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -29,6 +30,8 @@ SPRINT_DELAY = 30
 # delay for entering and leaving building
 ENTER_EXIT_DELAY = 50
 
+GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2}
+
 
 class LethalGame(arcade.Window):
     """
@@ -43,13 +46,15 @@ class LethalGame(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
         # Initialize variables for spawning / map / other important variables
-        self.is_outdoors = True
+        self.gamestate = GAMESTATE_OPTIONS["orbit"]
         self.indoor_map = None
         self.indoor_walls = None
         self.indoor_main_position = None
         self.indoor_main_bounding_box = None
         self.outdoor_starting_position = None
         self.outdoor_main_position = None
+
+        self.ship = Ship().setup()
 
         self.outdoor_map = None
         self.outdoor_walls = None
@@ -68,8 +73,10 @@ class LethalGame(arcade.Window):
         self.armed_mines = None
         self.turrets = None
         self.bullets = None
+
         self.indoor_physics_engine = None
         self.outdoor_physics_engine = None
+        self.ship_physics_engine = None
 
         # GUI variables
         self.camera = None
@@ -138,6 +145,8 @@ class LethalGame(arcade.Window):
         # Add logic for starting location of player (from outdoors)
         self.player.center_x = self.outdoor_starting_position[0]
         self.player.center_y = self.outdoor_starting_position[1]
+        # self.player.center_x = -20
+        # self.player.center_y = -20
         self.player.set_movement_speed(BASE_MOVEMENT_SPEED)  # speed is pixels per frame
 
         self.inventory_hud = arcade.SpriteList()
@@ -170,6 +179,17 @@ class LethalGame(arcade.Window):
         )
         self.outdoor_physics_engine.gravity_constant = 0
 
+        # Separate physics engine for teh ship - can be used outdoors and in orbit
+        self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.ship.get_walls()
+        )
+        self.ship_physics_engine.gravity_constant = 0
+
+        self.gamestate = GAMESTATE_OPTIONS["outdoors"] # Change once ship implemented
+
+        # Also change this
+        self.ship.update_position(self.outdoor_starting_position[0] - 64, self.outdoor_starting_position[1] - 128)
+
     def on_draw(self):
         """
         Render the screen
@@ -180,12 +200,19 @@ class LethalGame(arcade.Window):
         # Start the camera
         self.camera.use()
 
+        """
+        FUTURE: May need to add another state for landing, to animate the ship
+        """
+
         # Draw the scene depending on indoors or outdoors
-        if self.is_outdoors:
+        if self.gamestate == GAMESTATE_OPTIONS["orbit"]:
+            self.ship.draw_self()
+        elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
             self.outdoor_loot_items.draw()
+            self.ship.draw_self()
             # print("outdoors")
-        else:
+        else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
             # print("indoors")
             self.indoor_walls.draw()
             for mine in self.mines:
@@ -449,14 +476,25 @@ class LethalGame(arcade.Window):
         self.process_keychange()
 
         # Move the player with the physics engine
-        if self.is_outdoors:
-
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_physics_engine.update()
-        else:
+            self.ship_physics_engine.update()
+            self.ship.update_ship()
+            # This method will auto-update physics engine for if door is open or shut
+            self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
+                self.player, self.ship.get_walls()
+            )
+            self.ship_physics_engine.gravity_constant = 0
 
+            # Interact with the ship
+            if self.e_pressed:
+                self.ship.interact_ship(self.player)
+        elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
             self.indoor_physics_engine.update()
-
-
+        elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
+            self.ship_physics_engine.update()
+            if self.e_pressed:
+                self.ship.interact_ship(self.player)
 
         # handle collisions - like this
         # item_hit_list = arcade.check_for_collision_with_list(
@@ -469,7 +507,7 @@ class LethalGame(arcade.Window):
                 self.player.get_pd_delay() == 0:
             # Since we can only populate the player's inventory slot with a single item,
             # we will only try with the first item
-            if self.is_outdoors:
+            if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
                 # Check outdoor loot items
                 item_hit_list = arcade.check_for_collision_with_list(self.player, self.outdoor_loot_items)
                 if len(item_hit_list) > 0:
@@ -494,13 +532,13 @@ class LethalGame(arcade.Window):
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
                 self.player.get_pd_delay() == 0:
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
-            if self.is_outdoors:
+            if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
                 self.outdoor_loot_items.append(temp_item)
             else:
                 self.indoor_loot_items.append(temp_item)
 
         # Check if a player is on a mine
-        if not self.is_outdoors:
+        if self.gamestate == GAMESTATE_OPTIONS["indoors"]:
             mine_hit_list = arcade.check_for_collision_with_list(self.player, self.mines)
             if len(mine_hit_list) > 0:
                 for mine in mine_hit_list:
@@ -541,18 +579,16 @@ class LethalGame(arcade.Window):
                 self.player.decrease_health(bullet.get_damage())
 
         # Check for collision with entrances (enter indoors if outside)
-        if self.is_outdoors and len(arcade.check_for_collision_with_list(self.player, self.outdoor_map["entrance"])) > 0:
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"] and len(arcade.check_for_collision_with_list(self.player, self.outdoor_map["entrance"])) > 0:
 
             if self.e_pressed:
                 if self.delay_main_enter_exit == 0:
-                    print("entered")
-                    self.is_outdoors = False
+                    self.gamestate = GAMESTATE_OPTIONS["indoors"]
                     self.delay_main_enter_exit = ENTER_EXIT_DELAY
                     # Move player to indoors starting position
                     self.player.center_x = self.indoor_main_position[0]
                     self.player.center_y = self.indoor_main_position[1]
                 elif self.e_pressed:
-                    print("delaying")
                     self.delay_main_enter_exit -= 1
         # Exit if inside
         elif arcade.check_for_collision(self.player, self.indoor_main_bounding_box):
@@ -560,7 +596,7 @@ class LethalGame(arcade.Window):
             if self.e_pressed:
                 if self.delay_main_enter_exit == 0:
                     print("exitting")
-                    self.is_outdoors = True
+                    self.gamestate = GAMESTATE_OPTIONS["outdoors"]
                     self.delay_main_enter_exit = ENTER_EXIT_DELAY
                     # set player to outdoor main position
                     self.player.center_x = self.outdoor_main_position[0]

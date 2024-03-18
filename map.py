@@ -48,7 +48,7 @@ class Map(arcade.Sprite):
                 self.outdoor_starting_position = moon.get("outdoor_starting_position", [])
                 self.indoor_power = moon.get("indoor_power", int)
                 self.outdoor_power = moon.get("outdoor_power", int)
-                self.indoor_main_entrance_sprite = moon.get("indoor_main_comp_spawn", {})
+                self.indoor_main_entrance_sprite = moon.get("indoor_main_hit_box", {})
                 self.indoor_main_entrance_image = moon.get("indoor_main_image", {})
                 self.outdoor_leave_position = moon.get("outdoor_leave_main_position", [])
 
