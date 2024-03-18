@@ -490,7 +490,6 @@ class LethalGame(arcade.Window):
         """Movement and game logic"""
         # Handle dead state, reload ship with no loot items
         # if self.player.get_health() == 0:
-        print(self.gamestate)
         # Process movement based on keys
         self.process_keychange()
 
