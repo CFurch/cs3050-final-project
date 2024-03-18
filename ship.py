@@ -2,6 +2,7 @@ import arcade
 import random
 import json
 from player import PlayerCharacter
+from item import Item
 
 MAX_DOOR_BATTERY = 100
 DOOR_BATTERY_DRAIN = 0.2
@@ -10,8 +11,9 @@ DOOR_SPRITE_Y = 248
 SHIP_LAYER_NAMES = ["walls", "background", "door_control", "lever", "terminal"]
 DELAY_INTERACTIONS = 5
 DELAY_DRAIN = 0.1
+GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2}
 SHIP_INTERACTION_OPTIONS = {"lever": 0, "door": 1, "terminal": 2}
-
+SCREEN_HEIGHT = 650
 
 class Ship(arcade.Sprite):
     def __init__(self):
@@ -35,10 +37,16 @@ class Ship(arcade.Sprite):
         # Need delay starting at max
         self.lever_delay = DELAY_INTERACTIONS
 
+        self.ship_loot = None
+        self.total_loot_value = 0
+
     def setup(self):
         # Load tilemap
         self.tilemap = arcade.Scene.from_tilemap(arcade.load_tilemap("resources/tilemaps/ship.tmx"))
+        # The door sprite
         self.door_sprite = arcade.Sprite("resources/wall_sprites/closed_door.png")
+        # The loot present on the ship
+        self.ship_loot = arcade.SpriteList()
 
         return self
 
@@ -57,7 +65,7 @@ class Ship(arcade.Sprite):
         self.door_sprite.center_x = x + DOOR_SPRITE_X
         self.door_sprite.center_y = y + DOOR_SPRITE_Y
 
-    def draw_self(self):
+    def draw_self(self, camera, gamestate):
         # Only draw the layers we want to have drawn - bounding boxes and interaction boxes aren't needed
         self.tilemap["background"].draw()
         self.tilemap["walls"].draw()
@@ -68,6 +76,23 @@ class Ship(arcade.Sprite):
         # Draw the door if it is closed
         if self.door_closed:
             self.door_sprite.draw()
+
+        # Draw ship loot
+        self.ship_loot.draw()
+
+        # Draw the amount of loot onto the hud if in orbit
+        if gamestate == GAMESTATE_OPTIONS["orbit"]:
+            text_x = camera.position[0] + 20
+            text_y = camera.position[1] + SCREEN_HEIGHT - 30
+            arcade.draw_text(f"Total ship loot: {self.total_loot_value}", text_x, text_y - 210, arcade.csscolor.GREEN, 18)
+
+    def add_item(self, item):
+        self.ship_loot.append(item)
+        self.total_loot_value += item.get_value()
+
+    def remove_item(self, item):
+        self.ship_loot.remove(item)
+        self.total_loot_value -= item.get_value()
 
     def get_walls(self):
         # Create a SpriteList containing the walls
@@ -80,12 +105,16 @@ class Ship(arcade.Sprite):
 
         return wall_list
 
+    def get_background_hitbox(self):
+        return self.tilemap["background"]
+
     def interact_ship(self, player):
         """
         This function has to do with interaction between the player and things on the ship.
         Having the delays in here makes it so that player interaction using the "e" key
         makes delays only happen when the player is interacting. In practice this is honestly fine.
         :param player: PlayerCharacter object
+        :param camera: Camera object to draw onto hud
         :return: String, result of interaction
         """
 
@@ -137,6 +166,8 @@ class Ship(arcade.Sprite):
             self.door_battery_drain = 0
             self.door_closed = True
 
-
     def get_door(self):
         return self.door_closed
+
+    def get_loot(self):
+        return self.ship_loot

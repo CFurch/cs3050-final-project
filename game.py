@@ -12,11 +12,11 @@ from map import Map
 from player import PlayerCharacter
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
-from ship import Ship
+from ship import Ship, SCREEN_HEIGHT, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
 
 # Constants
 SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 650
+
 SCREEN_TITLE = "2D Lethal Company"
 
 # Starting location of the player, and movement constants
@@ -29,9 +29,6 @@ SPRINT_DELAY = 30
 
 # delay for entering and leaving building
 ENTER_EXIT_DELAY = 50
-
-GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2}
-SHIP_INTERACTION_OPTIONS = {"lever": 0, "door": 1, "terminal": 2}
 
 TILE_SCALING = 0.5
 
@@ -209,10 +206,10 @@ class LethalGame(arcade.Window):
 
         # Draw the scene depending on indoors or outdoors
         if self.gamestate == GAMESTATE_OPTIONS["orbit"]:
-            self.ship.draw_self()
+            self.ship.draw_self(self.camera, self.gamestate)
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
-            self.ship.draw_self()
+            self.ship.draw_self(self.camera, self.gamestate)
             self.outdoor_loot_items.draw()
             # print("outdoors")
         else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
@@ -525,33 +522,59 @@ class LethalGame(arcade.Window):
                 self.player.get_pd_delay() == 0:
             # Since we can only populate the player's inventory slot with a single item,
             # we will only try with the first item
-            if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
-                # Check outdoor loot items
-                item_hit_list = arcade.check_for_collision_with_list(self.player, self.outdoor_loot_items)
+            # First, check to see if the player is in the ship (functions for orbit and outdoors)
+            if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
+                # Check ship loot items
+                item_hit_list = arcade.check_for_collision_with_list(self.player, self.ship.get_loot())
                 if len(item_hit_list) > 0:
                     temp_item = item_hit_list[0]
 
                     self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                    self.outdoor_loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
-                    item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
-            else:
-                # Check indoor loot items
-                item_hit_list = arcade.check_for_collision_with_list(self.player, self.indoor_loot_items)
-                if len(item_hit_list) > 0:
-                    temp_item = item_hit_list[0]
-
-                    self.player.add_item(self.player.get_current_inv_slot(), temp_item)
-                    self.indoor_loot_items.remove(
+                    self.ship.remove_item(
                         item_hit_list[0])  # I'm not too sure how well this will work, have to try later
                     item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
+            else:
+                if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+                    # Check outdoor loot items
+                    item_hit_list = arcade.check_for_collision_with_list(self.player, self.outdoor_loot_items)
+                    if len(item_hit_list) > 0:
+                        temp_item = item_hit_list[0]
+
+                        self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+                        self.outdoor_loot_items.remove(item_hit_list[0]) # I'm not too sure how well this will work, have to try later
+                        item_hit_list[0].remove_from_sprite_lists() # remove from sprite list too
+                    # also check for collision with ship
+                    item_hit_list = arcade.check_for_collision_with_list(self.player, self.ship.get_loot())
+                    if len(item_hit_list) > 0:
+                        temp_item = item_hit_list[0]
+
+                        self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+                        self.ship.remove_item(
+                            item_hit_list[0])  # I'm not too sure how well this will work, have to try later
+                        item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
+                else:
+                    # Check indoor loot items
+                    item_hit_list = arcade.check_for_collision_with_list(self.player, self.indoor_loot_items)
+                    if len(item_hit_list) > 0:
+                        temp_item = item_hit_list[0]
+
+                        self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+                        self.indoor_loot_items.remove(
+                            item_hit_list[0])  # I'm not too sure how well this will work, have to try later
+                        item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
 
         # Handle checking if the player wants to drop items
-
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
                 self.player.get_pd_delay() == 0:
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
             if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
-                self.outdoor_loot_items.append(temp_item)
+                # Only add to the ship list if the player is interacting with the ship
+                if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
+                    self.ship.add_item(temp_item)
+                else:
+                    self.outdoor_loot_items.append(temp_item)
+            elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
+                self.ship.add_item(temp_item)
             else:
                 self.indoor_loot_items.append(temp_item)
 

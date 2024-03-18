@@ -87,3 +87,6 @@ class Item(arcade.Sprite):
         switch self.texture from inventory to map
         """
         self.texture = arcade.load_texture(self.texture_map)
+
+    def get_value(self):
+        return self.value
