@@ -147,6 +147,7 @@ class Ship(arcade.Sprite):
             self.lever_delay -= DELAY_DRAIN
         elif arcade.check_for_collision_with_list(player, self.tilemap["terminal"]):
             if self.interact_delay <= 0:
+                # Set the player to be interacting with the terminal
                 self.interact_delay = DELAY_INTERACTIONS
                 # print("terminal manip")
                 return SHIP_INTERACTION_OPTIONS["terminal"]
@@ -179,6 +180,7 @@ class Ship(arcade.Sprite):
         """
         This will handle terminal interaction, which will require a different UI than normal. However, this can be drawn
         over the rest of the screen with some opacity. (like in game)
+        This handles inputs from user for things like the moons, etc. This functions as a very simple parser
         :return:
         """
         return ""

@@ -518,6 +518,7 @@ class LethalGame(arcade.Window):
                         pass
                         # reset the game by exitting to the outer game loop and starting over from start screen
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
+                    # This will handle inputs and drawing new stuff
                     self.ship.interact_terminal()
         elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
             self.indoor_physics_engine.update()

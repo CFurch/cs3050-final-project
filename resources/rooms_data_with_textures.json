@@ -19,7 +19,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1000": {
@@ -34,13 +34,13 @@
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
         "item_spawn_areas": [
-          {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
+          {"center_x": 0, "center_y": 0, "width": 96, "height": 96}
         ],
         "spawner_locations": [
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0100": {
@@ -61,7 +61,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0010": {
@@ -82,7 +82,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0001": {
@@ -103,7 +103,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1100": {
@@ -123,7 +123,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0110": {
@@ -143,7 +143,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0011": {
@@ -163,7 +163,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1001": {
@@ -183,7 +183,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1010": {
@@ -203,7 +203,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0101": {
@@ -225,7 +225,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1110": {
@@ -244,7 +244,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1101": {
@@ -263,7 +263,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1011": {
@@ -282,7 +282,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "0111": {
@@ -301,7 +301,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       },
       "1111": {
@@ -318,7 +318,7 @@
           {"x": 0, "y": 0}
         ],
         "hazard_spawn_locations": [
-          {"x":  0, "y": 0, "width": 128, "height":  128}
+          {"x":  0, "y": 0, "width": 96, "height":  96}
         ]
       }
     }
