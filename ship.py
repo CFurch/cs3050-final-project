@@ -58,8 +58,8 @@ class Ship(arcade.Sprite):
 
     def draw_self(self):
         # Only draw the layers we want to have drawn - bounding boxes and interaction boxes aren't needed
-        self.tilemap["walls"].draw()
         self.tilemap["background"].draw()
+        self.tilemap["walls"].draw()
         # These will be removed later but here for debugging temporarily
         self.tilemap["door_control"].draw()
         self.tilemap["lever"].draw()
@@ -89,7 +89,7 @@ class Ship(arcade.Sprite):
         if arcade.check_for_collision_with_list(player, self.tilemap["door_control"]):
             if self.interact_delay <= 0:
                 self.interact_delay = DELAY_INTERACTIONS
-                print("door controls manip")
+                # print("door controls manip")
                 # reverse door state, if not in orbit
                 if not self.in_orbit:
                     self.door_closed = not self.door_closed
@@ -101,13 +101,13 @@ class Ship(arcade.Sprite):
             if self.lever_delay <= 0:
                 self.lever_delay = DELAY_INTERACTIONS
                 # possibly call self.change_orbit
-                print("lever manip")
+                # print("lever manip")
                 return "lever"
             self.lever_delay -= DELAY_DRAIN
         elif arcade.check_for_collision_with_list(player, self.tilemap["terminal"]):
             if self.interact_delay <= 0:
                 self.interact_delay = DELAY_INTERACTIONS
-                print("terminal manip")
+                # print("terminal manip")
                 return "terminal"
             self.interact_delay -= DELAY_DRAIN
 
