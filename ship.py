@@ -70,6 +70,10 @@ class Ship(arcade.Sprite):
         self.door_sprite.center_x += delta_x
         self.door_sprite.center_y += delta_y
 
+        for item in self.ship_loot:
+            item.center_x += delta_x
+            item.center_y += delta_y
+
     def get_pos(self):
         return self.center_x, self.center_y
 

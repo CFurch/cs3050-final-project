@@ -580,16 +580,20 @@ class LethalGame(arcade.Window):
             # First, check to see if the player is in the ship (functions for orbit and outdoors)
             if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
                 # Check ship loot items
-                self.ship.set_loot(self.check_player_list_collision(self.ship.get_loot()))
+                item_hit_list = arcade.check_for_collision_with_list(self.player, self.ship.get_loot())
+                if len(item_hit_list) > 0:
+                    temp_item = item_hit_list[0]
+
+                    self.player.add_item(self.player.get_current_inv_slot(), temp_item)
+                    self.ship.remove_item(temp_item)
+                    item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
 
             else:
                 if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
                     # Check outdoor loot items
                     self.outdoor_loot_items = self.check_player_list_collision(self.outdoor_loot_items)
 
-                    # also check for collision with ship
-                    self.ship.set_loot(self.check_player_list_collision(self.ship.get_loot()))
-                else:
+                elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
                     # Check indoor loot items
                     self.indoor_loot_items = self.check_player_list_collision(self.indoor_loot_items)
 
@@ -652,7 +656,6 @@ class LethalGame(arcade.Window):
 
         # Check for collision with entrances (enter indoors if outside)
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"] and len(arcade.check_for_collision_with_list(self.player, self.outdoor_map["entrance"])) > 0:
-
             if self.e_pressed:
                 if self.delay_main_enter_exit == 0:
                     self.gamestate = GAMESTATE_OPTIONS["indoors"]
@@ -664,7 +667,6 @@ class LethalGame(arcade.Window):
                     self.delay_main_enter_exit -= 1
         # Exit if inside
         elif self.gamestate == GAMESTATE_OPTIONS["indoors"] and arcade.check_for_collision(self.player, self.indoor_main_bounding_box):
-
             if self.e_pressed:
                 if self.delay_main_enter_exit == 0:
                     # print("exitting")
