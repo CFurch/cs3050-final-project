@@ -13,6 +13,7 @@ from player import PlayerCharacter
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 from ship import Ship, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
+from time import time
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -36,6 +37,15 @@ INITIAL_QUOTA = 130
 MAX_DAYS = 3
 
 TILE_SCALING = 0.5
+
+# Time constants
+MS_PER_SEC = 1000
+SEC_PER_MIN = 60
+MIN_PER_HOUR = 60
+SEC_PER_HOUR = SEC_PER_MIN * MIN_PER_HOUR
+# Time passes slightly faster in game than irl - one second is a bit more than a minute
+# 1.6 means 16 hours in 10 minutes
+TIME_RATE_INCREASE = 1.6
 
 
 class LethalGame(arcade.Window):
@@ -123,6 +133,11 @@ class LethalGame(arcade.Window):
         self.quotas_hit = 0
         self.days_left = MAX_DAYS
 
+        # Initialize time variables
+        self.start_time = None
+        self.delta_time = None
+        self.time_hud_sprite = arcade.Sprite("resources/player_sprites/time_hud_box.png")
+
     def setup(self, moons_name):
         self.moon_name = moons_name
         # Set up the Camera
@@ -205,6 +220,10 @@ class LethalGame(arcade.Window):
         self.ship.update_position(self.outdoor_starting_position[0] - 64 - ship_position[0],
                                   self.outdoor_starting_position[1] - 128 - ship_position[1])
 
+        # Set starting time
+        self.start_time = get_time()
+        self.delta_time = get_time() - self.start_time # clearly will start low, but is same way to update later
+
     def on_draw(self):
         """
         Render the screen
@@ -226,9 +245,18 @@ class LethalGame(arcade.Window):
             self.outdoor_map.draw()
             self.ship.draw_self(self.camera, self.gamestate)
             self.outdoor_loot_items.draw()
-            # print("outdoors")
+            # draw the time on hud, if the player isn't in the ship
+            if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
+                time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
+                time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
+                self.time_hud_sprite.center_x = time_text_x
+                self.time_hud_sprite.center_y = time_text_y
+                self.time_hud_sprite.draw()
+                # Draw the actual time
+                hours, minutes = ms_to_igt(self.delta_time)
+                arcade.draw_text(f"{hours:02d}:{minutes:02d}", time_text_x - 22, time_text_y - 6, arcade.csscolor.ORANGE, 12)
+
         else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
-            # print("indoors")
             self.indoor_walls.draw()
             for mine in self.mines:
                 if not mine.get_exploded():
@@ -652,6 +680,10 @@ class LethalGame(arcade.Window):
         # Position the camera
         self.center_camera_to_player()
 
+        # Update the time if indoors or outdoors (i.e. this happens if it is during a day
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"]:
+            self.delta_time = get_time() - self.start_time
+
     def check_player_list_collision(self, check_list):
         """
         :param check_list: List to check
@@ -668,6 +700,26 @@ class LethalGame(arcade.Window):
         if check_list is None:
             return arcade.SpriteList()
         return check_list
+
+
+def get_time():
+    # returns in second unit, multiple by 1000 for milliseconds
+    timestamp = time() * 1000
+    # round to nearest millisecond
+    return int(timestamp)
+
+
+def ms_to_igt(delta_time):
+    # Convert the time difference in milliseconds to real-life seconds
+    elapsed_seconds = (delta_time / MS_PER_SEC) * TIME_RATE_INCREASE
+
+    # Convert real-life seconds to in-game hours (based on 8 am start)
+    igt_hours = ((elapsed_seconds % SEC_PER_HOUR) // SEC_PER_MIN + 8) % 24
+
+    igt_minutes = elapsed_seconds % SEC_PER_MIN
+
+    return int(igt_hours), int(igt_minutes)
+
 
 def main():
     """
