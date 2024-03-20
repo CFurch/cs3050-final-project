@@ -33,6 +33,7 @@
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"},
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 96, "height": 96}
         ],
@@ -54,6 +55,7 @@
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"},
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -75,6 +77,7 @@
           {"center_x": 96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"},
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -96,6 +99,7 @@
           {"center_x": 96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"},
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -116,6 +120,7 @@
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"},
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -136,6 +141,7 @@
           {"center_x": 0, "center_y": 96, "texture": "resources/wall_sprites/wall_128x64.png"},
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -156,6 +162,7 @@
           {"center_x": 0, "center_y": 96, "texture": "resources/wall_sprites/wall_128x64.png"},
           {"center_x": 96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -176,6 +183,7 @@
           {"center_x": 96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"},
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -196,6 +204,7 @@
           {"center_x": 96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"},
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -218,6 +227,7 @@
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"}
   
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -237,6 +247,7 @@
   
           {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -256,6 +267,7 @@
   
           {"center_x": 0, "center_y": -96, "texture": "resources/wall_sprites/wall_128x64.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -275,6 +287,7 @@
   
           {"center_x": 96, "center_y": 0, "texture": "resources/wall_sprites/wall_64x128.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -294,6 +307,7 @@
   
           {"center_x": 0, "center_y": 96, "texture": "resources/wall_sprites/wall_128x64.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
@@ -311,6 +325,7 @@
           {"center_x": 96, "center_y": 96, "texture": "resources/wall_sprites/wall_64x64.png"},
           {"center_x": 96, "center_y": -96, "texture": "resources/wall_sprites/wall_64x64.png"}
         ],
+        "background": "resources/wall_sprites/interior_floor.png",
         "item_spawn_areas": [
           {"center_x": 0, "center_y": 0, "width": 128, "height": 128}
         ],
