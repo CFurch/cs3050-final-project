@@ -76,7 +76,7 @@ class LethalGame(arcade.Window):
         self.outdoor_walls = None
         self.outdoor_main_box = None
 
-        self.player = None
+        self.player = PlayerCharacter()
         self.inventory_hud = None
 
         self.indoor_enemy_entities = None
@@ -168,7 +168,6 @@ class LethalGame(arcade.Window):
         self.outdoor_main_position = map_settings[5]
 
         # Initialize player character
-        self.player = PlayerCharacter()
         self.indoor_main_position = self.indoor_map.get_player_start()
         # Add logic for starting location of player (from outdoors)
         self.player.center_x = self.outdoor_starting_position[0]
