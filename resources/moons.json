@@ -9,7 +9,7 @@
             "two_handed": [0.35,0.20,0.10]
         },
         "hazards": {
-            "mines": [1,5],
+            "mines": [2,10],
             "turrets": [2,6]
         },
         "outdoor_tilemap": "resources/tilemaps/experimentation.tmx",
