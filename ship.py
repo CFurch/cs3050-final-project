@@ -6,8 +6,8 @@ from item import Item
 
 MAX_DOOR_BATTERY = 100
 DOOR_BATTERY_DRAIN = 0.2
-DOOR_SPRITE_X = 64
-DOOR_SPRITE_Y = 248
+DOOR_SPRITE_X = 64 + 16
+DOOR_SPRITE_Y = 248 + 16
 SHIP_LAYER_NAMES = ["walls", "background", "door_control", "lever", "terminal"]
 DELAY_INTERACTIONS = 5
 DELAY_DRAIN = 0.1
