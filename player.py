@@ -1,4 +1,5 @@
 import arcade
+import math
 
 PLAYER_DELAY_PICKUP_DROP = 20
 
@@ -22,6 +23,7 @@ class PlayerCharacter(arcade.Sprite):
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.rotation = 0
 
         # Block pickup if player is just dropped something or just picked something up
         self.pickup_drop_delay = 0
@@ -163,6 +165,20 @@ class PlayerCharacter(arcade.Sprite):
 
     def reset_pd_delay(self):
         self.pickup_drop_delay = PLAYER_DELAY_PICKUP_DROP
+
+    def update_rotation(self, x_direction, y_direction):
+        # calculate using arctan
+        self.rotation = math.degrees(math.atan2(y_direction, x_direction))
+
+    def draw_self(self):
+
+        """
+        Draw the turret with scaled texture and rotation.
+        """
+
+        arcade.draw_texture_rectangle(self.center_x, self.center_y, self.texture.width * self.scale,
+                                      self.texture.height * self.scale, self.texture, self.rotation)
+
 
     """
     future todo:
