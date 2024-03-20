@@ -96,75 +96,18 @@ class Map(arcade.Sprite):
         # for each room in the column
         # add the empty data to the room
         for x, column in enumerate(maze):
-
             for y, row in enumerate(column):
                 new_room = [column[y], [[0,0,0],[0,0,0]],[0,0],0]
                 map[x][y] = new_room
 
-        # determine where to spawn loot, hazards, and vents
-        # will only spawn in rooms that have transitions
-        # this is to ensure forward compatability with different map generation styles
-        # loot pre-processing and preparation
-        # loot quantity
-        rand_loot_quant = random.randrange(self.loot_quantity[0],self.loot_quantity[1])
-        total_loot = 0
+        
+        # loot generation
+        gen_loot(map, self.loot_quantity, self.loot_weight)
 
-        # join loot weights and define population
-        loot_population = ['one_low','one_mid','one_high','two_low','two_mid','two_high']
-        loot_weights_total = self.loot_weight['one_handed'] + self.loot_weight['two_handed']
-
-        # while there is still
-        # loot to be placed, randomly select a room and check it's ID
-        while total_loot < rand_loot_quant:
-            # randomly generate X and Y coordinates within the map bounds
-            rand_x = random.randrange(0,self.size)
-            rand_y = random.randrange(0,self.size)
-
-            # if the room has transitions
-            if map[rand_x][rand_y][0] != "0000":
-                # use the weights to calculate what item will spawn
-                choice = random.choices(loot_population,loot_weights_total)
-                
-                match choice[0]:
-                    case 'one_low':
-                        map[rand_x][rand_y][1][0][0] += 1
-                    case 'one_mid':
-                        map[rand_x][rand_y][1][0][1] += 1
-                    case 'one_high':
-                        map[rand_x][rand_y][1][0][2] += 1
-                    case 'two_low':
-                        map[rand_x][rand_y][1][1][0] += 1
-                    case 'two_mid':
-                        map[rand_x][rand_y][1][1][1] += 1
-                    case 'two_high':
-                        map[rand_x][rand_y][1][1][2] += 1
-
-                total_loot += 1
-
-
-        # hazard pre-processing
-        max_mines = self.hazard_quantity['mines'][0]
-        max_turrets = self.hazard_quantity['turrets'][0]
-        total_mines = 0
-        total_turrets = 0
-
-        # while there are still mines and turrets to be placed
-        # randomly select a room and check it's ID
-        while total_mines < max_mines:
-            rand_x = random.randrange(0,self.size)
-            rand_y = random.randrange(0,self.size)
-
-            if map[rand_x][rand_y][0] != "0000":
-                map[rand_x][rand_y][2][0] += 1
-                total_mines += 1
-
-        while total_turrets < max_turrets:
-            rand_x = random.randrange(0,self.size)
-            rand_y = random.randrange(0,self.size)
-
-            if map[rand_x][rand_y][0] != "0000":
-                map[rand_x][rand_y][2][1] += 1
-                total_turrets += 1
+        # hazard generation
+        gen_hazards(map, self.hazard_quantity)
+    
+        # create spawners for monsters
 
         # Iterate through each room in the representation of the map and create a room
         x_temp = HALF_ROOM_SIZE
@@ -219,7 +162,6 @@ class Map(arcade.Sprite):
     def get_map_data(self):
         return self.outdoor_tilemap_name, self.outdoor_starting_position, self.indoor_power, self.outdoor_power, \
                self.indoor_main_entrance_sprite, self.outdoor_leave_position
-
 
 def create_grid(map_size):
     
@@ -293,7 +235,6 @@ def gen_dfs_maze(map_size, seed):
         
         return paths
 
-
     # while the number of visited nodes is less than the maximum number of cells
     while len(visited_nodes) < pow(map_size,2):
 
@@ -306,6 +247,7 @@ def gen_dfs_maze(map_size, seed):
 
         # get available neighbors, and store their information as an absolute position within the maze
         neighbors = get_neighbors(current_node)
+
         # reset valid neighbors from previous run
         valid_neighbors = []
 
@@ -318,8 +260,6 @@ def gen_dfs_maze(map_size, seed):
         
         # if no neighbors exist, backtrack. 
         # otherwise, append the current node to the visit queue, and update the paths
-        # FIX: Backtracking does not assign proper room ID's
-        # FIX: Currently backtracking bypasses room assignment, resulting in a false continued path despite
         if len(valid_neighbors) == 0:
             current_node = visit_queue.pop()
 
@@ -341,6 +281,78 @@ def gen_dfs_maze(map_size, seed):
     maze[start_x][start_y] = str(int(maze[start_x][start_y]) + 1).zfill(4)
 
     return starting_node, maze
+
+def gen_loot(map, loot_quantity, loot_weight):
+    """
+    randomly generate the loot from the map
+    """
+
+    rand_loot_quant = random.randrange(loot_quantity[0],loot_quantity[1])
+    total_loot = 0
+
+    # join loot weights and define population
+    loot_population = ['one_low','one_mid','one_high','two_low','two_mid','two_high']
+    loot_weights_total = loot_weight['one_handed'] + loot_weight['two_handed']
+
+    # while there is still
+    # loot to be placed, randomly select a room and check it's ID
+    while total_loot < rand_loot_quant:
+        # randomly generate X and Y coordinates within the map bounds
+        rand_x = random.randrange(0,len(map))
+        rand_y = random.randrange(0,len(map))
+
+        # if the room has transitions
+        if map[rand_x][rand_y][0] != "0000":
+            # use the weights to calculate what item will spawn
+            choice = random.choices(loot_population,loot_weights_total)
+            
+            match choice[0]:
+                case 'one_low':
+                    map[rand_x][rand_y][1][0][0] += 1
+                case 'one_mid':
+                    map[rand_x][rand_y][1][0][1] += 1
+                case 'one_high':
+                    map[rand_x][rand_y][1][0][2] += 1
+                case 'two_low':
+                    map[rand_x][rand_y][1][1][0] += 1
+                case 'two_mid':
+                    map[rand_x][rand_y][1][1][1] += 1
+                case 'two_high':
+                    map[rand_x][rand_y][1][1][2] += 1
+
+            total_loot += 1
+
+def gen_hazards(map, hazard_quantity):
+
+    # initialize variables
+    max_mines = hazard_quantity['mines'][0]
+    max_turrets = hazard_quantity['turrets'][0]
+    total_mines = 0
+    total_turrets = 0
+
+    # while there are still mines and turrets to be placed
+    # randomly select a room and check it's ID
+    while total_mines < max_mines:
+        rand_x = random.randrange(0,len(map))
+        rand_y = random.randrange(0,len(map))
+
+        if map[rand_x][rand_y][0] != "0000":
+            map[rand_x][rand_y][2][0] += 1
+            total_mines += 1
+
+    while total_turrets < max_turrets:
+        rand_x = random.randrange(0,len(map))
+        rand_y = random.randrange(0,len(map))
+
+        if map[rand_x][rand_y][0] != "0000":
+            map[rand_x][rand_y][2][1] += 1
+            total_turrets += 1
+
+
+def gen_spawners(map, indoor_power, monsters):
+    """
+    Randomly create the spawners for the map alongside their timers and selected monster
+    """
 
 
 def XORshift(state):
