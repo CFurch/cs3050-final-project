@@ -205,6 +205,8 @@ class PlayerCharacter(arcade.Sprite):
         if current_rotation != target_direction:
             self.rotation += rotation_direction * rotation_rate
 
+        # BUG: adjust hitbox based on rotation
+
     def draw_self(self):
 
         """

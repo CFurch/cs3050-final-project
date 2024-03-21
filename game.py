@@ -14,6 +14,7 @@ from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 from ship import Ship, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
 from time import time
+import json
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -137,6 +138,8 @@ class LethalGame(arcade.Window):
         self.start_time = None
         self.delta_time = None
         self.time_hud_sprite = arcade.Sprite("resources/player_sprites/time_hud_box.png")
+
+        self.last_terminal_output = None
 
     def setup(self, moons_name):
         self.moon_name = moons_name
@@ -334,10 +337,23 @@ class LethalGame(arcade.Window):
         arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
         arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
+        # Draw text from ship
+        if self.ship.player_interacting_with_terminal:
+            arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
+                             self.camera.position[1] + 100, arcade.csscolor.GREEN, 36)
+            base_output, processed_terminal_output = self.ship.read_output()
+            if processed_terminal_output != "":
+                arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
+                                 self.camera.position[1] + 200, arcade.csscolor.GREEN, 36)
+
     def process_keychange(self):
         """
         This function is used for changing the state of the player
         """
+        # If player is interacting with the terminal, don't allow movement
+        if self.ship.player_interacting_with_terminal:
+            return
+
         # Update movement speed if shift is pressed - if sprinting, base movement speed should be doubled
         if not self.delaying_stam and self.shift_pressed and (self.up_pressed or self.down_pressed or self.right_pressed or self.left_pressed):
             self.sprinting = self.player.get_stam() > 0
@@ -451,15 +467,14 @@ class LethalGame(arcade.Window):
         # Does have a default value
 
 
-
-
-
     def on_key_press(self, key, modifiers):
         """
         Handling key presses
         :param key: the key object to be pressed
         :param modifiers:
         """
+        if self.ship.player_interacting_with_terminal:
+            self.ship.add_terminal_input(key)
         # In some examples, these are in if elif blocks, this is changed to if statements
         # to allow multiple directions to be pressed at once (only to allow up/down or right/left)
         if key == arcade.key.UP or key == arcade.key.W:
@@ -547,6 +562,28 @@ class LethalGame(arcade.Window):
         # if self.player.get_health() == 0:
         # Process movement based on keys
         self.process_keychange()
+
+        # Handle player interacting with terminal. If they are, handle accordingly
+        if self.ship.player_interacting_with_terminal:
+            self.ship.check_terminal_input(self.gamestate)
+            # variable output is more useful, shorter more explanatory strings
+            variable_output, terminal_string = self.ship.read_output()
+            if variable_output != self.last_terminal_output and variable_output != None:
+                # print(variable_output)
+                self.last_terminal_output = variable_output
+
+                # Check if it is a moon - only allow switching while in orbit (handled in ship class)
+                # Load moon data for terminal phrases - done after other inputs to not load every time
+                with open('resources/moons.json', 'r') as f:
+                    data = json.load(f)
+                # check if terminal phrase starts with a moon phrase
+                for obj in data:
+                    if self.last_terminal_output.startswith(obj['terminal_phrase']):
+                        self.moon_name = obj["id"]
+                # Add code for switching terminal output here
+
+        else:
+            self.last_terminal_output = None
 
         # Move the player with the physics engine
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
