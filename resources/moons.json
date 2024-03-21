@@ -1,6 +1,8 @@
 [
     {
         "id": "experimentation",
+        "terminal_phrase": "ex",
+        "moon_name": "40 - Experimentation",
         "size": 1.0,
         "difficulty": 1.0,
         "loot-quantity": [10,15],
@@ -22,6 +24,8 @@
     },
     {
         "id": "titan",
+        "terminal_phrase": "ti",
+        "moon_name": "8 - Titan",
         "size": 2.5,
         "difficulty": 2.5,
         "loot-quantity": [16,21],

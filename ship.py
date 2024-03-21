@@ -3,6 +3,8 @@ import random
 import json
 from player import PlayerCharacter
 from item import Item
+import keyboard
+
 
 MAX_DOOR_BATTERY = 100
 DOOR_BATTERY_DRAIN = 0.2
@@ -41,7 +43,11 @@ class Ship(arcade.Sprite):
         self.ship_loot = None
         self.total_loot_value = 0
 
+        # For terminal interaction
         self.player_interacting_with_terminal = False
+        self.terminal_input = ""
+        self.terminal_output = ""
+        self.processed_output = ""
 
     def setup(self):
         # Load tilemap
@@ -145,15 +151,18 @@ class Ship(arcade.Sprite):
             self.interact_delay -= DELAY_DRAIN
         elif arcade.check_for_collision_with_list(player, self.tilemap["lever"]):
             if self.lever_delay <= 0:
+                # Lever is activated
                 self.lever_delay = DELAY_INTERACTIONS
-                # print("lever manip")
                 return SHIP_INTERACTION_OPTIONS["lever"]
             self.lever_delay -= DELAY_DRAIN
         elif arcade.check_for_collision_with_list(player, self.tilemap["terminal"]):
             if self.interact_delay <= 0:
                 # Set the player to be interacting with the terminal
                 self.interact_delay = DELAY_INTERACTIONS
-                # print("terminal manip")
+                print("getting input")
+                # Interact with keyboard / listen for input
+                self.player_interacting_with_terminal = True
+
                 return SHIP_INTERACTION_OPTIONS["terminal"]
             self.interact_delay -= DELAY_DRAIN
 
@@ -197,3 +206,64 @@ class Ship(arcade.Sprite):
 
     def set_loot(self, spritelist):
         self.ship_loot = spritelist
+
+    def add_terminal_input(self, key):
+        """
+        Adds a single keypress to the input string
+        """
+        if key == arcade.key.ENTER:
+            # Save terminal input into output(checked by process)
+            self.terminal_output = self.terminal_input
+            self.terminal_input = ""  # Reset input string after printing
+        elif key == arcade.key.BACKSPACE:
+            self.terminal_input = self.terminal_input[:-1]  # Remove last character
+        elif key == arcade.key.ESCAPE:
+            self.player_interacting_with_terminal = False
+            self.processed_output = ""
+            self.terminal_output = ""
+            self.terminal_input = ""
+            # Add input into output variable and reset input
+        elif key in (arcade.key.LSHIFT, arcade.key.RSHIFT, arcade.key.NUMLOCK, arcade.key.CAPSLOCK,
+                     arcade.key.LCTRL, arcade.key.RCTRL, arcade.key.LALT, arcade.key.RALT,
+                     arcade.key.LMETA, arcade.key.RMETA):
+            pass  # Ignore special keys
+        else:
+            # Add pressed character to input string
+            self.terminal_input += chr(key)
+
+    def check_terminal_input(self):
+        """
+        Checks to see if there is any terminal output
+        """
+        if self.terminal_output != "":
+            # output to user and reset terminal outpute
+            self.processed_output = process_input(self.terminal_output)
+            self.terminal_output = ""
+
+    def read_output(self):
+        if self.processed_output == "":
+            return False
+        return self.processed_output
+
+
+def process_input(input_string):
+    """
+    Processes string input, in basic form. Many of the inputs are hardcoded
+    :param input_string: String
+    """
+    # For routing to company building
+    if input_string.startswith("com"):
+        print("company")
+        return "Routing to company building"
+    else:
+        # Load moon data for terminal phrases - done after other inputs to not load every time
+        with open('resources/moons.json', 'r') as f:
+            data = json.load(f)
+        # check if terminal phrase starts with a moon phrase
+        for obj in data:
+            if input_string.startswith(obj['terminal_phrase']):
+                return f"Routing to {obj['moon_name']}"
+        return "Invalid input"
+
+
+
