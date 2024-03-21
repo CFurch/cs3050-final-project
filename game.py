@@ -76,7 +76,7 @@ class LethalGame(arcade.Window):
         self.outdoor_walls = None
         self.outdoor_main_box = None
 
-        self.player = None
+        self.player = PlayerCharacter()
         self.inventory_hud = None
 
         self.indoor_enemy_entities = None
@@ -168,7 +168,6 @@ class LethalGame(arcade.Window):
         self.outdoor_main_position = map_settings[5]
 
         # Initialize player character
-        self.player = PlayerCharacter()
         self.indoor_main_position = self.indoor_map.get_player_start()
         # Add logic for starting location of player (from outdoors)
         self.player.center_x = self.outdoor_starting_position[0]
@@ -284,7 +283,7 @@ class LethalGame(arcade.Window):
                     turret.get_turret_laser().draw()
                 turret.draw_scaled()
 
-        self.player.draw()
+        self.player.draw_self()
 
         # Draw the hud sprites
         temp_x = 300
@@ -427,6 +426,34 @@ class LethalGame(arcade.Window):
         else:
             self.drop_item = False
 
+        # Handle player direction
+        if self.left_pressed and self.right_pressed:
+            # update upwards direction if both pressed
+            self.player.update_rotation(0, 1)
+        elif self.up_pressed and self.down_pressed:
+            self.player.update_rotation(1, 0)
+        elif self.up_pressed and self.right_pressed:
+            self.player.update_rotation(1, 1)
+        elif self.up_pressed and self.left_pressed:
+            self.player.update_rotation(-1, 1)
+        elif self.down_pressed and self.right_pressed:
+            self.player.update_rotation(1, -1)
+        elif self.down_pressed and self.left_pressed:
+            self.player.update_rotation(-1, -1)
+        elif self.left_pressed:
+            self.player.update_rotation(-1, 0)
+        elif self.right_pressed:
+            self.player.update_rotation(1, 0)
+        elif self.up_pressed:
+            self.player.update_rotation(0, 1)
+        elif self.down_pressed:
+            self.player.update_rotation(0, -1)
+        # Does have a default value
+
+
+
+
+
     def on_key_press(self, key, modifiers):
         """
         Handling key presses
@@ -512,7 +539,7 @@ class LethalGame(arcade.Window):
 
         player_centered = screen_center_x, screen_center_y
 
-        self.camera.move_to(player_centered, 0.2)
+        self.camera.move_to(player_centered, .075)
 
     def on_update(self, delta_time):
         """Movement and game logic"""

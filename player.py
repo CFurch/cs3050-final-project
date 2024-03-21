@@ -1,6 +1,8 @@
 import arcade
+import math
 
 PLAYER_DELAY_PICKUP_DROP = 20
+PLAYER_ROTATION_RATE = 10
 
 
 class PlayerCharacter(arcade.Sprite):
@@ -22,6 +24,7 @@ class PlayerCharacter(arcade.Sprite):
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.rotation = 0
 
         # Block pickup if player is just dropped something or just picked something up
         self.pickup_drop_delay = 0
@@ -163,6 +166,54 @@ class PlayerCharacter(arcade.Sprite):
 
     def reset_pd_delay(self):
         self.pickup_drop_delay = PLAYER_DELAY_PICKUP_DROP
+
+    def update_rotation(self, x_direction, y_direction):
+        """
+        This is done by calculating the target direction for the player to turn, and then updating the players
+        current direction by a step
+        :param x_direction:
+        :param y_direction:
+        :return:
+        """
+        # Calculate target direction using arctan
+        target_direction = math.degrees(math.atan2(y_direction, x_direction))
+
+        # Normalize target direction to be in the range [0, 360) (arctan is in range -180 to 180)
+        target_direction = (target_direction + 360) % 360
+        current_rotation = self.rotation % 360
+
+        # Calculate the absolute difference between target direction and current rotation
+        diff_clockwise = (target_direction - current_rotation) % 360
+        diff_counterclockwise = (current_rotation - target_direction) % 360
+
+        # Determine the direction (clockwise or counterclockwise) to rotate
+        if diff_clockwise <= diff_counterclockwise:
+            rotation_direction = 1  # Rotate clockwise
+        else:
+            rotation_direction = -1  # Rotate counterclockwise
+
+        # Adjust rotation rate if rotation is close to target (reduce stuttering
+        if min(diff_clockwise, diff_counterclockwise) < PLAYER_ROTATION_RATE:
+            rotation_rate = PLAYER_ROTATION_RATE / 2
+            # Decrease again if closer
+            if min(diff_clockwise, diff_counterclockwise) < PLAYER_ROTATION_RATE / 2:
+                rotation_rate = PLAYER_ROTATION_RATE / 4
+        else:
+            rotation_rate = PLAYER_ROTATION_RATE
+
+        # Adjust rotation
+        if current_rotation != target_direction:
+            self.rotation += rotation_direction * rotation_rate
+
+    def draw_self(self):
+
+        """
+        Draw the turret with scaled texture and rotation.
+        """
+
+        arcade.draw_texture_rectangle(self.center_x, self.center_y, self.texture.width * self.scale,
+                                      self.texture.height * self.scale, self.texture, self.rotation)
+
 
     """
     future todo:
