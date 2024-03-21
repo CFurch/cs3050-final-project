@@ -100,7 +100,6 @@ class Map(arcade.Sprite):
                 new_room = [column[y], [[0,0,0],[0,0,0]],[0,0],0]
                 map[x][y] = new_room
 
-        
         # loot generation
         gen_loot(map, self.loot_quantity, self.loot_weight)
 
@@ -118,6 +117,7 @@ class Map(arcade.Sprite):
             for x, item in enumerate(col):
                 #print(item)
                 #print(x_temp, y_temp, item)
+
                 # generate room based on bitwise rep, x, y, to_spawn_loot, etc
                 bitwise_room_rep = item[0]
                 
@@ -282,16 +282,17 @@ def gen_dfs_maze(map_size, seed):
     # create a doorway for the starting node
     maze[start_x][start_y] = str(int(maze[start_x][start_y]) + 1).zfill(4)
 
+    
     # generate random hallways
     total_halls = 0
-    while total_halls < (0.25 * pow(map_size,2)):
+    while total_halls < (0.75 * pow(map_size,2)):
         rand_x = random.randrange(1, map_size-1)
         rand_y = random.randrange(1, map_size-1)
 
         dir_population = ["1000","0100","0010","0001"]
         rand_dirr = random.sample(dir_population,1)
 
-        maze[rand_x][rand_y] = str(int(maze[rand_x][rand_y]) + int(rand_dirr[0])).replace("2","1")
+        maze[rand_x][rand_y] = str(int(maze[rand_x][rand_y]) + int(rand_dirr[0])).replace("2","1").zfill(4)
 
         total_halls += 1
 
