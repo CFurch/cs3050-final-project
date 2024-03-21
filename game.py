@@ -133,6 +133,9 @@ class LethalGame(arcade.Window):
         self.quota = INITIAL_QUOTA
         self.quotas_hit = 0
         self.days_left = MAX_DAYS
+        self.quota_hud_sprite = arcade.Sprite("resources/player_sprites/quota_hud_box.png")
+        self.day_hud_sprite = arcade.Sprite("resources/player_sprites/day_hud_box.png")
+        self.zero_day_sprite = arcade.Sprite("resources/player_sprites/no_day_left.png")
 
         # Initialize time variables
         self.start_time = None
@@ -243,6 +246,31 @@ class LethalGame(arcade.Window):
         # Draw the scene depending on indoors or outdoors
         if self.gamestate == GAMESTATE_OPTIONS["orbit"]:
             self.ship.draw_self(self.camera, self.gamestate)
+
+            # Draw the days left
+            if self.days_left > 0:
+                sprite = self.day_hud_sprite
+                color = arcade.csscolor.GREEN
+            else:
+                sprite = self.zero_day_sprite
+                color = arcade.csscolor.RED
+
+            # Draw correct days left (red if zero)
+            time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
+            time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
+            sprite.center_x = time_text_x - 64
+            sprite.center_y = time_text_y
+            sprite.draw()
+
+            arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
+                             12)
+            self.quota_hud_sprite.center_x = time_text_x + 64
+            self.quota_hud_sprite.center_y = time_text_y
+            self.quota_hud_sprite.draw()
+            # Draw the days left
+            arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
+                             12)
+
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
             self.ship.draw_self(self.camera, self.gamestate)
