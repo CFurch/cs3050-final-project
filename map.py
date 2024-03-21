@@ -272,13 +272,29 @@ def gen_dfs_maze(map_size, seed):
            
             # update the current node with the outpath
             maze[x][y] = str(int(maze[x][y]) + int(paths[0])).zfill(4)
-            maze[valid_neighbors[0][0]][valid_neighbors[0][1]] = str(int(maze[valid_neighbors[0][0]][valid_neighbors[0][1]]) + int(paths[1])).zfill(4)
+            maze[valid_neighbors[0][0]][valid_neighbors[0][1]] = str(int(maze[valid_neighbors[0][0]][valid_neighbors[0][1]]) + 
+                                                                     int(paths[1])).zfill(4)
+            
             # update the neighbor node with the inpath
 
             current_node = valid_neighbors[0]
 
     # create a doorway for the starting node
     maze[start_x][start_y] = str(int(maze[start_x][start_y]) + 1).zfill(4)
+
+    # generate random hallways
+    total_halls = 0
+    while total_halls < (0.25 * pow(map_size,2)):
+        rand_x = random.randrange(1, map_size-1)
+        rand_y = random.randrange(1, map_size-1)
+
+        dir_population = ["1000","0100","0010","0001"]
+        rand_dirr = random.sample(dir_population,1)
+
+        maze[rand_x][rand_y] = str(int(maze[rand_x][rand_y]) + int(rand_dirr[0])).replace("2","1")
+
+        total_halls += 1
+
 
     return starting_node, maze
 
@@ -347,7 +363,6 @@ def gen_hazards(map, hazard_quantity):
         if map[rand_x][rand_y][0] != "0000":
             map[rand_x][rand_y][2][1] += 1
             total_turrets += 1
-
 
 def gen_spawners(map, indoor_power, monsters):
     """
