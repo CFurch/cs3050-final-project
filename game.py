@@ -14,6 +14,7 @@ from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 from ship import Ship, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
 from time import time
+import json
 
 # Constants
 SCREEN_WIDTH = 1000
@@ -564,13 +565,23 @@ class LethalGame(arcade.Window):
 
         # Handle player interacting with terminal. If they are, handle accordingly
         if self.ship.player_interacting_with_terminal:
-            self.ship.check_terminal_input()
+            self.ship.check_terminal_input(self.gamestate)
             # variable output is more useful, shorter more explanatory strings
             variable_output, terminal_string = self.ship.read_output()
-            if variable_output != self.last_terminal_output:
+            if variable_output != self.last_terminal_output and variable_output != None:
                 # print(variable_output)
                 self.last_terminal_output = variable_output
+
+                # Check if it is a moon - only allow switching while in orbit (handled in ship class)
+                # Load moon data for terminal phrases - done after other inputs to not load every time
+                with open('resources/moons.json', 'r') as f:
+                    data = json.load(f)
+                # check if terminal phrase starts with a moon phrase
+                for obj in data:
+                    if self.last_terminal_output.startswith(obj['terminal_phrase']):
+                        self.moon_name = obj["id"]
                 # Add code for switching terminal output here
+
         else:
             self.last_terminal_output = None
 

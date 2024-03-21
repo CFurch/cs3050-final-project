@@ -232,20 +232,20 @@ class Ship(arcade.Sprite):
             # Add pressed character to input string
             self.terminal_input += chr(key)
 
-    def check_terminal_input(self):
+    def check_terminal_input(self, gamestate):
         """
         Checks to see if there is any terminal output
         """
         if self.terminal_output != "":
             # output to user and reset terminal outpute
-            self.short_output, self.processed_output = process_input(self.terminal_output)
+            self.short_output, self.processed_output = process_input(self.terminal_output, gamestate)
             self.terminal_output = ""
 
     def read_output(self):
         return self.short_output, self.processed_output
 
 
-def process_input(input_string):
+def process_input(input_string, gamestate):
     """
     Processes string input, in basic form. Many of the inputs are hardcoded
     :param input_string: String
@@ -255,13 +255,17 @@ def process_input(input_string):
         # print("company")
         return "comp", "Routing to company building"
     else:
-        # Load moon data for terminal phrases - done after other inputs to not load every time
-        with open('resources/moons.json', 'r') as f:
-            data = json.load(f)
-        # check if terminal phrase starts with a moon phrase
-        for obj in data:
-            if input_string.startswith(obj['terminal_phrase']):
-                return obj['terminal_phrase'], f"Routing to {obj['moon_name']}"
+        # Only allow moon switching while in orbit
+        if gamestate == GAMESTATE_OPTIONS["orbit"]:
+            # Load moon data for terminal phrases - done after other inputs to not load every time
+            with open('resources/moons.json', 'r') as f:
+                data = json.load(f)
+            # check if terminal phrase starts with a moon phrase
+            for obj in data:
+                if input_string.startswith(obj['terminal_phrase']):
+                    return obj['terminal_phrase'], f"Routing to {obj['moon_name']}"
+        else:
+            return "", "Cannot change moon unless in orbit"
         return None, "Invalid input"
 
 
