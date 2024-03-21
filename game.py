@@ -138,6 +138,8 @@ class LethalGame(arcade.Window):
         self.delta_time = None
         self.time_hud_sprite = arcade.Sprite("resources/player_sprites/time_hud_box.png")
 
+        self.last_terminal_output = None
+
     def setup(self, moons_name):
         self.moon_name = moons_name
         # Set up the Camera
@@ -338,8 +340,8 @@ class LethalGame(arcade.Window):
         if self.ship.player_interacting_with_terminal:
             arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
                              self.camera.position[1] + 100, arcade.csscolor.GREEN, 36)
-            processed_terminal_output = self.ship.read_output()
-            if processed_terminal_output != False:
+            base_output, processed_terminal_output = self.ship.read_output()
+            if processed_terminal_output != "":
                 arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
                                  self.camera.position[1] + 200, arcade.csscolor.GREEN, 36)
 
@@ -562,7 +564,15 @@ class LethalGame(arcade.Window):
 
         # Handle player interacting with terminal. If they are, handle accordingly
         if self.ship.player_interacting_with_terminal:
-            out = self.ship.check_terminal_input()
+            self.ship.check_terminal_input()
+            # variable output is more useful, shorter more explanatory strings
+            variable_output, terminal_string = self.ship.read_output()
+            if variable_output != self.last_terminal_output:
+                # print(variable_output)
+                self.last_terminal_output = variable_output
+                # Add code for switching terminal output here
+        else:
+            self.last_terminal_output = None
 
         # Move the player with the physics engine
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:

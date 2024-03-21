@@ -48,6 +48,7 @@ class Ship(arcade.Sprite):
         self.terminal_input = ""
         self.terminal_output = ""
         self.processed_output = ""
+        self.short_output = ""
 
     def setup(self):
         # Load tilemap
@@ -237,13 +238,11 @@ class Ship(arcade.Sprite):
         """
         if self.terminal_output != "":
             # output to user and reset terminal outpute
-            self.processed_output = process_input(self.terminal_output)
+            self.short_output, self.processed_output = process_input(self.terminal_output)
             self.terminal_output = ""
 
     def read_output(self):
-        if self.processed_output == "":
-            return False
-        return self.processed_output
+        return self.short_output, self.processed_output
 
 
 def process_input(input_string):
@@ -253,8 +252,8 @@ def process_input(input_string):
     """
     # For routing to company building
     if input_string.startswith("com"):
-        print("company")
-        return "Routing to company building"
+        # print("company")
+        return "comp", "Routing to company building"
     else:
         # Load moon data for terminal phrases - done after other inputs to not load every time
         with open('resources/moons.json', 'r') as f:
@@ -262,8 +261,8 @@ def process_input(input_string):
         # check if terminal phrase starts with a moon phrase
         for obj in data:
             if input_string.startswith(obj['terminal_phrase']):
-                return f"Routing to {obj['moon_name']}"
-        return "Invalid input"
+                return obj['terminal_phrase'], f"Routing to {obj['moon_name']}"
+        return None, "Invalid input"
 
 
 
