@@ -11,7 +11,7 @@
     If the monsters power is greater than the maps remaining indoor power, it fails and will wait for it's next timer.
     If the monsters power is equal to or less than the maps remaining indoor power, the monster will be spawned and it will wait for its next timer.
 
-    the spawner class will be instantiated by the room, but will then be handed off to GAME to handle spawning.
+    The spawner class will have to be called by ROOM, with info passed from map.
 
 """
 
@@ -31,9 +31,6 @@ class Spawner(arcade.Sprite):
         """
 
         
-
-
-
     def spawn_monster():
         """
         called when the current cooldown is hit
