@@ -100,7 +100,7 @@ class Ship(arcade.Sprite):
         self.ship_loot.draw()
 
         # Draw the amount of loot onto the hud if in orbit
-        if gamestate == GAMESTATE_OPTIONS["orbit"]:
+        if gamestate == GAMESTATE_OPTIONS["orbit"] and not self.player_interacting_with_terminal:
             text_x = camera.position[0] + 20
             text_y = camera.position[1] + SCREEN_HEIGHT - 30
             arcade.draw_text(f"Total ship loot: {self.total_loot_value}", text_x, text_y - 210, arcade.csscolor.GREEN, 18)
@@ -160,7 +160,7 @@ class Ship(arcade.Sprite):
             if self.interact_delay <= 0:
                 # Set the player to be interacting with the terminal
                 self.interact_delay = DELAY_INTERACTIONS
-                print("getting input")
+                # print("getting input")
                 # Interact with keyboard / listen for input
                 self.player_interacting_with_terminal = True
 
@@ -254,6 +254,14 @@ def process_input(input_string, gamestate):
     if input_string.startswith("com"):
         # print("company")
         return "comp", "Routing to company building"
+    elif input_string.startswith("moo"):
+        # Load moon names
+        rtn_string = "Available moons: "
+        with open('resources/moons.json', 'r') as f:
+            data = json.load(f)
+        for moon in data:
+            rtn_string += "\n" + moon["moon_name"]
+        return "moons", rtn_string
     else:
         # Only allow moon switching while in orbit
         if gamestate == GAMESTATE_OPTIONS["orbit"]:

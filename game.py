@@ -143,6 +143,8 @@ class LethalGame(arcade.Window):
         self.time_hud_sprite = arcade.Sprite("resources/player_sprites/time_hud_box.png")
 
         self.last_terminal_output = None
+        self.terminal_background = arcade.Sprite("resources/player_sprites/terminal_background.png")
+        self.terminal_background.alpha = 128
 
     def setup(self, moons_name):
         self.moon_name = moons_name
@@ -246,30 +248,30 @@ class LethalGame(arcade.Window):
         # Draw the scene depending on indoors or outdoors
         if self.gamestate == GAMESTATE_OPTIONS["orbit"]:
             self.ship.draw_self(self.camera, self.gamestate)
+            if not self.ship.player_interacting_with_terminal:
+                # Draw the days left
+                if self.days_left > 0:
+                    sprite = self.day_hud_sprite
+                    color = arcade.csscolor.GREEN
+                else:
+                    sprite = self.zero_day_sprite
+                    color = arcade.csscolor.RED
 
-            # Draw the days left
-            if self.days_left > 0:
-                sprite = self.day_hud_sprite
-                color = arcade.csscolor.GREEN
-            else:
-                sprite = self.zero_day_sprite
-                color = arcade.csscolor.RED
+                # Draw correct days left (red if zero)
+                time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
+                time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
+                sprite.center_x = time_text_x - 64
+                sprite.center_y = time_text_y
+                sprite.draw()
 
-            # Draw correct days left (red if zero)
-            time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
-            time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
-            sprite.center_x = time_text_x - 64
-            sprite.center_y = time_text_y
-            sprite.draw()
-
-            arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
-                             12)
-            self.quota_hud_sprite.center_x = time_text_x + 64
-            self.quota_hud_sprite.center_y = time_text_y
-            self.quota_hud_sprite.draw()
-            # Draw the days left
-            arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
-                             12)
+                arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
+                                 12)
+                self.quota_hud_sprite.center_x = time_text_x + 64
+                self.quota_hud_sprite.center_y = time_text_y
+                self.quota_hud_sprite.draw()
+                # Draw the days left
+                arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
+                                 12)
 
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
@@ -344,35 +346,42 @@ class LethalGame(arcade.Window):
             holding_text.center_y = self.camera.position[1] + 50
             holding_text.draw()
 
-        # Draw the health and stamina on the camera view
-        # health_text = f"Health: {self.player.get_health()}"
-        stamina_text = f"Stamina: {int(self.player.get_stam())}"
-        weight_text = f"{int(self.player.get_weight())} lb"
-
-        # Calculate the position for objects relative to the camera's position
-        text_x = self.camera.position[0] + 20
-        text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
-
-        # Draw the text at the calculated position
-        # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
-        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
-        health_sprite.center_x = self.camera.position[0] + 75
-        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
-        # health_sprite.alpha = 128 # use this to set opacity of objects
-        health_sprite.draw()
-
-        # Stamina representation
-        arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
-        arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
-
         # Draw text from ship
         if self.ship.player_interacting_with_terminal:
+            self.terminal_background.center_x = self.camera.position[0] + SCREEN_WIDTH / 2
+            self.terminal_background.center_y = self.camera.position[1] + SCREEN_HEIGHT / 2
+            self.terminal_background.draw()
             arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
                              self.camera.position[1] + 100, arcade.csscolor.GREEN, 36)
             base_output, processed_terminal_output = self.ship.read_output()
             if processed_terminal_output != "":
                 arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
-                                 self.camera.position[1] + 200, arcade.csscolor.GREEN, 36)
+                                 self.camera.position[1] + SCREEN_HEIGHT - 100, arcade.csscolor.GREEN, 36,
+                                 multiline=True, width=850)
+        else:
+            # Draw the health and stamina on the camera view
+            # health_text = f"Health: {self.player.get_health()}"
+            stamina_text = f"Stamina: {int(self.player.get_stam())}"
+            weight_text = f"{int(self.player.get_weight())} lb"
+
+            # Calculate the position for objects relative to the camera's position
+            text_x = self.camera.position[0] + 20
+            text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
+
+            # Draw the text at the calculated position
+            # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
+            health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
+            health_sprite.center_x = self.camera.position[0] + 75
+            health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
+            # health_sprite.alpha = 128 # use this to set opacity of objects
+            health_sprite.draw()
+
+            # Stamina representation
+            arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
+            arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
+
+
+
 
     def process_keychange(self):
         """
