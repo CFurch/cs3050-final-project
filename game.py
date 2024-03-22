@@ -91,6 +91,8 @@ class LethalGame(arcade.Window):
         self.turrets = None
         self.bullets = None
 
+        self.spawners = None
+
         self.indoor_physics_engine = None
         self.outdoor_physics_engine = None
         self.ship_physics_engine = None
@@ -635,6 +637,7 @@ class LethalGame(arcade.Window):
         #     self.player, self.loot_items # may need to change layer name
         # )
         self.player.decrease_pd_delay()
+
         # Handle checking if items are in hitbox and the player is attempting to pick something up
         # Add the item to inventory if the player's current slot is open
         if self.try_pickup_item and not self.player.get_inv(self.player.get_current_inv_slot()) and \
@@ -660,7 +663,6 @@ class LethalGame(arcade.Window):
                 elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
                     # Check indoor loot items
                     self.indoor_loot_items = self.check_player_list_collision(self.indoor_loot_items)
-
 
         # Handle checking if the player wants to drop items
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
@@ -742,6 +744,9 @@ class LethalGame(arcade.Window):
                 else:
                     # print("delaying")
                     self.delay_main_enter_exit -= 1
+
+        # update spawner list
+                    
 
         # Position the camera
         self.center_camera_to_player()
