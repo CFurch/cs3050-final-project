@@ -49,6 +49,7 @@ class Ship(arcade.Sprite):
         self.terminal_output = ""
         self.processed_output = ""
         self.short_output = ""
+        self.money = 0
 
     def setup(self):
         # Load tilemap

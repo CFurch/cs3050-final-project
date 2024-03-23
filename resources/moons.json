@@ -5,7 +5,7 @@
         "moon_name": "40 - Experimentation",
         "size": 1.0,
         "difficulty": 1.0,
-        "loot-quantity": [10,15],
+        "loot-quantity": [100,150],
         "loot-weight": {
             "one_handed": [0.15,0.20,0.00],
             "two_handed": [0.35,0.20,0.10]
