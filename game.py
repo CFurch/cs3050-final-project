@@ -146,6 +146,13 @@ class LethalGame(arcade.Window):
         self.terminal_background = arcade.Sprite("resources/player_sprites/terminal_background.png")
         self.terminal_background.alpha = 128
 
+        self.company_building = arcade.Scene.from_tilemap(arcade.load_tilemap("resources/tilemaps/company.tmx"))
+        self.company_starting_position = (720, 640)
+        self.company_physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.company_building["walls"]
+        )
+        self.company_physics_engine.gravity_constant = 0
+
     def setup(self, moons_name):
         self.moon_name = moons_name
         # Set up the Camera
@@ -244,9 +251,13 @@ class LethalGame(arcade.Window):
         """
         FUTURE: May need to add another state for landing, to animate the ship
         """
+        if self.gamestate == GAMESTATE_OPTIONS["company"]:
+            self.company_building.draw()
+            self.ship.draw_self(self.camera, self.gamestate)
+            self.outdoor_loot_items.draw()
 
         # Draw the scene depending on indoors or outdoors
-        if self.gamestate == GAMESTATE_OPTIONS["orbit"]:
+        elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
             self.ship.draw_self(self.camera, self.gamestate)
             if not self.ship.player_interacting_with_terminal:
                 # Draw the days left
@@ -380,9 +391,6 @@ class LethalGame(arcade.Window):
             arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
             arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
-
-
-
     def process_keychange(self):
         """
         This function is used for changing the state of the player
@@ -431,7 +439,7 @@ class LethalGame(arcade.Window):
             self.player.set_movement_speed(diagonal_speed)
 
         # Adjust speed for outdoors (since for some reason this is twice the speed of orbit and indoors
-        if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
             self.player.set_movement_speed(self.player.get_movement_speed() / 2)
 
         # Account for weight
@@ -502,7 +510,6 @@ class LethalGame(arcade.Window):
         elif self.down_pressed:
             self.player.update_rotation(0, -1)
         # Does have a default value
-
 
     def on_key_press(self, key, modifiers):
         """
@@ -617,6 +624,8 @@ class LethalGame(arcade.Window):
                 for obj in data:
                     if self.last_terminal_output.startswith(obj['terminal_phrase']):
                         self.moon_name = obj["id"]
+                    elif self.last_terminal_output.startswith("com"):
+                        self.moon_name = "comp"
                 # Add code for switching terminal output here
 
         else:
@@ -640,12 +649,43 @@ class LethalGame(arcade.Window):
                 if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
                     self.gamestate = GAMESTATE_OPTIONS["orbit"]
                     self.ship.change_orbit()
-                    # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
-                    self.days_left -= 1
-                    if self.days_left < 0:
-                        # Tushar: game over screen
-                        pass
-                        # reset the game by exitting to the outer game loop and starting over from start screen
+                    # Only decrease days left if its not the company building
+                    if self.gamestate != GAMESTATE_OPTIONS["company"]:
+                        # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+                        self.days_left -= 1
+                        if self.days_left < 0:
+                            # Tushar: game over screen
+                            pass
+                            # reset the game by exitting to the outer game loop and starting over from start screen
+                elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
+                    # This will handle inputs and drawing new stuff
+                    self.ship.interact_terminal()
+        elif self.gamestate == GAMESTATE_OPTIONS["company"]:
+            self.company_physics_engine.update()
+            self.ship.update_ship()
+            # This method will auto-update physics engine for if door is open or shut
+            self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
+                self.player, self.ship.get_walls()
+            )
+            self.ship_physics_engine.gravity_constant = 0
+            self.ship_physics_engine.update()
+
+            # Interact with the ship
+            if self.e_pressed:
+                ship_action = self.ship.interact_ship(self.player)
+                # The following is changing from landing to orbit
+                if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
+                    previous_gamestate = self.gamestate
+                    self.gamestate = GAMESTATE_OPTIONS["orbit"]
+                    self.ship.change_orbit()
+                    # Only decrease days left if its not the company building
+                    if previous_gamestate != GAMESTATE_OPTIONS["company"]:
+                        # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+                        self.days_left -= 1
+                        if self.days_left < 0:
+                            # Tushar: game over screen
+                            pass
+                            # reset the game by exitting to the outer game loop and starting over from start screen
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
                     # This will handle inputs and drawing new stuff
                     self.ship.interact_terminal()
@@ -663,9 +703,20 @@ class LethalGame(arcade.Window):
                 if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
                     self.gamestate = GAMESTATE_OPTIONS["outdoors"]
                     self.ship.change_orbit()
-                    # Setup and generate the new map (maybe show a loading screen before this and remove it after done)
-                    # Like in game
-                    self.setup(self.moon_name)
+                    if self.moon_name != "comp":
+                        # Setup and generate the new map (maybe show a loading screen before this and remove it after done)
+                        # Like in game
+                        self.setup(self.moon_name)
+                    else:
+                        self.gamestate = GAMESTATE_OPTIONS["company"]
+                        # Setup the company building
+                        # Ship update position uses delta_x and y
+                        ship_position = self.ship.get_pos()
+                        self.ship.update_position(self.company_starting_position[0] - 64 - ship_position[0],
+                                                  self.company_starting_position[1] - 128 - ship_position[1])
+                        self.player.center_x = self.company_starting_position[0]
+                        self.player.center_y = self.company_starting_position[1]
+                        self.outdoor_loot_items = arcade.SpriteList()
 
         # handle collisions - like this
         # item_hit_list = arcade.check_for_collision_with_list(
@@ -690,7 +741,7 @@ class LethalGame(arcade.Window):
                     item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
 
             else:
-                if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+                if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
                     # Check outdoor loot items
                     self.outdoor_loot_items = self.check_player_list_collision(self.outdoor_loot_items)
 
@@ -703,7 +754,7 @@ class LethalGame(arcade.Window):
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
                 self.player.get_pd_delay() == 0:
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
-            if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+            if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
                 # Only add to the ship list if the player is interacting with the ship
                 if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
                     self.ship.add_item(temp_item)

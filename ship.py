@@ -13,7 +13,7 @@ DOOR_SPRITE_Y = 248 + 16
 SHIP_LAYER_NAMES = ["walls", "background", "door_control", "lever", "terminal"]
 DELAY_INTERACTIONS = 5
 DELAY_DRAIN = 0.1
-GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2}
+GAMESTATE_OPTIONS = {"orbit": 0, "outdoors": 1, "indoors": 2, "company": 3}
 SHIP_INTERACTION_OPTIONS = {"lever": 0, "door": 1, "terminal": 2}
 SCREEN_HEIGHT = 650
 
