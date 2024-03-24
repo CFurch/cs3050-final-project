@@ -988,6 +988,7 @@ class LethalGame(arcade.Window):
 
         # Check if the player is dead, transfer to orbit otherwise
         if self.player.health <= 0 and self.gamestate != GAMESTATE_OPTIONS["orbit"]:
+            # Tushar: Death screen
             self.gamestate = GAMESTATE_OPTIONS["orbit"]
             self.player.reset()
             self.player.center_x = self.ship.center_x + 64
