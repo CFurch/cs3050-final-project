@@ -479,7 +479,7 @@ class LethalGame(arcade.Window):
             base_output, processed_terminal_output = self.ship.read_output()
             if processed_terminal_output != "":
                 arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
-                                 self.camera.position[1] + SCREEN_HEIGHT - 100, arcade.csscolor.GREEN, 36,
+                                 self.camera.position[1] + SCREEN_HEIGHT - 100, arcade.csscolor.GREEN, 24,
                                  multiline=True, width=850)
         else:
             # Draw the health and stamina on the camera view

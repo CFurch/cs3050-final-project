@@ -251,6 +251,7 @@ def process_input(input_string, gamestate):
     Processes string input, in basic form. Many of the inputs are hardcoded
     :param input_string: String
     """
+    input_string = input_string.lower()
     # For routing to company building
     if input_string.startswith("com"):
         # print("company")
@@ -263,6 +264,13 @@ def process_input(input_string, gamestate):
         for moon in data:
             rtn_string += "\n" + moon["moon_name"]
         return "moons", rtn_string
+    elif input_string.startswith("help"):
+        return "help", "moons: shows list of available moons\n\n" \
+                       "company building: route to company building\n\n" \
+                       "store: shows store items for purchase\n\n" \
+                       "Exit terminal using escape key"
+    elif input_string.startswith("sto"):
+        return "store", "Store"
     else:
         # Only allow moon switching while in orbit
         if gamestate == GAMESTATE_OPTIONS["orbit"]:
