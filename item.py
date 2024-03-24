@@ -32,6 +32,7 @@ class Item(arcade.Sprite):
         self.texture_map = None
         self.type = None
         self.two_handed = None
+        self.on_ground = None
 
     def setup(self, x_center, y_center, value, is_two_handed):
         """
@@ -69,9 +70,10 @@ class Item(arcade.Sprite):
 
         # Assign weight and texture (for each of the two textures)
         self.weight = item["weight"]
-        self.texture_map = item["sprite_filename"]
+        self.texture_map = arcade.Sprite(item["sprite_filename"])
         self.texture = arcade.load_texture(item["sprite_filename"])
-        self.texture_inventory = item["sprite_inventory_filename"]
+        self.texture_inventory = arcade.Sprite(item["sprite_inventory_filename"])
+        self.on_ground = True
         self.two_handed = is_two_handed
 
         return self
@@ -80,13 +82,25 @@ class Item(arcade.Sprite):
         """
         Switch self.texture from map texture to inventory texture
         """
-        self.texture = arcade.load_texture(self.texture_inventory)
+        # self.texture = arcade.load_texture(self.texture_inventory)
+        self.on_ground = False
 
     def set_map_texture(self):
         """
         switch self.texture from inventory to map
         """
-        self.texture = arcade.load_texture(self.texture_map)
+        # self.texture = arcade.load_texture(self.texture_map)
+        self.on_ground = True
+
+    def draw_self(self):
+        if self.on_ground:
+            self.texture_map.center_x = self.center_x
+            self.texture_map.center_y = self.center_y
+            self.texture_map.draw()
+        else:
+            self.texture_inventory.center_x = self.center_x
+            self.texture_inventory.center_y = self.center_y
+            self.texture_inventory.draw()
 
     def get_value(self):
         return self.value

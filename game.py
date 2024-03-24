@@ -429,7 +429,9 @@ class LethalGame(arcade.Window):
                     armed_mine.draw()
 
             # Draw loot after mines but before turrets
-            self.indoor_loot_items.draw()
+            # self.indoor_loot_items.draw()
+            for item in self.indoor_loot_items:
+                item.draw_self()
 
             # draw bullets and turrets at correct angles
             for bullet in self.bullets:
@@ -460,7 +462,7 @@ class LethalGame(arcade.Window):
                 item.center_y = self.camera.position[1] + 50
                 # item.set_inventory_texture()
                 # print(item.center_x, item.center_y)
-                item.draw()
+                item.draw_self()
 
         # Draw text for holding 2 handed item
         if self.player.get_two_handed():
