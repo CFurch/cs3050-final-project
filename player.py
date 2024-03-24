@@ -111,6 +111,9 @@ class PlayerCharacter(arcade.Sprite):
 
         return removed_item
 
+    def clear_inv(self):
+        self.inventory = [None, None, None, None]
+
     def decrease_stam(self, amount):
         self.stamina -= amount
         if self.stamina < 0:

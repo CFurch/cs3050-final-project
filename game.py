@@ -48,6 +48,7 @@ SEC_PER_HOUR = SEC_PER_MIN * MIN_PER_HOUR
 # Time passes slightly faster in game than irl - one second is a bit more than a minute
 # 1.6 means 16 hours in 10 minutes
 TIME_RATE_INCREASE = 1.6
+DAY_LENGTH = 10 * SEC_PER_MIN * MS_PER_SEC
 
 
 class LethalGame(arcade.Window):
@@ -776,6 +777,19 @@ class LethalGame(arcade.Window):
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
                     # This will handle inputs and drawing new stuff
                     self.ship.interact_terminal()
+            if self.delta_time >= DAY_LENGTH:
+                self.gamestate = GAMESTATE_OPTIONS["orbit"]
+                self.player.clear_inv()
+                self.player.center_x = self.ship.center_x + 64
+                self.player.center_y = self.ship.center_y + 128
+                self.ship.change_orbit()
+                # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+                self.days_left -= 1
+                # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
+                if self.days_left < 0:
+                    # Tushar: end game screen here
+                    self.reset_game()
+
         elif self.gamestate == GAMESTATE_OPTIONS["company"]:
             self.company_physics_engine.update()
             self.ship.update_ship()
@@ -956,8 +970,11 @@ class LethalGame(arcade.Window):
         # Check for player interacting with bell
         if arcade.check_for_collision_with_list(self.player, self.company_building["bell"]) and self.e_pressed:
             for item in self.sell_list:
-                self.scrap_sold += item.value
-                self.ship.money += item.value
+                # Include loss for number of days left
+                value_loss = (MAX_DAYS - self.days_left) / MAX_DAYS
+
+                self.scrap_sold += int(item.value * value_loss)
+                self.ship.money += int(item.value * value_loss)
             self.sell_list = arcade.SpriteList()
 
         # Position the camera
