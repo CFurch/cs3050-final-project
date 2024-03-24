@@ -970,10 +970,10 @@ class LethalGame(arcade.Window):
                     # print("delaying")
                     self.delay_main_enter_exit -= 1
 
-<<<<<<< HEAD
+
         # update spawner list
                     
-=======
+
         # Check for player interacting with bell
         if arcade.check_for_collision_with_list(self.player, self.company_building["bell"]) and self.e_pressed:
             for item in self.sell_list:
@@ -983,7 +983,7 @@ class LethalGame(arcade.Window):
                 self.scrap_sold += int(item.value * value_loss)
                 self.ship.money += int(item.value * value_loss)
             self.sell_list = arcade.SpriteList()
->>>>>>> 9d7b03f753934a16403265534ad5d26bbd5754ea
+
 
         # Position the camera
         self.center_camera_to_player()
