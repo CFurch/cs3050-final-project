@@ -765,6 +765,7 @@ class LethalGame(arcade.Window):
                     self.days_left -= 1
                     # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
                     if self.days_left < 0:
+                        # Tushar: end game screen here
                         self.reset_game()
 
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
@@ -1004,12 +1005,9 @@ def main():
     """
 
     # Initialize game and begin runtime
-    loop_var = "continue"
-    while loop_var == "continue":
-        window = LethalGame()
-        window.setup("experimentation")
-        loop_var = arcade.run()
-        print(loop_var)
+    window = LethalGame()
+    window.setup("experimentation")
+    arcade.run()
 
 
 if __name__ == "__main__":
