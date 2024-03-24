@@ -12,6 +12,7 @@ from map import Map
 from player import PlayerCharacter
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
+from game_loop_utilities import increase_quota
 from ship import Ship, SHIP_INTERACTION_OPTIONS, GAMESTATE_OPTIONS
 from time import time
 import json
@@ -138,6 +139,8 @@ class LethalGame(arcade.Window):
         self.quota_hud_sprite = arcade.Sprite("resources/player_sprites/quota_hud_box.png")
         self.day_hud_sprite = arcade.Sprite("resources/player_sprites/day_hud_box.png")
         self.zero_day_sprite = arcade.Sprite("resources/player_sprites/no_day_left.png")
+        self.scrap_sold = 0
+        self.sell_list = arcade.SpriteList()
 
         # Initialize time variables
         self.start_time = None
@@ -145,6 +148,115 @@ class LethalGame(arcade.Window):
         self.time_hud_sprite = arcade.Sprite("resources/player_sprites/time_hud_box.png")
 
         self.last_terminal_output = None
+        self.terminal_background = arcade.Sprite("resources/player_sprites/terminal_background.png")
+        self.terminal_background.alpha = 128
+
+        self.company_building = arcade.Scene.from_tilemap(arcade.load_tilemap("resources/tilemaps/company.tmx"))
+        self.company_starting_position = (720, 640)
+        self.company_physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.company_building["walls"]
+        )
+        self.company_physics_engine.gravity_constant = 0
+
+    def reset_game(self):
+        """
+        Reset the game, different than init
+        """
+        # Initialize variables for spawning / map / other important variables
+        self.gamestate = GAMESTATE_OPTIONS["orbit"]
+        self.moon_name = None
+        self.indoor_map = None
+        self.indoor_walls = None
+        self.indoor_main_position = None
+        self.indoor_main_bounding_box = None
+        self.outdoor_starting_position = None
+        self.outdoor_main_position = None
+
+        self.ship = Ship().setup()
+
+        self.outdoor_map = None
+        self.outdoor_walls = None
+        self.outdoor_main_box = None
+
+        self.player = PlayerCharacter()
+        self.inventory_hud = None
+
+        self.indoor_enemy_entities = None
+        self.indoor_enemy_entities = None
+
+        self.indoor_loot_items = None
+        self.outdoor_loot_items = arcade.SpriteList()
+
+        self.mines = None
+        self.armed_mines = None
+        self.turrets = None
+        self.bullets = None
+
+        self.indoor_physics_engine = None
+        self.outdoor_physics_engine = None
+        self.ship_physics_engine = None
+
+        # GUI variables
+        self.camera = None
+        # Instead of using a scene, it may also be easier to just keep a sprite list
+        # for each individual thing.
+        # self.scene = None
+
+        # Movement / inventory variables
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
+        self.shift_pressed = False
+        self.pressed_1 = False
+        self.pressed_2 = False
+        self.pressed_3 = False
+        self.pressed_4 = False
+        self.e_pressed = False
+        self.g_pressed = False
+
+        self.sprinting = False
+        self.delaying_stam = False
+
+        self.delay_main_enter_exit = ENTER_EXIT_DELAY
+
+        # Inventory slots
+        self.try_pickup_item = False
+        self.drop_item = False
+
+        # Set power levels - has to do with spawning mechanics
+        self.indoor_power = None  # experimentation-40 levels
+        self.outdoor_power = None
+
+        # Game loop settings - some of these are off of the given ones from the wiki
+        # https://lethal-company.fandom.com/wiki/Profit_Quota
+        self.quota = INITIAL_QUOTA
+        self.quotas_hit = 0
+        self.days_left = MAX_DAYS
+        self.quota_hud_sprite = arcade.Sprite("resources/player_sprites/quota_hud_box.png")
+        self.day_hud_sprite = arcade.Sprite("resources/player_sprites/day_hud_box.png")
+        self.zero_day_sprite = arcade.Sprite("resources/player_sprites/no_day_left.png")
+        self.scrap_sold = 0
+        self.sell_list = arcade.SpriteList()
+
+        # Initialize time variables
+        self.start_time = None
+        self.delta_time = None
+        self.time_hud_sprite = arcade.Sprite("resources/player_sprites/time_hud_box.png")
+
+        self.last_terminal_output = None
+        self.terminal_background = arcade.Sprite("resources/player_sprites/terminal_background.png")
+        self.terminal_background.alpha = 128
+
+        self.company_building = arcade.Scene.from_tilemap(arcade.load_tilemap("resources/tilemaps/company.tmx"))
+        self.company_starting_position = (720, 640)
+        self.company_physics_engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.company_building["walls"]
+        )
+        self.company_physics_engine.gravity_constant = 0
+
+        self.setup("experimentation")
 
     def setup(self, moons_name):
         self.moon_name = moons_name
@@ -244,39 +356,55 @@ class LethalGame(arcade.Window):
         """
         FUTURE: May need to add another state for landing, to animate the ship
         """
-
         # Draw the scene depending on indoors or outdoors
-        if self.gamestate == GAMESTATE_OPTIONS["orbit"]:
+        if self.gamestate == GAMESTATE_OPTIONS["orbit"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
             self.ship.draw_self(self.camera, self.gamestate)
+            if self.gamestate == GAMESTATE_OPTIONS["company"]:
+                self.company_building.draw()
+                self.ship.draw_self(self.camera, self.gamestate)
+                for item in self.outdoor_loot_items:
+                    item.draw_self()
+                for item in self.sell_list:
+                    item.draw_self()
 
-            # Draw the days left
-            if self.days_left > 0:
-                sprite = self.day_hud_sprite
-                color = arcade.csscolor.GREEN
-            else:
-                sprite = self.zero_day_sprite
-                color = arcade.csscolor.RED
+            if not self.ship.player_interacting_with_terminal:
 
-            # Draw correct days left (red if zero)
-            time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
-            time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
-            sprite.center_x = time_text_x - 64
-            sprite.center_y = time_text_y
-            sprite.draw()
+                # Draw the days left
+                if self.days_left > 0:
+                    sprite = self.day_hud_sprite
+                    color = arcade.csscolor.GREEN
+                else:
+                    sprite = self.zero_day_sprite
+                    color = arcade.csscolor.RED
 
-            arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
-                             12)
-            self.quota_hud_sprite.center_x = time_text_x + 64
-            self.quota_hud_sprite.center_y = time_text_y
-            self.quota_hud_sprite.draw()
-            # Draw the days left
-            arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
-                             12)
+                # Draw correct days left (red if zero)
+                time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
+                time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
+                sprite.center_x = time_text_x - 128
+                sprite.center_y = time_text_y
+                sprite.draw()
+
+                arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
+                                 12)
+                self.quota_hud_sprite.center_x = time_text_x
+                self.quota_hud_sprite.center_y = time_text_y
+                self.quota_hud_sprite.draw()
+
+                # Draw the days left
+                arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
+                                 12)
+                self.quota_hud_sprite.center_x = time_text_x + 128
+                self.quota_hud_sprite.center_y = time_text_y
+                self.quota_hud_sprite.draw()
+                arcade.draw_text(f"Sold: {self.scrap_sold}", self.quota_hud_sprite.center_x - 42,
+                                 self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
+                                 12)
 
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
             self.ship.draw_self(self.camera, self.gamestate)
-            self.outdoor_loot_items.draw()
+            for item in self.outdoor_loot_items:
+                item.draw_self()
             # draw the time on hud, if the player isn't in the ship
             if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
                 time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
@@ -306,7 +434,9 @@ class LethalGame(arcade.Window):
                     armed_mine.draw()
 
             # Draw loot after mines but before turrets
-            self.indoor_loot_items.draw()
+            # self.indoor_loot_items.draw()
+            for item in self.indoor_loot_items:
+                item.draw_self()
 
             # draw bullets and turrets at correct angles
             for bullet in self.bullets:
@@ -337,7 +467,7 @@ class LethalGame(arcade.Window):
                 item.center_y = self.camera.position[1] + 50
                 # item.set_inventory_texture()
                 # print(item.center_x, item.center_y)
-                item.draw()
+                item.draw_self()
 
         # Draw text for holding 2 handed item
         if self.player.get_two_handed():
@@ -346,35 +476,39 @@ class LethalGame(arcade.Window):
             holding_text.center_y = self.camera.position[1] + 50
             holding_text.draw()
 
-        # Draw the health and stamina on the camera view
-        # health_text = f"Health: {self.player.get_health()}"
-        stamina_text = f"Stamina: {int(self.player.get_stam())}"
-        weight_text = f"{int(self.player.get_weight())} lb"
-
-        # Calculate the position for objects relative to the camera's position
-        text_x = self.camera.position[0] + 20
-        text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
-
-        # Draw the text at the calculated position
-        # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
-        health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
-        health_sprite.center_x = self.camera.position[0] + 75
-        health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
-        # health_sprite.alpha = 128 # use this to set opacity of objects
-        health_sprite.draw()
-
-        # Stamina representation
-        arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
-        arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
-
         # Draw text from ship
         if self.ship.player_interacting_with_terminal:
+            self.terminal_background.center_x = self.camera.position[0] + SCREEN_WIDTH / 2
+            self.terminal_background.center_y = self.camera.position[1] + SCREEN_HEIGHT / 2
+            self.terminal_background.draw()
             arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
                              self.camera.position[1] + 100, arcade.csscolor.GREEN, 36)
             base_output, processed_terminal_output = self.ship.read_output()
             if processed_terminal_output != "":
                 arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
-                                 self.camera.position[1] + 200, arcade.csscolor.GREEN, 36)
+                                 self.camera.position[1] + SCREEN_HEIGHT - 100, arcade.csscolor.GREEN, 24,
+                                 multiline=True, width=850)
+        else:
+            # Draw the health and stamina on the camera view
+            # health_text = f"Health: {self.player.get_health()}"
+            stamina_text = f"Stamina: {int(self.player.get_stam())}"
+            weight_text = f"{int(self.player.get_weight())} lb"
+
+            # Calculate the position for objects relative to the camera's position
+            text_x = self.camera.position[0] + 20
+            text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
+
+            # Draw the text at the calculated position
+            # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
+            health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
+            health_sprite.center_x = self.camera.position[0] + 75
+            health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
+            # health_sprite.alpha = 128 # use this to set opacity of objects
+            health_sprite.draw()
+
+            # Stamina representation
+            arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
+            arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
     def process_keychange(self):
         """
@@ -424,7 +558,7 @@ class LethalGame(arcade.Window):
             self.player.set_movement_speed(diagonal_speed)
 
         # Adjust speed for outdoors (since for some reason this is twice the speed of orbit and indoors
-        if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
             self.player.set_movement_speed(self.player.get_movement_speed() / 2)
 
         # Account for weight
@@ -495,7 +629,6 @@ class LethalGame(arcade.Window):
         elif self.down_pressed:
             self.player.update_rotation(0, -1)
         # Does have a default value
-
 
     def on_key_press(self, key, modifiers):
         """
@@ -610,6 +743,8 @@ class LethalGame(arcade.Window):
                 for obj in data:
                     if self.last_terminal_output.startswith(obj['terminal_phrase']):
                         self.moon_name = obj["id"]
+                    elif self.last_terminal_output.startswith("com"):
+                        self.moon_name = "comp"
                 # Add code for switching terminal output here
 
         else:
@@ -635,10 +770,42 @@ class LethalGame(arcade.Window):
                     self.ship.change_orbit()
                     # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
                     self.days_left -= 1
+                    # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
                     if self.days_left < 0:
-                        # Tushar: game over screen
-                        pass
-                        # reset the game by exitting to the outer game loop and starting over from start screen
+                        # Tushar: end game screen here
+                        self.reset_game()
+
+                elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
+                    # This will handle inputs and drawing new stuff
+                    self.ship.interact_terminal()
+        elif self.gamestate == GAMESTATE_OPTIONS["company"]:
+            self.company_physics_engine.update()
+            self.ship.update_ship()
+            # This method will auto-update physics engine for if door is open or shut
+            self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
+                self.player, self.ship.get_walls()
+            )
+            self.ship_physics_engine.gravity_constant = 0
+            self.ship_physics_engine.update()
+
+            # Interact with the ship
+            if self.e_pressed:
+                ship_action = self.ship.interact_ship(self.player)
+                # The following is changing from landing to orbit
+                if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
+                    self.gamestate = GAMESTATE_OPTIONS["orbit"]
+                    self.ship.change_orbit()
+                    # Check days left
+                    if self.days_left <= 0:
+                        # if hit quota: reset days left and new quota
+                        if self.scrap_sold >= self.quota:
+                            self.days_left = 3
+                            self.quotas_hit += 1
+                            self.quota = increase_quota(self.quota, self.quotas_hit)
+                            self.scrap_sold = 0
+                        else:
+                            # Tushar: Game end screen, after a short period restart the game (call init function)
+                            self.reset_game()
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
                     # This will handle inputs and drawing new stuff
                     self.ship.interact_terminal()
@@ -656,9 +823,22 @@ class LethalGame(arcade.Window):
                 if ship_action == SHIP_INTERACTION_OPTIONS["lever"]:
                     self.gamestate = GAMESTATE_OPTIONS["outdoors"]
                     self.ship.change_orbit()
-                    # Setup and generate the new map (maybe show a loading screen before this and remove it after done)
-                    # Like in game
-                    self.setup(self.moon_name)
+                    if self.moon_name != "comp":
+                        # Setup and generate the new map (maybe show a loading screen before this and remove it after done)
+                        # Like in game
+                        self.setup(self.moon_name)
+                    else:
+                        self.gamestate = GAMESTATE_OPTIONS["company"]
+                        # Setup the company building
+                        # Ship update position uses delta_x and y
+                        ship_position = self.ship.get_pos()
+                        self.ship.update_position(self.company_starting_position[0] - 64 - ship_position[0],
+                                                  self.company_starting_position[1] - 128 - ship_position[1])
+                        self.player.center_x = self.company_starting_position[0]
+                        self.player.center_y = self.company_starting_position[1]
+                        # Clear lists
+                        self.outdoor_loot_items = arcade.SpriteList()
+                        self.sell_list = arcade.SpriteList()
 
         # handle collisions - like this
         # item_hit_list = arcade.check_for_collision_with_list(
@@ -684,9 +864,10 @@ class LethalGame(arcade.Window):
                     item_hit_list[0].remove_from_sprite_lists()  # remove from sprite list too
 
             else:
-                if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+                if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
                     # Check outdoor loot items
                     self.outdoor_loot_items = self.check_player_list_collision(self.outdoor_loot_items)
+                    # Also cannot pick items up from the sell list
 
                 elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
                     # Check indoor loot items
@@ -696,10 +877,12 @@ class LethalGame(arcade.Window):
         if self.drop_item and self.player.get_inv(self.player.get_current_inv_slot()) and \
                 self.player.get_pd_delay() == 0:
             temp_item = self.player.remove_item(self.player.get_current_inv_slot())
-            if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+            if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
                 # Only add to the ship list if the player is interacting with the ship
                 if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
                     self.ship.add_item(temp_item)
+                elif arcade.check_for_collision_with_list(self.player, self.company_building["sell_areas"]):
+                    self.sell_list.append(temp_item)
                 else:
                     self.outdoor_loot_items.append(temp_item)
             elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
@@ -773,8 +956,17 @@ class LethalGame(arcade.Window):
                     # print("delaying")
                     self.delay_main_enter_exit -= 1
 
+<<<<<<< HEAD
         # update spawner list
                     
+=======
+        # Check for player interacting with bell
+        if arcade.check_for_collision_with_list(self.player, self.company_building["bell"]) and self.e_pressed:
+            for item in self.sell_list:
+                self.scrap_sold += item.value
+                self.ship.money += item.value
+            self.sell_list = arcade.SpriteList()
+>>>>>>> 9d7b03f753934a16403265534ad5d26bbd5754ea
 
         # Position the camera
         self.center_camera_to_player()

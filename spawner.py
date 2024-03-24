@@ -11,8 +11,6 @@
     If the monsters power is greater than the maps remaining indoor power, it fails and will wait for it's next timer.
     If the monsters power is equal to or less than the maps remaining indoor power, the monster will be spawned and it will wait for its next timer.
 
-    The spawner class will have to be called by ROOM, with info passed from map.
-
 """
 
 import arcade
@@ -23,15 +21,27 @@ class Spawner(arcade.Sprite):
         """
         initialize spawn queue
         """
+        self.cooldown_max = 0
+        self.cooldown_current = 0
         self.spawn_queue = []
 
     def setup(self, map):
         """
         populate the spawn queue
         """
-
         
-    def spawn_monster():
+    def update_spawner(self, time, current_power):
         """
-        called when the current cooldown is hit
+        increments the spawner cooldown
         """
+        self.cooldown_current -= time
+        
+        if self.cooldown_current < 0:
+            spawn_monster()
+            self.cooldown_current = self.cooldown_max
+
+
+def spawn_monster():
+    """
+    called when the current cooldown is hit
+    """
