@@ -98,7 +98,8 @@ class Ship(arcade.Sprite):
             self.door_sprite.draw()
 
         # Draw ship loot
-        self.ship_loot.draw()
+        for item in self.ship_loot:
+            item.draw_self()
 
         # Draw the amount of loot onto the hud if in orbit
         if gamestate == GAMESTATE_OPTIONS["orbit"] and not self.player_interacting_with_terminal:

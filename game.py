@@ -360,8 +360,10 @@ class LethalGame(arcade.Window):
             if self.gamestate == GAMESTATE_OPTIONS["company"]:
                 self.company_building.draw()
                 self.ship.draw_self(self.camera, self.gamestate)
-                self.outdoor_loot_items.draw()
-                self.sell_list.draw()
+                for item in self.outdoor_loot_items:
+                    item.draw_self()
+                for item in self.sell_list:
+                    item.draw_self()
 
             if not self.ship.player_interacting_with_terminal:
 
@@ -399,7 +401,8 @@ class LethalGame(arcade.Window):
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             self.outdoor_map.draw()
             self.ship.draw_self(self.camera, self.gamestate)
-            self.outdoor_loot_items.draw()
+            for item in self.outdoor_loot_items:
+                item.draw_self()
             # draw the time on hud, if the player isn't in the ship
             if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
                 time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
