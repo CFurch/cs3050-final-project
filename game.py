@@ -9,7 +9,7 @@ import arcade
 import math
 from room import Room
 from map import Map
-from player import PlayerCharacter
+from player import PlayerCharacter, MAX_STAM, MAX_HEALTH
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 from game_loop_utilities import increase_quota
@@ -26,7 +26,6 @@ SCREEN_TITLE = "2D Lethal Company"
 # Starting location of the player, and movement constants
 PLAYER_START_X = 500
 PLAYER_START_Y = 500
-MAX_STAM = 100
 STAM_DRAIN = 0.17 # set to match game
 BASE_MOVEMENT_SPEED = 2
 SPRINT_DELAY = 30
@@ -781,7 +780,7 @@ class LethalGame(arcade.Window):
                     self.ship.interact_terminal()
             if self.delta_time >= DAY_LENGTH:
                 self.gamestate = GAMESTATE_OPTIONS["orbit"]
-                self.player.clear_inv()
+                self.player.reset()
                 self.player.center_x = self.ship.center_x + 64
                 self.player.center_y = self.ship.center_y + 128
                 self.ship.change_orbit()
@@ -984,9 +983,22 @@ class LethalGame(arcade.Window):
                 self.ship.money += int(item.value * value_loss)
             self.sell_list = arcade.SpriteList()
 
-
         # Position the camera
         self.center_camera_to_player()
+
+        # Check if the player is dead, transfer to orbit otherwise
+        if self.player.health <= 0 and self.gamestate != GAMESTATE_OPTIONS["orbit"]:
+            self.gamestate = GAMESTATE_OPTIONS["orbit"]
+            self.player.reset()
+            self.player.center_x = self.ship.center_x + 64
+            self.player.center_y = self.ship.center_y + 128
+            self.ship.change_orbit()
+            # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+            self.days_left -= 1
+            # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
+            if self.days_left < 0:
+                # Tushar: end game screen here
+                self.reset_game()
 
         # Update the time if indoors or outdoors (i.e. this happens if it is during a day
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"]:

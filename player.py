@@ -3,6 +3,8 @@ import math
 
 PLAYER_DELAY_PICKUP_DROP = 20
 PLAYER_ROTATION_RATE = 10
+MAX_HEALTH = 100
+MAX_STAM = 100
 
 
 class PlayerCharacter(arcade.Sprite):
@@ -18,8 +20,8 @@ class PlayerCharacter(arcade.Sprite):
         self.inventory = [None, None, None, None]  # Assuming 4 inventory slots
         self.holding_two_handed = False
         self.current_item_slot_selected = 1  # Default to first slot
-        self.health = 100
-        self.stamina = 100
+        self.health = MAX_HEALTH
+        self.stamina = MAX_STAM
         self.movement_speed = None
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
@@ -141,6 +143,21 @@ class PlayerCharacter(arcade.Sprite):
         """
         if not self.holding_two_handed:
             self.current_item_slot_selected = inventory_slot
+
+    def reset(self):
+        # Inventory attributes
+        self.inventory = [None, None, None, None]  # Assuming 4 inventory slots
+        self.holding_two_handed = False
+        self.current_item_slot_selected = 1  # Default to first slot
+        self.health = MAX_HEALTH
+        self.stamina = MAX_STAM
+        self.movement_speed = None
+        self.total_weight = 0
+        # Need to update sprites with animations, directions, etc
+        self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.rotation = 0
+
+        self.pickup_drop_delay = 0
 
     def get_current_inv_slot(self):
         """
