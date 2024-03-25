@@ -1,5 +1,6 @@
 import arcade
 import math
+from utility_functions import rotate_hit_box
 
 PLAYER_DELAY_PICKUP_DROP = 20
 PLAYER_ROTATION_RATE = 10
@@ -26,6 +27,7 @@ class PlayerCharacter(arcade.Sprite):
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.current_texture_name = "resources/player_sprites/player_neutral.png"
         self.rotation = 0
 
         # Block pickup if player is just dropped something or just picked something up
@@ -224,8 +226,9 @@ class PlayerCharacter(arcade.Sprite):
         # Adjust rotation
         if current_rotation != target_direction:
             self.rotation += rotation_direction * rotation_rate
-
-        # BUG: adjust hitbox based on rotation
+            # Only update hitbox if rotation has changed
+            # Have to create a new sprite each time for the angle is only supplied during creation
+            self.hit_box = rotate_hit_box(arcade.Sprite(self.current_texture_name).hit_box, self.rotation)
 
     def draw_self(self):
 

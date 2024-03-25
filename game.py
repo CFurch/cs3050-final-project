@@ -482,7 +482,7 @@ class LethalGame(arcade.Window):
             self.terminal_background.center_y = self.camera.position[1] + SCREEN_HEIGHT / 2
             self.terminal_background.draw()
             arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
-                             self.camera.position[1] + 100, arcade.csscolor.GREEN, 36)
+                             self.camera.position[1] + 100, arcade.csscolor.GREEN, 24)
             base_output, processed_terminal_output = self.ship.read_output()
             if processed_terminal_output != "":
                 arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
