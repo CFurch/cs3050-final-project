@@ -213,6 +213,8 @@ class PlayerCharacter(arcade.Sprite):
         Draw the turret with scaled texture and rotation.
         """
 
+        # TODO: Swap sprites when walking/carrying
+
         arcade.draw_texture_rectangle(self.center_x, self.center_y, self.texture.width * self.scale,
                                       self.texture.height * self.scale, self.texture, self.rotation)
 

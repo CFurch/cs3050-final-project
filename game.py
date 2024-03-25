@@ -417,6 +417,9 @@ class LethalGame(arcade.Window):
                 arcade.draw_text(f"{hours:02d}:{minutes:02d}", time_text_x - 22, time_text_y - 6, arcade.csscolor.ORANGE, 12)
 
         else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
+
+            # TODO: Only draw adjacent rooms
+
             self.indoor_walls.draw()
             for mine in self.mines:
                 if not mine.get_exploded():
@@ -445,6 +448,8 @@ class LethalGame(arcade.Window):
                 if turret.get_turret_laser() != None:
                     turret.get_turret_laser().draw()
                 turret.draw_scaled()
+
+        
 
         self.player.draw_self()
 
@@ -956,17 +961,15 @@ class LethalGame(arcade.Window):
                     # print("delaying")
                     self.delay_main_enter_exit -= 1
 
-<<<<<<< HEAD
         # update spawner list
+        self.indoor_map.update()
                     
-=======
         # Check for player interacting with bell
         if arcade.check_for_collision_with_list(self.player, self.company_building["bell"]) and self.e_pressed:
             for item in self.sell_list:
                 self.scrap_sold += item.value
                 self.ship.money += item.value
             self.sell_list = arcade.SpriteList()
->>>>>>> 9d7b03f753934a16403265534ad5d26bbd5754ea
 
         # Position the camera
         self.center_camera_to_player()
