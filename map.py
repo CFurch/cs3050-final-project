@@ -3,6 +3,7 @@ import random
 import json
 from room import Room
 import time
+import spawner
 
 ROOM_SIZE = 256
 HALF_ROOM_SIZE = 128
@@ -28,8 +29,13 @@ class Map(arcade.Sprite):
         self.hazard_quantity = []
         self.mines = None
         self.turrets = None
+        self.monster_data = []
+
         # previous seed: random.randrange(0,2**31-1)
         self.seed = XORshift(int(time.time()))
+        #self.seed = 0
+       
+        self.spawners = []
 
         random.seed(self.seed)
 
@@ -51,6 +57,7 @@ class Map(arcade.Sprite):
                 self.outdoor_starting_position = moon.get("outdoor_starting_position", [])
                 self.indoor_power = moon.get("indoor_power", int)
                 self.outdoor_power = moon.get("outdoor_power", int)
+                self.monster_data = moon.get("monster_weight", [])
                 self.indoor_main_entrance_sprite = moon.get("indoor_main_hit_box", {})
                 self.indoor_main_entrance_image = moon.get("indoor_main_image", {})
                 self.outdoor_leave_position = moon.get("outdoor_leave_main_position", [])
@@ -70,7 +77,7 @@ class Map(arcade.Sprite):
         """
 
         # gen_dfs_maze takes: size and seed
-        player_start, maze = gen_dfs_maze(int(self.size) , self.seed)
+        player_start, maze = gen_dfs_maze(int(self.size))
         map = maze
 
         # Scale up player_start
@@ -100,7 +107,6 @@ class Map(arcade.Sprite):
                 new_room = [column[y], [[0,0,0],[0,0,0]],[0,0],0]
                 map[x][y] = new_room
 
-        
         # loot generation
         gen_loot(map, self.loot_quantity, self.loot_weight)
 
@@ -108,6 +114,7 @@ class Map(arcade.Sprite):
         gen_hazards(map, self.hazard_quantity)
     
         # create spawners for monsters
+        gen_spawners(map, self.difficulty, self.monster_data)
 
         # Iterate through each room in the representation of the map and create a room
         x_temp = HALF_ROOM_SIZE
@@ -118,6 +125,7 @@ class Map(arcade.Sprite):
             for x, item in enumerate(col):
                 #print(item)
                 #print(x_temp, y_temp, item)
+
                 # generate room based on bitwise rep, x, y, to_spawn_loot, etc
                 bitwise_room_rep = item[0]
                 
@@ -144,6 +152,17 @@ class Map(arcade.Sprite):
             y_temp = HALF_ROOM_SIZE
             x_temp += ROOM_SIZE
 
+    def update(self):
+        """
+        call map/tile updates
+        """
+
+        # spawners
+        for spawner in self.spawners:
+            print(spawner)
+
+        # doors
+
     def get_walls(self):
         return self.wall_list
 
@@ -158,6 +177,9 @@ class Map(arcade.Sprite):
 
     def get_turrets(self):
         return self.turrets
+
+    def get_spawners(self):
+        return self.spawners
 
     def get_map_data(self):
         return self.outdoor_tilemap_name, self.outdoor_starting_position, self.indoor_power, self.outdoor_power, \
@@ -174,12 +196,10 @@ def create_grid(map_size):
 
     return grid
 
-def gen_dfs_maze(map_size, seed):
+def gen_dfs_maze(map_size):
 
     # initialize the maze with the map size
     maze = create_grid(map_size)
-
-    random.seed(seed)
 
     # assign default starting node
     start_x = 0
@@ -272,13 +292,30 @@ def gen_dfs_maze(map_size, seed):
            
             # update the current node with the outpath
             maze[x][y] = str(int(maze[x][y]) + int(paths[0])).zfill(4)
-            maze[valid_neighbors[0][0]][valid_neighbors[0][1]] = str(int(maze[valid_neighbors[0][0]][valid_neighbors[0][1]]) + int(paths[1])).zfill(4)
+            maze[valid_neighbors[0][0]][valid_neighbors[0][1]] = str(int(maze[valid_neighbors[0][0]][valid_neighbors[0][1]]) + 
+                                                                     int(paths[1])).zfill(4)
+            
             # update the neighbor node with the inpath
 
             current_node = valid_neighbors[0]
 
     # create a doorway for the starting node
     maze[start_x][start_y] = str(int(maze[start_x][start_y]) + 1).zfill(4)
+
+    
+    # generate random hallways
+    total_halls = 0
+    while total_halls < (0.75 * pow(map_size,2)):
+        rand_x = random.randrange(1, map_size-1)
+        rand_y = random.randrange(1, map_size-1)
+
+        dir_population = ["1000","0100","0010","0001"]
+        rand_dirr = random.sample(dir_population,1)
+
+        maze[rand_x][rand_y] = str(int(maze[rand_x][rand_y]) + int(rand_dirr[0])).replace("2","1").zfill(4)
+
+        total_halls += 1
+
 
     return starting_node, maze
 
@@ -348,12 +385,38 @@ def gen_hazards(map, hazard_quantity):
             map[rand_x][rand_y][2][1] += 1
             total_turrets += 1
 
-
-def gen_spawners(map, indoor_power, monsters):
+def gen_spawners(map, difficulty, monster_data,):
     """
     Randomly create the spawners for the map alongside their timers and selected monster
     """
 
+    max_spawners = len(map)
+    total_spawners = 0
+    cooldown = (1/difficulty) * 100
+
+
+    # normalize spawn chances and calculate weights
+    norm_val = sum(monster_data.values())
+    normalized_monsters = {m:mw/norm_val for m, mw in monster_data.items()}
+    monster_pop = list(monster_data.keys())
+    monster_weight = list(normalized_monsters.values())
+
+    while total_spawners <= max_spawners:
+        rand_x = random.randrange(0, len(map))
+        rand_y = random.randrange(0, len(map))
+        
+
+        if map[rand_x][rand_y][0] != "0000":
+
+            # generate a monster queue from the difficulty, max length of 4
+            monsters = [random.choices(monster_pop,monster_weight,k=4)]
+
+            # create a spawner and store it in the spawner list
+
+            # use the monster weights to generate a spawner and store it in the map data
+            map[rand_x][rand_y][3] = spawner.Spawner.setup(spawner, cooldown, monsters)
+            
+            total_spawners += 1
 
 def XORshift(state):
     """

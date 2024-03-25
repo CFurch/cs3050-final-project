@@ -1,6 +1,8 @@
 [
     {
         "id": "experimentation",
+        "terminal_phrase": "ex",
+        "moon_name": "40 - Experimentation",
         "size": 1.0,
         "difficulty": 1.0,
         "loot-quantity": [10,15],
@@ -12,16 +14,26 @@
             "mines": [2,10],
             "turrets": [2,6]
         },
+        
         "outdoor_tilemap": "resources/tilemaps/experimentation.tmx",
         "outdoor_starting_position": [1600, 3750],
         "outdoor_leave_main_position": [1760, 4448],
+        
         "indoor_power": 4,
         "outdoor_power": 3,
+        "monster_weight": {
+            "hydrogere": 4,
+            "thumper": 2,
+            "bracken": 1
+        },
+
         "indoor_main_hit_box": {"center_x": -112, "center_y": 0, "texture": "resources/wall_sprites/main_hit_box.png"},
         "indoor_main_image": {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/main_entrance.png"}
     },
     {
         "id": "titan",
+        "terminal_phrase": "ti",
+        "moon_name": "8 - Titan",
         "size": 2.5,
         "difficulty": 2.5,
         "loot-quantity": [16,21],
@@ -33,11 +45,19 @@
             "mines": [20,48],
             "turrets": [20,35]
         },
-        "outdoor_tilemap": "resources/tilemaps/experimentation.tmx",
-        "outdoor_starting_position": [500, 500],
-        "outdoor_leave_main_position": [1775, 4475],
+        "outdoor_tilemap": "resources/tilemaps/titan.tmx",
+        "outdoor_starting_position": [1600, 3750],
+        "outdoor_leave_main_position": [1760, 4448],
+
         "indoor_power": 4,
         "outdoor_power": 3,
+        "monster_weight": {
+            "hydrogere": 1,
+            "thumper": 2,
+            "bracken": 4
+        },
+
+
         "indoor_main_hit_box": {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/main_hit_box.png"},
         "indoor_main_image": {"center_x": -96, "center_y": 0, "texture": "resources/wall_sprites/main_entrance.png"}
     }

@@ -28,7 +28,7 @@ def increase_quota(current_quota, quotas_fulfilled):
     plt.grid(True)
     plt.show()
     """
-    return next_quota
+    return int(next_quota[0])
 
 
 def generate_randomizer_curve(size):

@@ -118,3 +118,14 @@ class LineSegment(arcade.Sprite):
         Extend the line segment by a specified step.
         """
         self.width += step
+
+
+def rotate_hit_box(hit_box_points, angle):
+    """Rotate hit box points around a center point (cx, cy) by an angle."""
+    new_points = []
+    for x, y in hit_box_points:
+        # Rotate points around center of player
+        new_x = x * math.cos(math.radians(angle)) - y * math.sin(math.radians(angle))
+        new_y = x * math.sin(math.radians(angle)) + y * math.cos(math.radians(angle))
+        new_points.append((new_x, new_y))
+    return new_points
