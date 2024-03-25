@@ -25,10 +25,12 @@ class Spawner(arcade.Sprite):
         self.cooldown_current = 0
         self.spawn_queue = []
 
-    def setup(self, map):
+    def setup(self, cooldown, monsters):
         """
         populate the spawn queue
         """
+        self.cooldown_max = cooldown
+        self.spawn_queue = []
         
     def update_spawner(self, time, current_power):
         """
