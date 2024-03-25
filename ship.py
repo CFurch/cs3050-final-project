@@ -102,7 +102,7 @@ class Ship(arcade.Sprite):
             item.draw_self()
 
         # Draw the amount of loot onto the hud if in orbit
-        if gamestate == GAMESTATE_OPTIONS["orbit"] and not self.player_interacting_with_terminal:
+        if (gamestate == GAMESTATE_OPTIONS["orbit"] or gamestate == GAMESTATE_OPTIONS["company"]) and not self.player_interacting_with_terminal:
             text_x = camera.position[0] + 20
             text_y = camera.position[1] + SCREEN_HEIGHT - 30
             arcade.draw_text(f"Total ship loot: {self.total_loot_value}", text_x, text_y - 210, arcade.csscolor.GREEN, 18)

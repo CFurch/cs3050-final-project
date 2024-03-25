@@ -9,7 +9,7 @@ import arcade
 import math
 from room import Room
 from map import Map
-from player import PlayerCharacter
+from player import PlayerCharacter, MAX_STAM, MAX_HEALTH
 from item import Item
 from utility_functions import euclidean_distance, calculate_direction_vector_negative, is_within_facing_direction
 from game_loop_utilities import increase_quota
@@ -26,7 +26,6 @@ SCREEN_TITLE = "2D Lethal Company"
 # Starting location of the player, and movement constants
 PLAYER_START_X = 500
 PLAYER_START_Y = 500
-MAX_STAM = 100
 STAM_DRAIN = 0.17 # set to match game
 BASE_MOVEMENT_SPEED = 2
 SPRINT_DELAY = 30
@@ -48,6 +47,7 @@ SEC_PER_HOUR = SEC_PER_MIN * MIN_PER_HOUR
 # Time passes slightly faster in game than irl - one second is a bit more than a minute
 # 1.6 means 16 hours in 10 minutes
 TIME_RATE_INCREASE = 1.6
+DAY_LENGTH = 10 * SEC_PER_MIN * MS_PER_SEC
 
 
 class LethalGame(arcade.Window):
@@ -487,7 +487,7 @@ class LethalGame(arcade.Window):
             self.terminal_background.center_y = self.camera.position[1] + SCREEN_HEIGHT / 2
             self.terminal_background.draw()
             arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
-                             self.camera.position[1] + 100, arcade.csscolor.GREEN, 36)
+                             self.camera.position[1] + 100, arcade.csscolor.GREEN, 24)
             base_output, processed_terminal_output = self.ship.read_output()
             if processed_terminal_output != "":
                 arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
@@ -783,6 +783,19 @@ class LethalGame(arcade.Window):
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
                     # This will handle inputs and drawing new stuff
                     self.ship.interact_terminal()
+            if self.delta_time >= DAY_LENGTH:
+                self.gamestate = GAMESTATE_OPTIONS["orbit"]
+                self.player.reset()
+                self.player.center_x = self.ship.center_x + 64
+                self.player.center_y = self.ship.center_y + 128
+                self.ship.change_orbit()
+                # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+                self.days_left -= 1
+                # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
+                if self.days_left < 0:
+                    # Tushar: end game screen here
+                    self.reset_game()
+
         elif self.gamestate == GAMESTATE_OPTIONS["company"]:
             self.company_physics_engine.update()
             self.ship.update_ship()
@@ -961,18 +974,44 @@ class LethalGame(arcade.Window):
                     # print("delaying")
                     self.delay_main_enter_exit -= 1
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> e24ae0c52c18ddfab2b4cef68877db856412133f
         # update spawner list
         self.indoor_map.update()
                     
+<<<<<<< HEAD
+=======
+
+>>>>>>> e24ae0c52c18ddfab2b4cef68877db856412133f
         # Check for player interacting with bell
         if arcade.check_for_collision_with_list(self.player, self.company_building["bell"]) and self.e_pressed:
             for item in self.sell_list:
-                self.scrap_sold += item.value
-                self.ship.money += item.value
+                # Include loss for number of days left
+                value_loss = (MAX_DAYS - self.days_left) / MAX_DAYS
+
+                self.scrap_sold += int(item.value * value_loss)
+                self.ship.money += int(item.value * value_loss)
             self.sell_list = arcade.SpriteList()
 
         # Position the camera
         self.center_camera_to_player()
+
+        # Check if the player is dead, transfer to orbit otherwise
+        if self.player.health <= 0 and self.gamestate != GAMESTATE_OPTIONS["orbit"]:
+            # Tushar: Death screen
+            self.gamestate = GAMESTATE_OPTIONS["orbit"]
+            self.player.reset()
+            self.player.center_x = self.ship.center_x + 64
+            self.player.center_y = self.ship.center_y + 128
+            self.ship.change_orbit()
+            # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+            self.days_left -= 1
+            # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
+            if self.days_left < 0:
+                # Tushar: end game screen here
+                self.reset_game()
 
         # Update the time if indoors or outdoors (i.e. this happens if it is during a day
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"]:

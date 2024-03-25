@@ -1,8 +1,11 @@
 import arcade
 import math
+from utility_functions import rotate_hit_box
 
 PLAYER_DELAY_PICKUP_DROP = 20
 PLAYER_ROTATION_RATE = 10
+MAX_HEALTH = 100
+MAX_STAM = 100
 
 
 class PlayerCharacter(arcade.Sprite):
@@ -18,12 +21,13 @@ class PlayerCharacter(arcade.Sprite):
         self.inventory = [None, None, None, None]  # Assuming 4 inventory slots
         self.holding_two_handed = False
         self.current_item_slot_selected = 1  # Default to first slot
-        self.health = 100
-        self.stamina = 100
+        self.health = MAX_HEALTH
+        self.stamina = MAX_STAM
         self.movement_speed = None
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.current_texture_name = "resources/player_sprites/player_neutral.png"
         self.rotation = 0
 
         # Block pickup if player is just dropped something or just picked something up
@@ -111,6 +115,9 @@ class PlayerCharacter(arcade.Sprite):
 
         return removed_item
 
+    def clear_inv(self):
+        self.inventory = [None, None, None, None]
+
     def decrease_stam(self, amount):
         self.stamina -= amount
         if self.stamina < 0:
@@ -138,6 +145,21 @@ class PlayerCharacter(arcade.Sprite):
         """
         if not self.holding_two_handed:
             self.current_item_slot_selected = inventory_slot
+
+    def reset(self):
+        # Inventory attributes
+        self.inventory = [None, None, None, None]  # Assuming 4 inventory slots
+        self.holding_two_handed = False
+        self.current_item_slot_selected = 1  # Default to first slot
+        self.health = MAX_HEALTH
+        self.stamina = MAX_STAM
+        self.movement_speed = None
+        self.total_weight = 0
+        # Need to update sprites with animations, directions, etc
+        self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.rotation = 0
+
+        self.pickup_drop_delay = 0
 
     def get_current_inv_slot(self):
         """
@@ -204,8 +226,9 @@ class PlayerCharacter(arcade.Sprite):
         # Adjust rotation
         if current_rotation != target_direction:
             self.rotation += rotation_direction * rotation_rate
-
-        # BUG: adjust hitbox based on rotation
+            # Only update hitbox if rotation has changed
+            # Have to create a new sprite each time for the angle is only supplied during creation
+            self.hit_box = rotate_hit_box(arcade.Sprite(self.current_texture_name).hit_box, self.rotation)
 
     def draw_self(self):
 
