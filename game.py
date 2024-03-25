@@ -974,17 +974,9 @@ class LethalGame(arcade.Window):
                     # print("delaying")
                     self.delay_main_enter_exit -= 1
 
-<<<<<<< HEAD
-=======
-
->>>>>>> e24ae0c52c18ddfab2b4cef68877db856412133f
         # update spawner list
         self.indoor_map.update()
                     
-<<<<<<< HEAD
-=======
-
->>>>>>> e24ae0c52c18ddfab2b4cef68877db856412133f
         # Check for player interacting with bell
         if arcade.check_for_collision_with_list(self.player, self.company_building["bell"]) and self.e_pressed:
             for item in self.sell_list:

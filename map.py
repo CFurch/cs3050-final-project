@@ -156,7 +156,6 @@ class Map(arcade.Sprite):
         """
         call map/tile updates
         """
-        print("UPDATE")
 
         # spawners
         for spawner in self.spawners:
