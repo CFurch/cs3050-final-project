@@ -281,6 +281,8 @@ class PlayerCharacter(arcade.Sprite):
         if self.movement_speed:
             self.walk_time += self.movement_speed
 
+        # TODO: Add logic for interpolated sprites
+
         # logic for swapping states
         if self.walk_time > 30:
             
@@ -292,6 +294,7 @@ class PlayerCharacter(arcade.Sprite):
 
             self.walk_time = 0
 
+        # TODO: move this out into the main body so that it can be referenced without re-initializing on each update
         sprite_matrix = [[[self.sprite_neutral, self.sprite_neutral], [self.sprite_walk1, self.sprite_walk2]],
                          [[self.sprite_neutral_carry, self.sprite_neutral_carry], [self.sprite_walk1_carry, self.sprite_walk2_carry]]]
 
