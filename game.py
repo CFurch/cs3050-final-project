@@ -62,6 +62,8 @@ class LethalGame(arcade.Window):
         # Call the parent class and set up the window
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
+        arcade.enable_timings()
+
         # Initialize variables for spawning / map / other important variables
         self.gamestate = GAMESTATE_OPTIONS["orbit"]
         self.moon_name = None
@@ -347,11 +349,15 @@ class LethalGame(arcade.Window):
         """
         Render the screen
         """
+
         # Clear the screen
         self.clear()
 
         # Start the camera
         self.camera.use()
+
+        # print fps to console
+        #print(arcade.get_fps(60))
 
         """
         FUTURE: May need to add another state for landing, to animate the ship
@@ -419,8 +425,12 @@ class LethalGame(arcade.Window):
         else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
 
             # TODO: Only draw adjacent rooms
+            # calculate adjacent rooms
+            # doing this iteratively causes severe performance drops
+            # for this to be efficient we'd need to do some GPU parallel processing chicanery
 
             self.indoor_walls.draw()
+
             for mine in self.mines:
                 if not mine.get_exploded():
                     mine.draw()

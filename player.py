@@ -24,10 +24,22 @@ class PlayerCharacter(arcade.Sprite):
         self.health = MAX_HEALTH
         self.stamina = MAX_STAM
         self.movement_speed = None
+        self.moving = False
+        self.walk_state = 0
+        self.walk_time = 0
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
         self.current_texture_name = "resources/player_sprites/player_neutral.png"
+
+        # load all sprites
+        self.sprite_neutral = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.sprite_walk1 = arcade.load_texture("resources/player_sprites/player_walk_left.png")
+        self.sprite_walk2 = arcade.load_texture("resources/player_sprites/player_walk_right.png")
+        self.sprite_neutral_carry = arcade.load_texture("resources/player_sprites/player_neutral_carry.png")
+        self.sprite_walk1_carry = arcade.load_texture("resources/player_sprites/player_carry_left.png")
+        self.sprite_walk2_carry = arcade.load_texture("resources/player_sprites/player_carry_right.png")
+
         self.rotation = 0
 
         # Block pickup if player is just dropped something or just picked something up
@@ -154,9 +166,24 @@ class PlayerCharacter(arcade.Sprite):
         self.health = MAX_HEALTH
         self.stamina = MAX_STAM
         self.movement_speed = None
+        self.moving = False
+        self.walk_state = 0
+        self.walk_time = 0
         self.total_weight = 0
         # Need to update sprites with animations, directions, etc
+        #self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        # Need to update sprites with animations, directions, etc
         self.texture = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.current_texture_name = "resources/player_sprites/player_neutral.png"
+
+        # load all sprites
+        self.sprite_neutral = arcade.load_texture("resources/player_sprites/player_neutral.png")
+        self.sprite_walk1 = arcade.load_texture("resources/player_sprites/player_walk_left.png")
+        self.sprite_walk2 = arcade.load_texture("resources/player_sprites/player_walk_right.png")
+        self.sprite_neutral_carry = arcade.load_texture("resources/player_sprites/player_neutral_carry.png")
+        self.sprite_walk1_carry = arcade.load_texture("resources/player_sprites/player_carry_left.png")
+        self.sprite_walk2_carry = arcade.load_texture("resources/player_sprites/player_carry_right.png")
+
         self.rotation = 0
 
         self.pickup_drop_delay = 0
@@ -231,16 +258,49 @@ class PlayerCharacter(arcade.Sprite):
             self.hit_box = rotate_hit_box(arcade.Sprite(self.current_texture_name).hit_box, self.rotation)
 
     def draw_self(self):
-
         """
         Draw the turret with scaled texture and rotation.
         """
 
-        # TODO: Swap sprites when walking/carrying
+        # reset states
+        moving = False
+        carrying = False
+
+        # if the player is moving
+        if self.change_x or self.change_y:
+            moving = True
+
+        # if the player is holding an item
+        if self.inventory[self.current_item_slot_selected-1] != None or self.holding_two_handed:
+            carrying = True
+        
+        # every frame, increment the step counter, unless sprinting, then increase again!
+        # when the step counter reaches 20, swap the walk state
+        if self.movement_speed:
+            self.walk_time += self.movement_speed
+
+        # logic for swapping states
+        if self.walk_time > 30:
+            
+            match self.walk_state:
+                case 0:
+                    self.walk_state = 1
+                case 1:
+                    self.walk_state = 0
+
+            self.walk_time = 0
+
+        print(self.walk_state)
+
+
+        sprite_matrix = [[[self.sprite_neutral, self.sprite_neutral], [self.sprite_walk1, self.sprite_walk2]],
+                         [[self.sprite_neutral_carry, self.sprite_neutral], [self.sprite_walk1_carry, self.sprite_walk2_carry]]]
+
+        sprite = sprite_matrix[carrying][moving][self.walk_state]
 
         arcade.draw_texture_rectangle(self.center_x, self.center_y, self.texture.width * self.scale,
-                                      self.texture.height * self.scale, self.texture, self.rotation)
-
+                                      self.texture.height * self.scale, sprite, self.rotation)
+        
 
     """
     future todo:
