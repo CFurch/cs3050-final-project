@@ -29,13 +29,12 @@ class Map(arcade.Sprite):
         self.hazard_quantity = []
         self.mines = None
         self.turrets = None
+        self.spawners = []
         self.monster_data = []
 
         # previous seed: random.randrange(0,2**31-1)
         self.seed = XORshift(int(time.time()))
         #self.seed = 0
-       
-        self.spawners = []
 
         random.seed(self.seed)
 
@@ -97,6 +96,7 @@ class Map(arcade.Sprite):
 
         self.mines = arcade.SpriteList()
         self.turrets = arcade.SpriteList()
+        self.spawners = arcade.SpriteList()
 
         # populate the maze with empties
         # for each column in the map
@@ -114,7 +114,7 @@ class Map(arcade.Sprite):
         gen_hazards(map, self.hazard_quantity)
     
         # create spawners for monsters
-        gen_spawners(map, self.difficulty, self.monster_data)
+        gen_spawners(map, self.spawners, self.difficulty, self.monster_data)
 
         # Iterate through each room in the representation of the map and create a room
         x_temp = HALF_ROOM_SIZE
@@ -159,9 +159,8 @@ class Map(arcade.Sprite):
 
         # spawners
         for spawner in self.spawners:
-            print(spawner)
+            spawner.update()
 
-        # doors
 
     def get_walls(self):
         return self.wall_list
@@ -385,7 +384,7 @@ def gen_hazards(map, hazard_quantity):
             map[rand_x][rand_y][2][1] += 1
             total_turrets += 1
 
-def gen_spawners(map, difficulty, monster_data,):
+def gen_spawners(map, spawners, difficulty, monster_data):
     """
     Randomly create the spawners for the map alongside their timers and selected monster
     """
@@ -393,7 +392,6 @@ def gen_spawners(map, difficulty, monster_data,):
     max_spawners = len(map)
     total_spawners = 0
     cooldown = (1/difficulty) * 100
-
 
     # normalize spawn chances and calculate weights
     norm_val = sum(monster_data.values())
@@ -406,15 +404,18 @@ def gen_spawners(map, difficulty, monster_data,):
         rand_y = random.randrange(0, len(map))
         
 
-        if map[rand_x][rand_y][0] != "0000":
+        if map[rand_x][rand_y][0] != "0000" and map[rand_x][rand_y][3] != 1:
 
             # generate a monster queue from the difficulty, max length of 4
             monsters = [random.choices(monster_pop,monster_weight,k=4)]
 
             # create a spawner and store it in the spawner list
+            new_spawner = spawner.Spawner()
+            new_spawner.setup(cooldown,monsters)
+            spawners.append(new_spawner)
 
-            # use the monster weights to generate a spawner and store it in the map data
-            map[rand_x][rand_y][3] = spawner.Spawner.setup(spawner, cooldown, monsters)
+            # then add a spawner to one of the map tiles
+            map[rand_x][rand_y][3] = 1
             
             total_spawners += 1
 
