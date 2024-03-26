@@ -293,7 +293,7 @@ class PlayerCharacter(arcade.Sprite):
             self.walk_time = 0
 
         sprite_matrix = [[[self.sprite_neutral, self.sprite_neutral], [self.sprite_walk1, self.sprite_walk2]],
-                         [[self.sprite_neutral_carry, self.sprite_neutral], [self.sprite_walk1_carry, self.sprite_walk2_carry]]]
+                         [[self.sprite_neutral_carry, self.sprite_neutral_carry], [self.sprite_walk1_carry, self.sprite_walk2_carry]]]
 
         sprite = sprite_matrix[carrying][moving][self.walk_state]
 
