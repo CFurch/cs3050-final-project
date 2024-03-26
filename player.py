@@ -266,6 +266,8 @@ class PlayerCharacter(arcade.Sprite):
         moving = False
         carrying = False
 
+        # TODO: Render carried item in front of player
+
         # if the player is moving
         if self.change_x or self.change_y:
             moving = True
@@ -289,9 +291,6 @@ class PlayerCharacter(arcade.Sprite):
                     self.walk_state = 0
 
             self.walk_time = 0
-
-        print(self.walk_state)
-
 
         sprite_matrix = [[[self.sprite_neutral, self.sprite_neutral], [self.sprite_walk1, self.sprite_walk2]],
                          [[self.sprite_neutral_carry, self.sprite_neutral], [self.sprite_walk1_carry, self.sprite_walk2_carry]]]
