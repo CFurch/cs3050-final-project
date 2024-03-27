@@ -787,7 +787,7 @@ class LethalGame(arcade.Window):
                     self.days_left -= 1
                     # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
                     if self.days_left < 0:
-                        # Tushar: end game screen here
+                        # Tushar: death game screen here
                         self.reset_game()
 
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
@@ -803,7 +803,7 @@ class LethalGame(arcade.Window):
                 self.days_left -= 1
                 # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
                 if self.days_left < 0:
-                    # Tushar: end game screen here
+                    # Tushar: death game screen here
                     self.reset_game()
 
         elif self.gamestate == GAMESTATE_OPTIONS["company"]:

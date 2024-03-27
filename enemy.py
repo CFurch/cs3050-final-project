@@ -1,4 +1,5 @@
 import arcade
+import json
 
 class Enemy(arcade.Sprite):
     #initializtion function
