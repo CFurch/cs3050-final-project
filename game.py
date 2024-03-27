@@ -65,9 +65,9 @@ class LethalGame(arcade.Window):
         """
         # Call the parent class and set up the window
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-        self.background_image = arcade.load_texture("resources/screen.jpeg")
 
         arcade.enable_timings()
+        
 
         # Initialize variables for spawning / map / other important variables
         self.gamestate = GAMESTATE_OPTIONS["orbit"]
@@ -367,14 +367,14 @@ class LethalGame(arcade.Window):
         # Clear the screen
         self.clear()
 
-
-
         # print fps to console
         #print(arcade.get_fps(60))
 
         """
         FUTURE: May need to add another state for landing, to animate the ship
         """
+        # For mouse position stuff you'll likely have to make a new field for the class that is updated in the on_key_press
+        # and on_key_release function
         button_x = 100  # Replace with the actual x-coordinate of the button
         mouse_x = 50    # Replace with the actual x-coordinate of the mouse cursor
         if self.current_screen == START_SCREEN:
@@ -1069,7 +1069,7 @@ class LethalGame(arcade.Window):
         arcade.draw_texture_rectangle(
             SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,  # Center of the screen
             SCREEN_WIDTH, SCREEN_HEIGHT,            # Width and height of the screen
-            self.background_image                  
+                      
         )
 
         # Draw the start button
@@ -1099,7 +1099,7 @@ class LethalGame(arcade.Window):
                 self.setup('orbit')
             elif current_screen == GAME_SCREEN:
                 # Handle game interactions here
-                self.on_draw()
+                self.setup()
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
