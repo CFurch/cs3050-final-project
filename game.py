@@ -367,8 +367,7 @@ class LethalGame(arcade.Window):
         # Clear the screen
         self.clear()
 
-        # Start the camera
-        self.camera.use()
+
 
         # print fps to console
         #print(arcade.get_fps(60))
@@ -376,11 +375,16 @@ class LethalGame(arcade.Window):
         """
         FUTURE: May need to add another state for landing, to animate the ship
         """
+        # For mouse position stuff you'll likely have to make a new field for the class that is updated in the on_key_press
+        # and on_key_release function
         button_x = 100  # Replace with the actual x-coordinate of your start button
         mouse_x = 50    # Replace with the actual x-coordinate of the mouse cursor
         if self.current_screen == START_SCREEN:
+            self.camera.position = (0, 0) # Centered the camera to 0,0 (where I assumed it would be drawing stuff
             self.draw_start_screen(button_x, mouse_x)
         elif self.current_screen == GAME_SCREEN:
+            # Start the camera - Tushar: moved this here, only move camera if its in the game screen
+            self.camera.use()
             # Draw the scene depending on indoors or outdoors
             if self.gamestate == GAMESTATE_OPTIONS["orbit"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
                 self.ship.draw_self(self.camera, self.gamestate)
@@ -478,69 +482,69 @@ class LethalGame(arcade.Window):
                         turret.get_turret_laser().draw()
                     turret.draw_scaled()
 
-        self.player.draw_self()
+            self.player.draw_self()
 
-        # Draw the hud sprites
-        temp_x = 300
-        for slot in range(1, 5):
-            if slot == self.player.get_current_inv_slot():
-                sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
+            # Draw the hud sprites
+            temp_x = 300
+            for slot in range(1, 5):
+                if slot == self.player.get_current_inv_slot():
+                    sprite = arcade.Sprite("resources/item_sprites/inventory_box.png", scale=0.55)
+                else:
+                    sprite = arcade.Sprite("resources/item_sprites/inventory_box_non_selected.png", scale=0.55)
+                sprite.center_x = self.camera.position[0] + temp_x
+                temp_x += 125
+                sprite.center_y = self.camera.position[1] + 50
+                sprite.alpha = 200
+                sprite.draw()
+
+            for idx, item in enumerate(self.player.get_full_inv()):
+                if item != None:
+                    item.center_x = self.camera.position[0] + 300 + idx * 125
+                    item.center_y = self.camera.position[1] + 50
+                    # item.set_inventory_texture()
+                    # print(item.center_x, item.center_y)
+                    item.draw_self()
+
+            # Draw text for holding 2 handed item
+            if self.player.get_two_handed():
+                holding_text = arcade.Sprite("resources/player_sprites/full_hands.png", scale=0.67)
+                holding_text.center_x = self.camera.position[0] + SCREEN_WIDTH // 2 - 12
+                holding_text.center_y = self.camera.position[1] + 50
+                holding_text.draw()
+
+            # Draw text from ship
+            if self.ship.player_interacting_with_terminal:
+                self.terminal_background.center_x = self.camera.position[0] + SCREEN_WIDTH / 2
+                self.terminal_background.center_y = self.camera.position[1] + SCREEN_HEIGHT / 2
+                self.terminal_background.draw()
+                arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
+                                 self.camera.position[1] + 100, arcade.csscolor.GREEN, 24)
+                base_output, processed_terminal_output = self.ship.read_output()
+                if processed_terminal_output != "":
+                    arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
+                                     self.camera.position[1] + SCREEN_HEIGHT - 100, arcade.csscolor.GREEN, 24,
+                                     multiline=True, width=850)
             else:
-                sprite = arcade.Sprite("resources/item_sprites/inventory_box_non_selected.png", scale=0.55)
-            sprite.center_x = self.camera.position[0] + temp_x
-            temp_x += 125
-            sprite.center_y = self.camera.position[1] + 50
-            sprite.alpha = 200
-            sprite.draw()
+                # Draw the health and stamina on the camera view
+                # health_text = f"Health: {self.player.get_health()}"
+                stamina_text = f"Stamina: {int(self.player.get_stam())}"
+                weight_text = f"{int(self.player.get_weight())} lb"
 
-        for idx, item in enumerate(self.player.get_full_inv()):
-            if item != None:
-                item.center_x = self.camera.position[0] + 300 + idx * 125
-                item.center_y = self.camera.position[1] + 50
-                # item.set_inventory_texture()
-                # print(item.center_x, item.center_y)
-                item.draw_self()
+                # Calculate the position for objects relative to the camera's position
+                text_x = self.camera.position[0] + 20
+                text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
 
-        # Draw text for holding 2 handed item
-        if self.player.get_two_handed():
-            holding_text = arcade.Sprite("resources/player_sprites/full_hands.png", scale=0.67)
-            holding_text.center_x = self.camera.position[0] + SCREEN_WIDTH // 2 - 12
-            holding_text.center_y = self.camera.position[1] + 50
-            holding_text.draw()
+                # Draw the text at the calculated position
+                # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
+                health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
+                health_sprite.center_x = self.camera.position[0] + 75
+                health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
+                # health_sprite.alpha = 128 # use this to set opacity of objects
+                health_sprite.draw()
 
-        # Draw text from ship
-        if self.ship.player_interacting_with_terminal:
-            self.terminal_background.center_x = self.camera.position[0] + SCREEN_WIDTH / 2
-            self.terminal_background.center_y = self.camera.position[1] + SCREEN_HEIGHT / 2
-            self.terminal_background.draw()
-            arcade.draw_text(f"> {self.ship.terminal_input}", self.camera.position[0] + 50,
-                             self.camera.position[1] + 100, arcade.csscolor.GREEN, 24)
-            base_output, processed_terminal_output = self.ship.read_output()
-            if processed_terminal_output != "":
-                arcade.draw_text(processed_terminal_output, self.camera.position[0] + 50,
-                                 self.camera.position[1] + SCREEN_HEIGHT - 100, arcade.csscolor.GREEN, 24,
-                                 multiline=True, width=850)
-        else:
-            # Draw the health and stamina on the camera view
-            # health_text = f"Health: {self.player.get_health()}"
-            stamina_text = f"Stamina: {int(self.player.get_stam())}"
-            weight_text = f"{int(self.player.get_weight())} lb"
-
-            # Calculate the position for objects relative to the camera's position
-            text_x = self.camera.position[0] + 20
-            text_y = self.camera.position[1] + SCREEN_HEIGHT - 30
-
-            # Draw the text at the calculated position
-            # arcade.draw_text(health_text, text_x, text_y, arcade.csscolor.RED, 18)\
-            health_sprite = arcade.Sprite(f"resources/player_sprites/player_health_sprite_{int(self.player.get_health() // 25)}.png", scale=0.75)
-            health_sprite.center_x = self.camera.position[0] + 75
-            health_sprite.center_y = self.camera.position[1] + SCREEN_HEIGHT - 80
-            # health_sprite.alpha = 128 # use this to set opacity of objects
-            health_sprite.draw()
-
-            # Stamina representation
-            arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
-            arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
+                # Stamina representation
+                arcade.draw_text(stamina_text, text_x, text_y - 150, arcade.csscolor.ORANGE, 18)
+                arcade.draw_text(weight_text, text_x, text_y - 180, arcade.csscolor.ORANGE, 18)
 
     def process_keychange(self):
         """
