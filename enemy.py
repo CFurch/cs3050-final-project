@@ -45,5 +45,13 @@ class Enemy(arcade.Sprite):
         self.path = arcade.astar_calculate_path(self.position, PlayerCharacter.position, wall_list, diagonal_movement=False)
 
 
+    #Draw method
+    def on_draw(self):
+        self.texture = arcade.load_texture["sprite_texture.jpg"]
+
+    """#Update method
+    def update(self):
+        Pathfinding(self, wall_list)
+    """
 
     
