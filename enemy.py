@@ -15,14 +15,11 @@ class Enemy(arcade.Sprite):
 
         # Need to update sprites with animations, directions, etc
         self.texture = None
-        self.texture_map = None
         self.path = None
 
     #Assigns values to the correct attributes
-    def setup(self, health, power_level, Type, movement_speed, texture, wall_list):
-        self.health = health
+    def setup(self, Type, wall_list):
         self.type = Type
-        self.path = None
         self.barrier_list = wall_list
 
         # Load item data from JSON
@@ -30,11 +27,10 @@ class Enemy(arcade.Sprite):
             data_from_json = json.load(file)
 
             #Assuming that type is the same as the identifiers for monsters.json
-            self.power_level = self.type["power"]
-            self.movement_speed = self.type["movement_speed"]
-            self.texture = arcade.sprite(self.type["sprite"])
-            self.texture = arcade.load_texture(self.type["sprite"])
-
+            self.power_level = data_from_json[self.type]["power"]
+            self.movement_speed = data_from_json[self.type]["movement_speed"]
+            self.texture = arcade.Sprite(data_from_json[self.type]["sprite"])
+            self.health = data_from_json[self.type]["health"]
         file.close()
 
         return self

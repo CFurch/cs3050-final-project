@@ -1,11 +1,20 @@
 {
     "hydrogere": {
-        "power": 1
+        "power": 1,
+        "health": 100,
+        "sprite": "resources/player_sprite_temp.png",
+        "movement_speed": 1
     },
     "bracken": {
-        "power": 3
+        "power": 3,
+        "health": 100,
+        "sprite": "resources/player_sprite_temp.png",
+        "movement_speed": 3
     },
     "thumper": {
-        "power": 2
+        "power": 2,
+        "health": 100,
+        "sprite": "resources/player_sprite_temp.png",
+        "movement_speed": 5
     }
 }
