@@ -49,6 +49,10 @@ SEC_PER_HOUR = SEC_PER_MIN * MIN_PER_HOUR
 TIME_RATE_INCREASE = 1.6
 DAY_LENGTH = 10 * SEC_PER_MIN * MS_PER_SEC
 
+# Stuff for screens 
+START_SCREEN = 0
+GAME_SCREEN = 1
+current_screen = START_SCREEN 
 
 class LethalGame(arcade.Window):
     """
@@ -61,6 +65,7 @@ class LethalGame(arcade.Window):
         """
         # Call the parent class and set up the window
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        self.background_image = arcade.load_texture("resources/screen.jpeg")
 
         arcade.enable_timings()
 
@@ -159,6 +164,15 @@ class LethalGame(arcade.Window):
             self.player, self.company_building["walls"]
         )
         self.company_physics_engine.gravity_constant = 0
+
+        # start screen START BUTTON
+        self.button_x = SCREEN_WIDTH // 2  # X-coordinate of the button
+        self.button_y = SCREEN_HEIGHT // 2  # Y-coordinate of the button
+        self.button_width = 200  # Width of the button
+        self.button_height = 50  # Height of the button
+        self.mouse_x = SCREEN_WIDTH // 2  # Initial mouse X-coordinate
+        self.mouse_y = SCREEN_WIDTH // 2  # Initial mouse Y-coordinate
+        self.current_screen = START_SCREEN
 
     def reset_game(self):
         """
@@ -362,104 +376,107 @@ class LethalGame(arcade.Window):
         """
         FUTURE: May need to add another state for landing, to animate the ship
         """
-        # Draw the scene depending on indoors or outdoors
-        if self.gamestate == GAMESTATE_OPTIONS["orbit"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
-            self.ship.draw_self(self.camera, self.gamestate)
-            if self.gamestate == GAMESTATE_OPTIONS["company"]:
-                self.company_building.draw()
+        button_x = 100  # Replace with the actual x-coordinate of your start button
+        mouse_x = 50    # Replace with the actual x-coordinate of the mouse cursor
+        if self.current_screen == START_SCREEN:
+            self.draw_start_screen(button_x, mouse_x)
+        elif self.current_screen == GAME_SCREEN:
+            # Draw the scene depending on indoors or outdoors
+            if self.gamestate == GAMESTATE_OPTIONS["orbit"] or self.gamestate == GAMESTATE_OPTIONS["company"]:
+                self.ship.draw_self(self.camera, self.gamestate)
+                if self.gamestate == GAMESTATE_OPTIONS["company"]:
+                    self.company_building.draw()
+                    self.ship.draw_self(self.camera, self.gamestate)
+                    for item in self.outdoor_loot_items:
+                        item.draw_self()
+                    for item in self.sell_list:
+                        item.draw_self()
+
+                if not self.ship.player_interacting_with_terminal:
+
+                    # Draw the days left
+                    if self.days_left > 0:
+                        sprite = self.day_hud_sprite
+                        color = arcade.csscolor.GREEN
+                    else:
+                        sprite = self.zero_day_sprite
+                        color = arcade.csscolor.RED
+
+                    # Draw correct days left (red if zero)
+                    time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
+                    time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
+                    sprite.center_x = time_text_x - 128
+                    sprite.center_y = time_text_y
+                    sprite.draw()
+
+                    arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
+                                    12)
+                    self.quota_hud_sprite.center_x = time_text_x
+                    self.quota_hud_sprite.center_y = time_text_y
+                    self.quota_hud_sprite.draw()
+
+                    # Draw the days left
+                    arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
+                                    12)
+                    self.quota_hud_sprite.center_x = time_text_x + 128
+                    self.quota_hud_sprite.center_y = time_text_y
+                    self.quota_hud_sprite.draw()
+                    arcade.draw_text(f"Sold: {self.scrap_sold}", self.quota_hud_sprite.center_x - 42,
+                                    self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
+                                    12)
+
+            elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+                self.outdoor_map.draw()
                 self.ship.draw_self(self.camera, self.gamestate)
                 for item in self.outdoor_loot_items:
                     item.draw_self()
-                for item in self.sell_list:
+                # draw the time on hud, if the player isn't in the ship
+                if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
+                    time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
+                    time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
+                    self.time_hud_sprite.center_x = time_text_x
+                    self.time_hud_sprite.center_y = time_text_y
+                    self.time_hud_sprite.draw()
+                    # Draw the actual time
+                    hours, minutes = ms_to_igt(self.delta_time)
+                    arcade.draw_text(f"{hours:02d}:{minutes:02d}", time_text_x - 22, time_text_y - 6, arcade.csscolor.ORANGE, 12)
+
+            else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
+
+                # TODO: Only draw adjacent rooms
+                # calculate adjacent rooms
+                # doing this iteratively causes severe performance drops
+                # for this to be efficient we'd need to do some GPU parallel processing chicanery
+
+                self.indoor_walls.draw()
+
+                for mine in self.mines:
+                    if not mine.get_exploded():
+                        mine.draw()
+
+                for armed_mine in self.armed_mines:
+                    if armed_mine.get_exploded():
+                        # see if the player is within the explosion distance
+                        distance = euclidean_distance((self.player.center_x, self.player.center_y),
+                                                    (armed_mine.center_x, armed_mine.center_y))
+                        if distance <= armed_mine.get_explosion_distance():
+                            self.player.decrease_health(armed_mine.get_damage())
+                        self.armed_mines.remove(armed_mine)
+                    else:
+                        armed_mine.draw()
+
+                # Draw loot after mines but before turrets
+                # self.indoor_loot_items.draw()
+                for item in self.indoor_loot_items:
                     item.draw_self()
 
-            if not self.ship.player_interacting_with_terminal:
-
-                # Draw the days left
-                if self.days_left > 0:
-                    sprite = self.day_hud_sprite
-                    color = arcade.csscolor.GREEN
-                else:
-                    sprite = self.zero_day_sprite
-                    color = arcade.csscolor.RED
-
-                # Draw correct days left (red if zero)
-                time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
-                time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
-                sprite.center_x = time_text_x - 128
-                sprite.center_y = time_text_y
-                sprite.draw()
-
-                arcade.draw_text(f"{self.days_left} days left", sprite.center_x - 38, sprite.center_y - 6, color,
-                                 12)
-                self.quota_hud_sprite.center_x = time_text_x
-                self.quota_hud_sprite.center_y = time_text_y
-                self.quota_hud_sprite.draw()
-
-                # Draw the days left
-                arcade.draw_text(f"Quota: {self.quota}", self.quota_hud_sprite.center_x - 42, self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
-                                 12)
-                self.quota_hud_sprite.center_x = time_text_x + 128
-                self.quota_hud_sprite.center_y = time_text_y
-                self.quota_hud_sprite.draw()
-                arcade.draw_text(f"Sold: {self.scrap_sold}", self.quota_hud_sprite.center_x - 42,
-                                 self.quota_hud_sprite.center_y - 6, arcade.csscolor.GREEN,
-                                 12)
-
-        elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
-            self.outdoor_map.draw()
-            self.ship.draw_self(self.camera, self.gamestate)
-            for item in self.outdoor_loot_items:
-                item.draw_self()
-            # draw the time on hud, if the player isn't in the ship
-            if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
-                time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
-                time_text_y = self.camera.position[1] + SCREEN_HEIGHT - 32
-                self.time_hud_sprite.center_x = time_text_x
-                self.time_hud_sprite.center_y = time_text_y
-                self.time_hud_sprite.draw()
-                # Draw the actual time
-                hours, minutes = ms_to_igt(self.delta_time)
-                arcade.draw_text(f"{hours:02d}:{minutes:02d}", time_text_x - 22, time_text_y - 6, arcade.csscolor.ORANGE, 12)
-
-        else: # self.gamestate == GAMESTATE_OPTIONS["indoors"] # equivalent expression
-
-            # TODO: Only draw adjacent rooms
-            # calculate adjacent rooms
-            # doing this iteratively causes severe performance drops
-            # for this to be efficient we'd need to do some GPU parallel processing chicanery
-
-            self.indoor_walls.draw()
-
-            for mine in self.mines:
-                if not mine.get_exploded():
-                    mine.draw()
-
-            for armed_mine in self.armed_mines:
-                if armed_mine.get_exploded():
-                    # see if the player is within the explosion distance
-                    distance = euclidean_distance((self.player.center_x, self.player.center_y),
-                                                  (armed_mine.center_x, armed_mine.center_y))
-                    if distance <= armed_mine.get_explosion_distance():
-                        self.player.decrease_health(armed_mine.get_damage())
-                    self.armed_mines.remove(armed_mine)
-                else:
-                    armed_mine.draw()
-
-            # Draw loot after mines but before turrets
-            # self.indoor_loot_items.draw()
-            for item in self.indoor_loot_items:
-                item.draw_self()
-
-            # draw bullets and turrets at correct angles
-            for bullet in self.bullets:
-                bullet.draw_scaled()
-            for turret in self.turrets:
-                if turret.get_turret_laser() != None:
-                    turret.get_turret_laser().draw()
-                turret.draw_scaled()
-
-        
+                # draw bullets and turrets at correct angles
+                for bullet in self.bullets:
+                    bullet.draw_scaled()
+                for turret in self.turrets:
+                    if turret.get_turret_laser() != None:
+                        turret.get_turret_laser().draw()
+                    turret.draw_scaled()
 
         self.player.draw_self()
 
@@ -1035,6 +1052,62 @@ class LethalGame(arcade.Window):
         if check_list is None:
             return arcade.SpriteList()
         return check_list
+    
+    def draw_start_screen(self, button_x, mouse_x):
+        # Draw the start screen here
+        arcade.draw_text("Welcome to Lethal Company", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 100,
+                        arcade.color.WHITE, font_size=30, anchor_x="center")
+        arcade.draw_text("Click anywhere to start", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                        arcade.color.WHITE, font_size=20, anchor_x="center")
+
+        # Check if the mouse click is inside the start button
+        if (self.button_x - self.button_width // 2 < self.mouse_x < self.button_x + self.button_width // 2 and
+                self.button_y - self.button_height // 2 < self.mouse_y < self.button_y + self.button_height // 2):
+            # Start the game when the button is clicked
+            pass
+
+        """
+        Draw the start screen, including the background and start button
+        """
+        # Draw the background
+        arcade.draw_rectangle_filled(
+            SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,  # Center of the screen
+            SCREEN_WIDTH, SCREEN_HEIGHT,            # Width and height of the screen
+            arcade.color.LIGHT_BLUE                 # Choose your desired background color
+        )
+
+        # Draw the start button
+        if button_x - 25 < mouse_x < button_x + 25:
+            arcade.draw_rectangle_filled(
+                button_x, SCREEN_HEIGHT // 2,    # X and Y position of the button
+                100, 50,                         # Width and height of the button
+                arcade.color.GREEN               # Choose your desired button color
+            )
+        else:
+            arcade.draw_rectangle_filled(
+                button_x, SCREEN_HEIGHT // 2,    # X and Y position of the button
+                100, 50,                         # Width and height of the button
+                arcade.color.RED                 # Choose your desired button color
+            )
+
+        # Draw text on the button
+        arcade.draw_text(
+            "Start", button_x - 35, SCREEN_HEIGHT // 2 - 10,
+            arcade.color.WHITE, font_size=20
+        )
+            
+    def on_mouse_press(self, x, y, button, modifiers):
+            global current_screen
+            if current_screen == START_SCREEN:
+                current_screen = GAME_SCREEN
+                self.setup()
+            elif current_screen == GAME_SCREEN:
+                # Handle game interactions here
+                pass
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_x = x
+        self.mouse_y = y
 
 
 def get_time():
@@ -1054,6 +1127,7 @@ def ms_to_igt(delta_time):
     igt_minutes = elapsed_seconds % SEC_PER_MIN
 
     return int(igt_hours), int(igt_minutes)
+
 
 
 def main():
