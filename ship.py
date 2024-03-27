@@ -3,7 +3,7 @@ import random
 import json
 from player import PlayerCharacter
 from item import Item
-import keyboard
+
 
 
 MAX_DOOR_BATTERY = 100
