@@ -1,6 +1,7 @@
 import arcade
 import math
 from utility_functions import rotate_hit_box
+from arcade.experimental.lights import Light, LightLayer
 
 PLAYER_DELAY_PICKUP_DROP = 20
 PLAYER_ROTATION_RATE = 10
@@ -44,6 +45,9 @@ class PlayerCharacter(arcade.Sprite):
 
         # Block pickup if player is just dropped something or just picked something up
         self.pickup_drop_delay = 0
+
+        self.player_indoor_light = Light(self.center_x, self.center_y, 150, arcade.color.WHITE, 'soft')
+        self.player_outdoor_light = Light(self.center_x, self.center_y, 300, arcade.color.WHITE, 'soft')
 
         """
         current item slot selected:

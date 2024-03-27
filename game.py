@@ -6,6 +6,8 @@ CS 3050 Team 5
 import sys
 
 import arcade
+from arcade.experimental.lights import Light, LightLayer
+
 import math
 from room import Room
 from map import Map
@@ -48,6 +50,8 @@ SEC_PER_HOUR = SEC_PER_MIN * MIN_PER_HOUR
 # 1.6 means 16 hours in 10 minutes
 TIME_RATE_INCREASE = 1.6
 DAY_LENGTH = 10 * SEC_PER_MIN * MS_PER_SEC
+AMBIENT_COLOR = (10, 10, 10)
+
 
 
 class LethalGame(arcade.Window):
@@ -159,6 +163,17 @@ class LethalGame(arcade.Window):
             self.player, self.company_building["walls"]
         )
         self.company_physics_engine.gravity_constant = 0
+
+        # Layer for the lights on the map
+        self.indoor_light_layer = LightLayer(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.indoor_light_layer.set_background_color(arcade.color.BLACK)
+
+        self.indoor_light_layer.add(self.player.player_indoor_light)
+
+        self.outdoor_light_layer = LightLayer(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.outdoor_light_layer.set_background_color(arcade.color.BLACK)
+
+        self.outdoor_light_layer.add(self.player.player_outdoor_light)
 
     def reset_game(self):
         """
@@ -374,7 +389,6 @@ class LethalGame(arcade.Window):
                     item.draw_self()
 
             if not self.ship.player_interacting_with_terminal:
-
                 # Draw the days left
                 if self.days_left > 0:
                     sprite = self.day_hud_sprite
@@ -407,10 +421,13 @@ class LethalGame(arcade.Window):
                                  12)
 
         elif self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
-            self.outdoor_map.draw()
-            self.ship.draw_self(self.camera, self.gamestate)
-            for item in self.outdoor_loot_items:
-                item.draw_self()
+            with self.outdoor_light_layer:
+                self.outdoor_map.draw()
+                self.ship.draw_self(self.camera, self.gamestate)
+                for item in self.outdoor_loot_items:
+                    item.draw_self()
+            self.outdoor_light_layer.draw()
+
             # draw the time on hud, if the player isn't in the ship
             if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
                 time_text_x = self.camera.position[0] + SCREEN_WIDTH / 2
@@ -428,38 +445,37 @@ class LethalGame(arcade.Window):
             # calculate adjacent rooms
             # doing this iteratively causes severe performance drops
             # for this to be efficient we'd need to do some GPU parallel processing chicanery
+            with self.indoor_light_layer:
+                self.indoor_walls.draw()
 
-            self.indoor_walls.draw()
+                for mine in self.mines:
+                    if not mine.get_exploded():
+                        mine.draw()
 
-            for mine in self.mines:
-                if not mine.get_exploded():
-                    mine.draw()
+                for armed_mine in self.armed_mines:
+                    if armed_mine.get_exploded():
+                        # see if the player is within the explosion distance
+                        distance = euclidean_distance((self.player.center_x, self.player.center_y),
+                                                      (armed_mine.center_x, armed_mine.center_y))
+                        if distance <= armed_mine.get_explosion_distance():
+                            self.player.decrease_health(armed_mine.get_damage())
+                        self.armed_mines.remove(armed_mine)
+                    else:
+                        armed_mine.draw()
 
-            for armed_mine in self.armed_mines:
-                if armed_mine.get_exploded():
-                    # see if the player is within the explosion distance
-                    distance = euclidean_distance((self.player.center_x, self.player.center_y),
-                                                  (armed_mine.center_x, armed_mine.center_y))
-                    if distance <= armed_mine.get_explosion_distance():
-                        self.player.decrease_health(armed_mine.get_damage())
-                    self.armed_mines.remove(armed_mine)
-                else:
-                    armed_mine.draw()
+                # Draw loot after mines but before turrets
+                # self.indoor_loot_items.draw()
+                for item in self.indoor_loot_items:
+                    item.draw_self()
 
-            # Draw loot after mines but before turrets
-            # self.indoor_loot_items.draw()
-            for item in self.indoor_loot_items:
-                item.draw_self()
-
-            # draw bullets and turrets at correct angles
-            for bullet in self.bullets:
-                bullet.draw_scaled()
-            for turret in self.turrets:
-                if turret.get_turret_laser() != None:
-                    turret.get_turret_laser().draw()
-                turret.draw_scaled()
-
-        
+                # draw bullets and turrets at correct angles
+                for bullet in self.bullets:
+                    bullet.draw_scaled()
+                for turret in self.turrets:
+                    if turret.get_turret_laser() != None:
+                        turret.get_turret_laser().draw()
+                    turret.draw_scaled()
+            self.indoor_light_layer.draw(ambient_color=AMBIENT_COLOR)
 
         self.player.draw_self()
 
@@ -767,6 +783,8 @@ class LethalGame(arcade.Window):
 
         # Move the player with the physics engine
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
+            # Update player light position
+            self.player.player_outdoor_light.position = self.player.position
             self.outdoor_physics_engine.update()
             self.ship.update_ship()
             # This method will auto-update physics engine for if door is open or shut
@@ -839,6 +857,8 @@ class LethalGame(arcade.Window):
                     self.ship.interact_terminal()
         elif self.gamestate == GAMESTATE_OPTIONS["indoors"]:
             self.indoor_physics_engine.update()
+            # Update player light position
+            self.player.player_indoor_light.position = self.player.position
         elif self.gamestate == GAMESTATE_OPTIONS["orbit"]:
             # This method will auto-update physics engine for if door is open or shut
             self.ship_physics_engine = arcade.PhysicsEnginePlatformer(
