@@ -167,12 +167,12 @@ class LethalGame(arcade.Window):
         self.company_physics_engine.gravity_constant = 0
 
         # start screen START BUTTON
-        self.button_x = SCREEN_WIDTH // 2  # X-coordinate of the button
-        self.button_y = SCREEN_HEIGHT // 2  # Y-coordinate of the button
-        self.button_width = 200  # Width of the button
+        self.button_x = SCREEN_WIDTH // 3  # X-coordinate of the button
+        self.button_y = SCREEN_HEIGHT // 3  # Y-coordinate of the button
+        self.button_width = 100  # Width of the button
         self.button_height = 50  # Height of the button
-        self.mouse_x = SCREEN_WIDTH // 2  # Initial mouse X-coordinate
-        self.mouse_y = SCREEN_WIDTH // 2  # Initial mouse Y-coordinate
+        self.mouse_x = SCREEN_WIDTH // 3  # Initial mouse X-coordinate
+        self.mouse_y = SCREEN_WIDTH // 3 # Initial mouse Y-coordinate
         self.current_screen = START_SCREEN
 
     def reset_game(self):
@@ -380,7 +380,7 @@ class LethalGame(arcade.Window):
         mouse_x = 50    # Replace with the actual x-coordinate of the mouse cursor
         if self.current_screen == START_SCREEN:
             self.camera.position = (0, 0) # Centered the camera to 0,0 (where I assumed it would be drawing stuff
-            self.draw_start_screen(button_x, mouse_x)
+            self.draw_start_screen()
         elif self.current_screen == GAME_SCREEN:
             # Start the camera - Tushar: moved this here, only move camera if its in the game screen
             self.camera.use()
@@ -1056,7 +1056,7 @@ class LethalGame(arcade.Window):
             return arcade.SpriteList()
         return check_list
     
-    def draw_start_screen(self, button_x, mouse_x):
+    def draw_start_screen(self):
         background_texture = arcade.load_texture("resources/screens/Screen.jpeg")
         # Check if the mouse click is inside the start button
         if (self.button_x - self.button_width // 2 < self.mouse_x < self.button_x + self.button_width // 2 and
@@ -1075,22 +1075,23 @@ class LethalGame(arcade.Window):
         )
 
         # Draw the start button
-        if button_x - 25 < mouse_x < button_x + 25:
+        if (self.button_x - self.button_width // 2 < self.mouse_x < self.button_x + self.button_width // 2 and
+                self.button_y - self.button_height // 2 < self.mouse_y < self.button_y + self.button_height // 2):
             arcade.draw_rectangle_filled(
-                button_x, SCREEN_HEIGHT // 2,    # X and Y position of the button
-                100, 50,                         # Width and height of the button
-                arcade.color.GREEN               # button color
+                self.button_x, self.button_y,                # X and Y position of the button
+                self.button_width, self.button_height,      # Width and height of the button
+                arcade.color.YELLOW                          # button color
             )
         else:
             arcade.draw_rectangle_filled(
-                button_x, SCREEN_HEIGHT // 2,    # X and Y position of the button
-                100, 50,                         # Width and height of the button
-                arcade.color.RED                 # desired button color
+                self.button_x, self.button_y,               # X and Y position of the button
+                self.button_width, self.button_height,     # Width and height of the button
+                arcade.color.RED                            # desired button color
             )
 
         # Draw text on the button
         arcade.draw_text(
-            "Start", button_x - 35, SCREEN_HEIGHT // 2 - 10,
+            "Start", self.button_x - 15, SCREEN_HEIGHT // 3,
             arcade.color.WHITE, font_size=20
         )
             
