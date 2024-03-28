@@ -782,7 +782,7 @@ class LethalGame(arcade.Window):
             self.last_terminal_output = None
 
         # Check time if landed
-        if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"] and \
+        if (self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"]) and \
                 self.delta_time >= DAY_LENGTH:
             self.gamestate = GAMESTATE_OPTIONS["orbit"]
             self.player.reset()

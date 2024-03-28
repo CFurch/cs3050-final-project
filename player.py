@@ -238,7 +238,6 @@ class PlayerCharacter(arcade.Sprite):
         target_light_level = OUTDOOR_LIGHT_SIZE / (1 + np.exp(-decay_rate * (portion_of_day - minute_in_day_center)))
 
         self.player_outdoor_light.radius = target_light_level
-        print(time_ms, portion_of_day, target_light_level)
 
     def update_rotation(self, x_direction, y_direction):
         """
