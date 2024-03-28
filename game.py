@@ -65,6 +65,7 @@ class LethalGame(arcade.Window):
         """
         # Call the parent class and set up the window
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        self.background_image = arcade.load_texture("resources/screens/Screen.png")
 
         arcade.enable_timings()
         
