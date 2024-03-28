@@ -1057,11 +1057,12 @@ class LethalGame(arcade.Window):
         return check_list
     
     def draw_start_screen(self, button_x, mouse_x):
+        background_texture = arcade.load_texture("resources/screens/Screen.jpeg")
         # Check if the mouse click is inside the start button
         if (self.button_x - self.button_width // 2 < self.mouse_x < self.button_x + self.button_width // 2 and
                 self.button_y - self.button_height // 2 < self.mouse_y < self.button_y + self.button_height // 2):
             # Start the game when the button is clicked
-            self.setup()
+            self.setup('orbit')
 
         """
         Draw the start screen, including the background and start button
@@ -1070,7 +1071,7 @@ class LethalGame(arcade.Window):
         arcade.draw_texture_rectangle(
             SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,  # Center of the screen
             SCREEN_WIDTH, SCREEN_HEIGHT,            # Width and height of the screen
-                      
+            background_texture         
         )
 
         # Draw the start button
@@ -1100,7 +1101,7 @@ class LethalGame(arcade.Window):
                 self.setup('orbit')
             elif current_screen == GAME_SCREEN:
                 # Handle game interactions here
-                self.setup()
+                self.setup('orbit')
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
