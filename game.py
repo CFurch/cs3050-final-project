@@ -785,11 +785,14 @@ class LethalGame(arcade.Window):
         if (self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"]) and \
                 self.delta_time >= DAY_LENGTH:
             self.gamestate = GAMESTATE_OPTIONS["orbit"]
-            self.player.reset()
+
             self.player.center_x = self.ship.center_x + 64
             self.player.center_y = self.ship.center_y + 128
             self.ship.change_orbit()
-            self.ship.ship_loot = arcade.SpriteList()
+            # If player not on ship
+            if arcade.check_for_collision_with_list(self.player, self.ship.get_background_hitbox()):
+                self.player.reset()
+                self.ship.reset()
             # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
             self.days_left -= 1
             # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
@@ -1030,6 +1033,7 @@ class LethalGame(arcade.Window):
             self.player.reset()
             self.player.center_x = self.ship.center_x + 64
             self.player.center_y = self.ship.center_y + 128
+            self.ship.reset()
             self.ship.change_orbit()
             # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
             self.days_left -= 1

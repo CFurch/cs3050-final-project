@@ -106,6 +106,10 @@ class Ship(arcade.Sprite):
             text_y = camera.position[1] + SCREEN_HEIGHT - 30
             arcade.draw_text(f"Total ship loot: {self.total_loot_value}", text_x, text_y - 210, arcade.csscolor.GREEN, 18)
 
+    def reset(self):
+        self.ship_loot = arcade.SpriteList()
+        self.total_loot_value = 0
+
     def add_item(self, item):
         self.ship_loot.append(item)
         self.total_loot_value += item.get_value()
