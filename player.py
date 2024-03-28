@@ -1,5 +1,8 @@
 import arcade
 import math
+
+import numpy as np
+
 from utility_functions import rotate_hit_box
 from arcade.experimental.lights import Light, LightLayer
 
@@ -7,6 +10,11 @@ PLAYER_DELAY_PICKUP_DROP = 20
 PLAYER_ROTATION_RATE = 10
 MAX_HEALTH = 100
 MAX_STAM = 100
+INDOOR_LIGHT_SIZE = 150
+OUTDOOR_LIGHT_SIZE = 1000
+MS_PER_SEC = 1000
+SEC_PER_MIN = 60
+DAY_LENGTH = 10 * SEC_PER_MIN * MS_PER_SEC
 
 
 class PlayerCharacter(arcade.Sprite):
@@ -46,8 +54,8 @@ class PlayerCharacter(arcade.Sprite):
         # Block pickup if player is just dropped something or just picked something up
         self.pickup_drop_delay = 0
 
-        self.player_indoor_light = Light(self.center_x, self.center_y, 150, arcade.color.WHITE, 'soft')
-        self.player_outdoor_light = Light(self.center_x, self.center_y, 300, arcade.color.WHITE, 'soft')
+        self.player_indoor_light = Light(self.center_x, self.center_y, INDOOR_LIGHT_SIZE, arcade.color.WHITE, 'soft')
+        self.player_outdoor_light = Light(self.center_x, self.center_y, OUTDOOR_LIGHT_SIZE, arcade.color.WHITE, 'soft')
 
         """
         current item slot selected:
@@ -219,6 +227,18 @@ class PlayerCharacter(arcade.Sprite):
 
     def reset_pd_delay(self):
         self.pickup_drop_delay = PLAYER_DELAY_PICKUP_DROP
+
+    def light_level(self, time_ms):
+        # Set light level radius based on time of day, using logistic regression
+        # Convert MS to a time of day in terms of the overall 10 minutes of the day
+        portion_of_day = time_ms / DAY_LENGTH * 10
+        decay_rate = -1
+        # Midpoint in the logistic regression curve
+        minute_in_day_center = 7
+        target_light_level = OUTDOOR_LIGHT_SIZE / (1 + np.exp(-decay_rate * (portion_of_day - minute_in_day_center)))
+
+        self.player_outdoor_light.radius = target_light_level
+        print(time_ms, portion_of_day, target_light_level)
 
     def update_rotation(self, x_direction, y_direction):
         """

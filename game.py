@@ -50,8 +50,8 @@ SEC_PER_HOUR = SEC_PER_MIN * MIN_PER_HOUR
 # 1.6 means 16 hours in 10 minutes
 TIME_RATE_INCREASE = 1.6
 DAY_LENGTH = 10 * SEC_PER_MIN * MS_PER_SEC
-AMBIENT_COLOR = (10, 10, 10)
-
+AMBIENT_COLOR = (5, 5, 5)
+DARK_AMBIENT_COLOR = (0, 0, 0)
 
 
 class LethalGame(arcade.Window):
@@ -426,7 +426,7 @@ class LethalGame(arcade.Window):
                 self.ship.draw_self(self.camera, self.gamestate)
                 for item in self.outdoor_loot_items:
                     item.draw_self()
-            self.outdoor_light_layer.draw()
+            self.outdoor_light_layer.draw(ambient_color=AMBIENT_COLOR)
 
             # draw the time on hud, if the player isn't in the ship
             if not arcade.check_for_collision_with_list(self.player, self.ship.tilemap["background"]):
@@ -475,7 +475,7 @@ class LethalGame(arcade.Window):
                     if turret.get_turret_laser() != None:
                         turret.get_turret_laser().draw()
                     turret.draw_scaled()
-            self.indoor_light_layer.draw(ambient_color=AMBIENT_COLOR)
+            self.indoor_light_layer.draw(ambient_color=DARK_AMBIENT_COLOR)
 
         self.player.draw_self()
 
@@ -781,6 +781,22 @@ class LethalGame(arcade.Window):
         else:
             self.last_terminal_output = None
 
+        # Check time if landed
+        if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"] and \
+                self.delta_time >= DAY_LENGTH:
+            self.gamestate = GAMESTATE_OPTIONS["orbit"]
+            self.player.reset()
+            self.player.center_x = self.ship.center_x + 64
+            self.player.center_y = self.ship.center_y + 128
+            self.ship.change_orbit()
+            self.ship.ship_loot = arcade.SpriteList()
+            # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
+            self.days_left -= 1
+            # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
+            if self.days_left < 0:
+                # Tushar: end game screen here
+                self.reset_game()
+
         # Move the player with the physics engine
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"]:
             # Update player light position
@@ -811,19 +827,6 @@ class LethalGame(arcade.Window):
                 elif ship_action == SHIP_INTERACTION_OPTIONS["terminal"]:
                     # This will handle inputs and drawing new stuff
                     self.ship.interact_terminal()
-            if self.delta_time >= DAY_LENGTH:
-                self.gamestate = GAMESTATE_OPTIONS["orbit"]
-                self.player.reset()
-                self.player.center_x = self.ship.center_x + 64
-                self.player.center_y = self.ship.center_y + 128
-                self.ship.change_orbit()
-                # Remove a day left - after 3 days will be 0 - prevent landing/game over when done
-                self.days_left -= 1
-                # You have to go to company to sell to do selling process - reset if taking back off after day 0 day
-                if self.days_left < 0:
-                    # Tushar: end game screen here
-                    self.reset_game()
-
         elif self.gamestate == GAMESTATE_OPTIONS["company"]:
             self.company_physics_engine.update()
             self.ship.update_ship()
@@ -1037,6 +1040,8 @@ class LethalGame(arcade.Window):
 
         # Update the time if indoors or outdoors (i.e. this happens if it is during a day
         if self.gamestate == GAMESTATE_OPTIONS["outdoors"] or self.gamestate == GAMESTATE_OPTIONS["indoors"]:
+            # Set player light level - can happen before update
+            self.player.light_level(self.delta_time)
             self.delta_time = get_time() - self.start_time
 
     def check_player_list_collision(self, check_list):
